@@ -30,6 +30,11 @@ app.use('/api/admissions', require('./routes/admissions'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
+// Root route
+app.get('/', (req, res) => {
+    res.json({ message: 'Pretech Computer Education API Server', status: 'Running', docs: '/api/health' });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Pretech API is running' });
