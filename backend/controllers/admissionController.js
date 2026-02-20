@@ -51,25 +51,27 @@ const createAdmissionInternal = async (req, res, isAdmin) => {
 
         const admission = await Admission.create(admissionData);
 
-        // Create user account for the student
-        const existingUser = await User.findOne({ email: req.body.email });
-        if (!existingUser) {
-            const user = await User.create({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.mobile, // Default password is mobile number
-                role: 'student',
-                studentId
-            });
-            admission.user = user._id;
-            await admission.save();
-        } else {
-            admission.user = existingUser._id;
-            if (!existingUser.studentId) {
-                existingUser.studentId = studentId;
-                await existingUser.save();
+        // Create user account for the student (only if email provided)
+        if (req.body.email) {
+            const existingUser = await User.findOne({ email: req.body.email });
+            if (!existingUser) {
+                const user = await User.create({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.mobile, // Default password is mobile number
+                    role: 'student',
+                    studentId
+                });
+                admission.user = user._id;
+                await admission.save();
+            } else {
+                admission.user = existingUser._id;
+                if (!existingUser.studentId) {
+                    existingUser.studentId = studentId;
+                    await existingUser.save();
+                }
+                await admission.save();
             }
-            await admission.save();
         }
 
         // Auto-handle payment when admin marks as "Paid" (Cash/Offline)

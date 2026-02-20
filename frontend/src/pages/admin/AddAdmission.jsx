@@ -86,11 +86,6 @@ const AddAdmission = () => {
                                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                                 </div>
                                 <div>
-                                    <label className="label">Email *</label>
-                                    <input type="email" {...register('email', { required: 'Email is required' })} className="input-field" placeholder="Student Email" />
-                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-                                </div>
-                                <div>
                                     <label className="label">Mobile *</label>
                                     <input {...register('mobile', { required: 'Mobile is required', pattern: { value: /^[0-9]{10}$/, message: 'Invalid mobile' } })} className="input-field" placeholder="10-digit Mobile" />
                                     {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile.message}</p>}
@@ -128,19 +123,18 @@ const AddAdmission = () => {
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b pb-2">Course & Office Use</h3>
-
                                 <div>
                                     <label className="label">Address *</label>
-                                    <textarea {...register('address', { required: 'Required' })} className="input-field" rows="3" />
+                                    <textarea {...register('address', { required: 'Required' })} className="input-field" rows="2" />
                                 </div>
                                 <div>
                                     <label className="label">Qualification *</label>
                                     <input {...register('qualification', { required: 'Required' })} className="input-field" />
                                 </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b pb-2">Course & Office Use</h3>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
@@ -243,6 +237,13 @@ const AddAdmission = () => {
                                     </p>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Email at the bottom - optional */}
+                        <div className="mb-6 max-w-md">
+                            <label className="label">Email <span className="text-gray-400 text-xs font-normal">(Optional)</span></label>
+                            <input type="email" {...register('email')} className="input-field" placeholder="Student Email (optional)" />
+                            <p className="text-xs text-gray-400 mt-1">If provided, a student login account will be created.</p>
                         </div>
 
                         <div className="flex justify-end space-x-4 border-t pt-6 border-gray-100 dark:border-dark-border">

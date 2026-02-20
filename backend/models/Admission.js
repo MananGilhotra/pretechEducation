@@ -50,7 +50,7 @@ const admissionSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, 'Please add email'],
+        default: '',
         lowercase: true
     },
     address: {
