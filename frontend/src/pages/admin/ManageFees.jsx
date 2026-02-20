@@ -34,7 +34,7 @@ const ManageFees = () => {
     // Form state
     const [form, setForm] = useState({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '', paymentDate: new Date().toISOString().split('T')[0] });
     const [submitting, setSubmitting] = useState(false);
-    const [updatingInstallment, setUpdatingInstallment] = useState(null);
+
 
     const debounceRef = useRef(null);
 
@@ -110,22 +110,7 @@ const ManageFees = () => {
         } finally { setSubmitting(false); }
     };
 
-    const handleInstallmentToggle = async (installment) => {
-        if (!admissionData) return;
-        const newStatus = installment.status === 'Paid' ? 'Pending' : 'Paid';
-        setUpdatingInstallment(installment.number);
-        try {
-            const { data } = await API.put(`/payments/installment/${admissionData._id}/${installment.number}`, { status: newStatus });
-            toast.success(data.message);
-            setAdmissionData(data.admission);
-            setFeeSummary(data.feeSummary);
-            setPaymentHistory(data.payments || []);
-            // Refresh overview
-            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Failed to update installment');
-        } finally { setUpdatingInstallment(null); }
-    };
+
 
     const clearStudent = () => {
         setSelectedAdmission(null);
@@ -300,56 +285,6 @@ const ManageFees = () => {
                                 </div>
                             </div>
 
-                            {/* ======================== INSTALLMENT MANAGEMENT ======================== */}
-                            {admissionData.paymentPlan === 'Installment' && admissionData.installments?.length > 0 && (
-                                <div className="card mb-6">
-                                    <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">Installment Status</h2>
-                                    <div className="space-y-3">
-                                        {admissionData.installments
-                                            .sort((a, b) => a.number - b.number)
-                                            .map((inst) => (
-                                                <div key={inst.number}
-                                                    className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${inst.status === 'Paid'
-                                                        ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
-                                                        : 'border-gray-200 bg-white dark:border-dark-border dark:bg-dark-card'
-                                                        }`}
-                                                >
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${inst.status === 'Paid'
-                                                            ? 'bg-green-200 text-green-700 dark:bg-green-800 dark:text-green-300'
-                                                            : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-                                                            }`}>
-                                                            {inst.number}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-medium text-gray-900 dark:text-white">
-                                                                Installment #{inst.number}
-                                                            </div>
-                                                            <div className="text-sm text-gray-500">
-                                                                ₹{inst.amount?.toLocaleString('en-IN')}
-                                                                {inst.paidAt && <span className="ml-2 text-xs">· Paid on {new Date(inst.paidAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleInstallmentToggle(inst)}
-                                                        disabled={updatingInstallment === inst.number}
-                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${inst.status === 'Paid'
-                                                            ? 'bg-green-600 text-white hover:bg-green-700'
-                                                            : 'bg-gray-200 text-gray-700 hover:bg-amber-100 hover:text-amber-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-amber-900/30 dark:hover:text-amber-400'
-                                                            } disabled:opacity-50`}
-                                                    >
-                                                        {updatingInstallment === inst.number
-                                                            ? 'Updating…'
-                                                            : inst.status === 'Paid' ? '✓ Paid' : 'Mark as Paid'
-                                                        }
-                                                    </button>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                </div>
-                            )}
 
                             {/* ======================== PAYMENT ENTRY FORM ======================== */}
                             <div className="card mb-6">
