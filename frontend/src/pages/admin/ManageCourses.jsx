@@ -12,7 +12,7 @@ const ManageCourses = () => {
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(null);
     const [form, setForm] = useState({
-        name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active'
+        name: '', description: '', duration: '', fees: '', eligibility: '', category: '', status: 'Active'
     });
 
     const fetchCourses = async () => {
@@ -37,7 +37,7 @@ const ManageCourses = () => {
             }
             setShowModal(false);
             setEditing(null);
-            setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
+            setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: '', status: 'Active' });
             fetchCourses();
         } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     };
@@ -148,9 +148,10 @@ const ManageCourses = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="label">Category</label>
-                                    <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="input-field">
-                                        {['Programming', 'Web Development', 'Data Science', 'Networking', 'Office Tools', 'Graphic Design', 'Certification', 'Other'].map(c => <option key={c}>{c}</option>)}
-                                    </select>
+                                    <input list="categoryList" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="input-field" placeholder="Type or select category" required />
+                                    <datalist id="categoryList">
+                                        {[...new Set(courses.map(c => c.category).filter(Boolean))].map(c => <option key={c} value={c} />)}
+                                    </datalist>
                                 </div>
                                 <div>
                                     <label className="label">Status</label>

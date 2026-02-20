@@ -28,8 +28,7 @@ const courseSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        required: [true, 'Please add a category'],
-        enum: ['Programming', 'Web Development', 'Data Science', 'Networking', 'Office Tools', 'Graphic Design', 'Certification', 'Other']
+        required: [true, 'Please add a category']
     },
     status: {
         type: String,
