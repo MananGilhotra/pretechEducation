@@ -249,3 +249,31 @@ exports.exportAdmissions = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Delete a non-approved admission
+// @route   DELETE /api/admissions/:id
+// @access  Admin
+exports.deleteAdmission = async (req, res) => {
+    try {
+        const admission = await Admission.findById(req.params.id);
+        if (!admission) {
+            return res.status(404).json({ message: 'Admission not found' });
+        }
+        if (admission.approved) {
+            return res.status(400).json({ message: 'Cannot delete an approved admission' });
+        }
+
+        const Payment = require('../models/Payment');
+        // Delete related payments
+        await Payment.deleteMany({ admission: admission._id });
+        // Delete related user account if exists
+        if (admission.user) {
+            await User.findByIdAndDelete(admission.user);
+        }
+        await Admission.findByIdAndDelete(req.params.id);
+
+        res.json({ message: 'Admission deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

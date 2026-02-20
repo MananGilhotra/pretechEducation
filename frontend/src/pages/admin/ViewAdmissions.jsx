@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import toast from 'react-hot-toast';
-import { HiSearch, HiDownload, HiCheck } from 'react-icons/hi';
+import { HiSearch, HiDownload, HiCheck, HiX } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
@@ -30,6 +30,17 @@ const ViewAdmissions = () => {
             toast.success('Admission approved');
             fetchAdmissions();
         } catch { toast.error('Approval failed'); }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this admission?')) return;
+        try {
+            await API.delete(`/admissions/${id}`);
+            toast.success('Admission deleted');
+            fetchAdmissions();
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to delete');
+        }
     };
 
     const handleExport = async () => {
@@ -99,9 +110,12 @@ const ViewAdmissions = () => {
                                             <td className="py-3 px-4">
                                                 {adm.approved ? <span className="text-green-600">✓ Yes</span> : <span className="text-gray-400">No</span>}
                                             </td>
-                                            <td className="py-3 px-4">
+                                            <td className="py-3 px-4 flex gap-1">
                                                 {!adm.approved && (
-                                                    <button onClick={() => handleApprove(adm._id)} className="p-2 rounded-lg hover:bg-green-100 text-green-600 transition-colors" title="Approve"><HiCheck /></button>
+                                                    <>
+                                                        <button onClick={() => handleApprove(adm._id)} className="p-2 rounded-lg hover:bg-green-100 text-green-600 transition-colors" title="Approve"><HiCheck /></button>
+                                                        <button onClick={() => handleDelete(adm._id)} className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors" title="Delete"><HiX /></button>
+                                                    </>
                                                 )}
                                             </td>
                                         </tr>

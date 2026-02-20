@@ -435,7 +435,7 @@ exports.updateInstallmentStatus = async (req, res) => {
 // @route   GET /api/payments/overview
 exports.getFeeOverview = async (req, res) => {
     try {
-        const admissions = await Admission.find().populate('courseApplied', 'name fees');
+        const admissions = await Admission.find({ approved: true }).populate('courseApplied', 'name fees');
 
         let fullyPaid = 0;
         let partiallyPaid = 0;
