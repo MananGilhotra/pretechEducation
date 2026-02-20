@@ -21,9 +21,11 @@ const WhyChooseUs = () => {
 
     useEffect(() => {
         if (!sectionRef.current) return;
+        const cards = sectionRef.current.querySelectorAll('.feature-card');
+        if (!cards.length) return;
 
         gsap.fromTo(
-            sectionRef.current.querySelectorAll('.feature-card'),
+            cards,
             { y: 50, opacity: 0, scale: 0.95 },
             {
                 y: 0,

@@ -12,9 +12,11 @@ const About = () => {
 
     useEffect(() => {
         if (!sectionRef.current) return;
+        const elements = sectionRef.current.querySelectorAll('.about-animate');
+        if (!elements.length) return;
 
         gsap.fromTo(
-            sectionRef.current.querySelectorAll('.about-animate'),
+            elements,
             { y: 60, opacity: 0 },
             {
                 y: 0,

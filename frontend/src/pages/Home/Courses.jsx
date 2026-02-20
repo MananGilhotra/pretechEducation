@@ -35,9 +35,11 @@ const Courses = () => {
 
     useEffect(() => {
         if (!sectionRef.current) return;
+        const cards = sectionRef.current.querySelectorAll('.course-card');
+        if (!cards.length) return;
 
         gsap.fromTo(
-            sectionRef.current.querySelectorAll('.course-card'),
+            cards,
             { y: 60, opacity: 0 },
             {
                 y: 0,
