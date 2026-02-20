@@ -1,6 +1,4 @@
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
 
 // Helper to convert number to words (Indian numbering system)
 const numberToWords = (num) => {
@@ -19,19 +17,18 @@ const numberToWords = (num) => {
     return str.trim();
 };
 
-const generateReceipt = async (paymentData, admissionData) => {
+/**
+ * Generate a receipt PDF and return it as a Buffer (no filesystem writes).
+ * This works on Render's ephemeral filesystem.
+ */
+const generateReceipt = (paymentData, admissionData) => {
     return new Promise((resolve, reject) => {
         // A5 Landscape to match physical receipt shape
         const doc = new PDFDocument({ margin: 30, size: 'A5', layout: 'landscape' });
-        const filename = `receipt-${paymentData.transactionId || paymentData._id || Date.now()}.pdf`;
-        const filepath = path.join(__dirname, '../uploads', filename);
-
-        // Ensure uploads dir exists
-        const uploadsDir = path.join(__dirname, '../uploads');
-        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-        const stream = fs.createWriteStream(filepath);
-        doc.pipe(stream);
+        const chunks = [];
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
 
         const pageW = 595.28; // A5 landscape width
         const leftM = 30;
@@ -41,14 +38,13 @@ const generateReceipt = async (paymentData, admissionData) => {
         // ===================== ORANGE GRADIENT HEADER BAR =====================
         const gradientTop = 15;
         const gradientH = 75;
-        // Simulate gradient with multiple thin rects
         for (let i = 0; i < gradientH; i++) {
             const ratio = i / gradientH;
             const r = Math.round(255 * (1 - ratio * 0.2));
             const g = Math.round(165 + (100 - 165) * ratio);
-            const b = Math.round(0 + 50 * ratio);
+            const bv = Math.round(0 + 50 * ratio);
             doc.rect(leftM, gradientTop + i, contentW, 1)
-                .fill(`rgb(${r}, ${g}, ${b})`);
+                .fill(`rgb(${r}, ${g}, ${bv})`);
         }
 
         // Header text on gradient
@@ -219,7 +215,6 @@ const generateReceipt = async (paymentData, admissionData) => {
         // Balance calculation
         let balance = 0;
         if (admissionData.finalFees) {
-            // Estimate total paid: sum of all paid installments or just this payment if full
             const paidFromInstallments = admissionData.installments?.reduce((sum, inst) =>
                 (inst.status === 'Paid' ? sum + inst.amount : sum), 0) || 0;
             balance = Math.max(0, admissionData.finalFees - Math.max(paidFromInstallments, paymentData.amount));
@@ -250,12 +245,6 @@ const generateReceipt = async (paymentData, admissionData) => {
         doc.rect(leftM - 5, 10, contentW + 10, y + 20).lineWidth(1.5).strokeColor('#E67E00').stroke();
 
         doc.end();
-
-        stream.on('finish', () => {
-            resolve({ filename, filepath });
-        });
-
-        stream.on('error', reject);
     });
 };
 

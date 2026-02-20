@@ -393,8 +393,8 @@ const ManageFees = () => {
                                                         <td className="py-2.5 px-4 font-mono text-xs text-gray-500">{p.transactionId || '—'}</td>
                                                         <td className="py-2.5 px-4 text-gray-500 text-xs">{new Date(p.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                                         <td className="py-2.5 px-4">
-                                                            {p.receiptUrl ? (
-                                                                <a href={p.receiptUrl}
+                                                            {p.status === 'paid' ? (
+                                                                <a href={`/api/payments/${p._id}/receipt`}
                                                                     target="_blank" rel="noopener noreferrer"
                                                                     className="text-xs px-3 py-1 rounded-lg bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-200 transition-colors font-medium">
                                                                     📄 Download

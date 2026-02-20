@@ -74,14 +74,7 @@ exports.approvePayment = async (req, res) => {
         }
         await admission.save();
 
-        // Receipt
-        try {
-            const receiptData = await generateReceipt(payment, admission);
-            payment.receiptUrl = `/uploads/${receiptData.filename}`;
-            await payment.save();
-        } catch (err) {
-            console.error('Receipt failed', err);
-        }
+        // Receipt is generated on-the-fly via GET /api/payments/:id/receipt
 
         // Email
         try {
@@ -151,15 +144,7 @@ exports.verifyPayment = async (req, res) => {
 
             await admission.save();
 
-            // Generate receipt PDF
-            let receiptData = {};
-            try {
-                receiptData = await generateReceipt(payment, admission);
-                payment.receiptUrl = `/uploads/${receiptData.filename}`;
-                await payment.save();
-            } catch (pdfError) {
-                console.log('PDF generation failed:', pdfError.message);
-            }
+            // Receipt is generated on-the-fly via GET /api/payments/:id/receipt
 
             // Send payment confirmation email
             try {
@@ -244,7 +229,7 @@ exports.getMyPayments = async (req, res) => {
     }
 };
 
-// @desc    Download receipt
+// @desc    Download receipt (generates on-the-fly, no filesystem needed)
 // @route   GET /api/payments/:id/receipt
 exports.downloadReceipt = async (req, res) => {
     try {
@@ -258,16 +243,17 @@ exports.downloadReceipt = async (req, res) => {
             return res.status(404).json({ message: 'Payment not found' });
         }
 
-        if (payment.receiptUrl) {
-            return res.redirect(payment.receiptUrl);
-        }
+        // Generate receipt as PDF buffer
+        const pdfBuffer = await generateReceipt(payment, payment.admission);
 
-        // Generate receipt on-the-fly if not created yet
-        const receiptData = await generateReceipt(payment, payment.admission);
-        payment.receiptUrl = `/uploads/${receiptData.filename}`;
-        await payment.save();
-
-        res.redirect(payment.receiptUrl);
+        // Stream directly to browser
+        const filename = `receipt-${payment.transactionId || payment._id}.pdf`;
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `inline; filename="${filename}"`,
+            'Content-Length': pdfBuffer.length
+        });
+        res.send(pdfBuffer);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -315,14 +301,7 @@ exports.recordPayment = async (req, res) => {
         }
         await admission.save();
 
-        // Generate receipt PDF
-        try {
-            const receiptData = await generateReceipt(payment, admission);
-            payment.receiptUrl = `/uploads/${receiptData.filename}`;
-            await payment.save();
-        } catch (err) {
-            console.error('Receipt generation failed:', err.message);
-        }
+        // Receipt is generated on-the-fly via GET /api/payments/:id/receipt
 
         res.status(201).json({
             message: 'Payment recorded successfully',
