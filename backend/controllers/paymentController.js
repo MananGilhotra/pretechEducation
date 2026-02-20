@@ -216,13 +216,20 @@ exports.getPayments = async (req, res) => {
 // @route   GET /api/payments/me
 exports.getMyPayments = async (req, res) => {
     try {
-        const payments = await Payment.find({ user: req.user._id })
-            .populate({
-                path: 'admission',
-                select: 'studentId name courseApplied',
-                populate: { path: 'courseApplied', select: 'name' }
-            })
-            .sort({ createdAt: -1 });
+        // Find the student's admission first
+        const Admission = require('../models/Admission');
+        const admission = await Admission.findOne({ user: req.user._id });
+
+        let payments = [];
+        if (admission) {
+            payments = await Payment.find({ admission: admission._id })
+                .populate({
+                    path: 'admission',
+                    select: 'studentId name courseApplied',
+                    populate: { path: 'courseApplied', select: 'name' }
+                })
+                .sort({ createdAt: -1 });
+        }
         res.json(payments);
     } catch (error) {
         res.status(500).json({ message: error.message });
