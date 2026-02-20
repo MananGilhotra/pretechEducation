@@ -17,7 +17,7 @@ const Login = () => {
         try {
             const user = await login(data.email, data.password);
             toast.success('Login successful!');
-            navigate(user.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
+            navigate(user.role === 'admin' ? '/admin/dashboard' : user.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard');
         } catch (err) {
             toast.error(err.response?.data?.message || 'Invalid credentials');
         }

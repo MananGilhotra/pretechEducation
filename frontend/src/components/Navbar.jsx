@@ -90,7 +90,7 @@ const Navbar = () => {
                         {user ? (
                             <div className="flex items-center space-x-3">
                                 <Link
-                                    to={isAdmin ? '/admin/dashboard' : '/student/dashboard'}
+                                    to={isAdmin ? '/admin/dashboard' : user?.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard'}
                                     className="btn-primary text-sm !px-4 !py-2"
                                 >
                                     Dashboard
@@ -158,7 +158,7 @@ const Navbar = () => {
                                 {user ? (
                                     <>
                                         <Link
-                                            to={isAdmin ? '/admin/dashboard' : '/student/dashboard'}
+                                            to={isAdmin ? '/admin/dashboard' : user?.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard'}
                                             className="block px-4 py-3 text-sm font-medium text-primary-700 dark:text-primary-400"
                                         >
                                             Dashboard

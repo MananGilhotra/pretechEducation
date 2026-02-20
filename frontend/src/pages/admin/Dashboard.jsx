@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { HiUsers, HiQuestionMarkCircle, HiCurrencyRupee, HiBookOpen, HiArrowRight } from 'react-icons/hi';
+import { HiUsers, HiQuestionMarkCircle, HiCurrencyRupee, HiBookOpen, HiArrowRight, HiUserGroup } from 'react-icons/hi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -56,8 +56,10 @@ const Dashboard = () => {
     const statCards = [
         { label: 'Total Students', value: stats?.totalStudents || 0, icon: HiUsers, color: 'from-blue-500 to-blue-700', link: '/admin/admissions' },
         { label: 'Total Enquiries', value: stats?.totalEnquiries || 0, icon: HiQuestionMarkCircle, color: 'from-purple-500 to-purple-700', link: '/admin/enquiries' },
-        { label: 'Total Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-green-500 to-green-700', link: '/admin/payments' },
+        { label: 'Net Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-green-500 to-green-700', link: '/admin/payments', subtitle: `Gross: ₹${(stats?.grossRevenue || 0).toLocaleString('en-IN')} – Salary: ₹${(stats?.totalSalaryPaid || 0).toLocaleString('en-IN')}` },
         { label: 'Active Courses', value: stats?.activeCourses || 0, icon: HiBookOpen, color: 'from-orange-500 to-orange-700', link: '/admin/courses' },
+        { label: 'Total Teachers', value: stats?.totalTeachers || 0, icon: HiUserGroup, color: 'from-teal-500 to-teal-700', link: '/admin/teachers' },
+        { label: 'Salary Paid', value: `₹${(stats?.totalSalaryPaid || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-red-500 to-red-700', link: '/admin/salaries' },
     ];
 
     return (
@@ -77,7 +79,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Stat Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
                         {statCards.map((stat, i) => (
                             <motion.div
                                 key={i}
@@ -94,6 +96,7 @@ const Dashboard = () => {
                                     </div>
                                     <div className="text-2xl font-bold font-heading text-gray-900 dark:text-white">{stat.value}</div>
                                     <div className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</div>
+                                    {stat.subtitle && <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">{stat.subtitle}</div>}
                                 </Link>
                             </motion.div>
                         ))}
