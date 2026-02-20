@@ -32,12 +32,12 @@ const admissionSchema = new mongoose.Schema({
     },
     maritalStatus: {
         type: String,
-        required: [true, 'Please select marital status'],
-        enum: ['Single', 'Married', 'Divorced', 'Widowed']
+        enum: ['Single', 'Married', 'Divorced', 'Widowed'],
+        default: 'Single'
     },
     qualification: {
         type: String,
-        required: [true, 'Please add qualification']
+        default: ''
     },
     occupation: {
         type: String,
@@ -56,6 +56,18 @@ const admissionSchema = new mongoose.Schema({
     address: {
         type: String,
         required: [true, 'Please add address']
+    },
+    aadharNumber: {
+        type: String,
+        default: ''
+    },
+    referenceBy: {
+        type: String,
+        default: ''
+    },
+    batchMonth: {
+        type: String,
+        default: ''
     },
     courseApplied: {
         type: mongoose.Schema.Types.ObjectId,
