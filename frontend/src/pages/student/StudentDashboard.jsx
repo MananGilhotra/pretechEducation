@@ -15,17 +15,18 @@ const StudentDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [admRes, payRes] = await Promise.all([
-                    API.get('/admissions/me'),
-                    API.get('/payments/me')
-                ]);
+                const admRes = await API.get('/admissions/me');
                 setAdmission(admRes.data);
-                setPayments(payRes.data);
             } catch (err) {
-                console.log('No admission data yet');
-            } finally {
-                setLoading(false);
+                console.log('No admission data:', err.response?.data?.message || err.message);
             }
+            try {
+                const payRes = await API.get('/payments/me');
+                setPayments(payRes.data || []);
+            } catch (err) {
+                console.log('No payment data:', err.response?.data?.message || err.message);
+            }
+            setLoading(false);
         };
         fetchData();
     }, []);
@@ -81,8 +82,8 @@ const StudentDashboard = () => {
                                             <span className="text-sm text-gray-500 dark:text-gray-400">{item.label}</span>
                                             {item.badge ? (
                                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${item.value === 'Paid' ? 'bg-green-100 text-green-700' :
-                                                        item.value === 'Failed' ? 'bg-red-100 text-red-700' :
-                                                            'bg-amber-100 text-amber-700'
+                                                    item.value === 'Failed' ? 'bg-red-100 text-red-700' :
+                                                        'bg-amber-100 text-amber-700'
                                                     }`}>{item.value}</span>
                                             ) : (
                                                 <span className={`text-sm font-semibold text-gray-900 dark:text-white ${item.mono ? 'font-mono text-primary-700 dark:text-primary-400' : ''}`}>
@@ -115,8 +116,8 @@ const StudentDashboard = () => {
                                                 </div>
                                                 <p className="text-xs text-gray-500 font-mono">{pay.razorpayPaymentId || pay.razorpayOrderId}</p>
                                                 <p className="text-xs text-gray-400 mt-1">{new Date(pay.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                                                {pay.receiptUrl && (
-                                                    <a href={pay.receiptUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-xs text-primary-700 dark:text-primary-400 font-medium mt-2 hover:underline">
+                                                {pay.status === 'paid' && (
+                                                    <a href={`/api/payments/${pay._id}/receipt`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-xs text-primary-700 dark:text-primary-400 font-medium mt-2 hover:underline">
                                                         <HiDownload className="mr-1" /> Download Receipt
                                                     </a>
                                                 )}
