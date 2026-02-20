@@ -18,6 +18,6 @@ router.put('/installment/:admissionId/:installmentNumber', protect, authorize('a
 
 router.get('/', protect, authorize('admin'), getPayments);
 router.get('/me', protect, getMyPayments);
-router.get('/:id/receipt', protect, downloadReceipt);
+router.get('/:id/receipt', downloadReceipt);
 
 module.exports = router;
