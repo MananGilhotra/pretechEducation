@@ -281,7 +281,7 @@ const ViewAdmissions = () => {
                                                         <td className="py-2 px-3 text-gray-600 dark:text-gray-400">{pay.paymentMethod}</td>
                                                         <td className="py-2 px-3 text-gray-500">{new Date(pay.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                                         <td className="py-2 px-3">
-                                                            <a href={`${import.meta.env.VITE_API_URL || ''}/api/payments/${pay._id}/receipt`} target="_blank" rel="noopener noreferrer"
+                                                            <a href={`/api/payments/${pay._id}/receipt`} target="_blank" rel="noopener noreferrer"
                                                                 className="text-primary-700 dark:text-primary-400 hover:underline">Download</a>
                                                         </td>
                                                     </tr>
@@ -292,11 +292,40 @@ const ViewAdmissions = () => {
                                 </div>
                             )}
 
-                            {/* Passport Photo */}
-                            {selectedStudent.passportPhoto && (
+                            {/* Passport Photo & Signature */}
+                            {(selectedStudent.passportPhoto || selectedStudent.signature) && (
                                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-border">
-                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Photo</h3>
-                                    <img src={selectedStudent.passportPhoto} alt="Passport" className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border" />
+                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Documents</h3>
+                                    <div className="flex gap-4 flex-wrap">
+                                        {selectedStudent.passportPhoto && (
+                                            <div className="text-center">
+                                                <img
+                                                    src={selectedStudent.passportPhoto}
+                                                    alt="Passport Photo"
+                                                    className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
+                                                    onClick={() => window.open(selectedStudent.passportPhoto, '_blank')}
+                                                />
+                                                <button
+                                                    onClick={() => window.open(selectedStudent.passportPhoto, '_blank')}
+                                                    className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
+                                                >View Photo</button>
+                                            </div>
+                                        )}
+                                        {selectedStudent.signature && (
+                                            <div className="text-center">
+                                                <img
+                                                    src={selectedStudent.signature}
+                                                    alt="Signature"
+                                                    className="w-32 h-16 object-contain rounded-xl border border-gray-200 dark:border-dark-border bg-white cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
+                                                    onClick={() => window.open(selectedStudent.signature, '_blank')}
+                                                />
+                                                <button
+                                                    onClick={() => window.open(selectedStudent.signature, '_blank')}
+                                                    className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
+                                                >View Signature</button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </motion.div>
