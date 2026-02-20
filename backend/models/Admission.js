@@ -123,6 +123,11 @@ const admissionSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    discount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     registrationDate: {
         type: Date,
         default: Date.now

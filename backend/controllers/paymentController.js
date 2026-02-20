@@ -334,7 +334,9 @@ exports.getFeeSummary = async (req, res) => {
         const paidPayments = await Payment.find({ admission: req.params.admissionId, status: 'paid' })
             .sort({ createdAt: -1 });
         const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const discount = admission.discount || 0;
+        const totalFees = Math.max(0, grossFees - discount);
         const balanceDue = Math.max(0, totalFees - totalPaid);
 
         res.json({
@@ -350,8 +352,54 @@ exports.getFeeSummary = async (req, res) => {
                 installments: admission.installments || [],
                 totalInstallments: admission.totalInstallments || 1,
             },
-            feeSummary: { totalFees, totalPaid, balanceDue, paymentStatus: admission.paymentStatus },
+            feeSummary: { grossFees, discount, totalFees, totalPaid, balanceDue, paymentStatus: admission.paymentStatus },
             payments: paidPayments
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Apply discount to a student's fees
+// @route   PUT /api/payments/discount/:admissionId
+exports.applyDiscount = async (req, res) => {
+    try {
+        const { discount } = req.body;
+        if (discount === undefined || discount < 0) {
+            return res.status(400).json({ message: 'Valid discount amount is required' });
+        }
+
+        const admission = await Admission.findById(req.params.admissionId)
+            .populate('courseApplied', 'name fees');
+        if (!admission) {
+            return res.status(404).json({ message: 'Admission not found' });
+        }
+
+        const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        if (discount > grossFees) {
+            return res.status(400).json({ message: 'Discount cannot exceed total fees' });
+        }
+
+        admission.discount = Number(discount);
+        await admission.save();
+
+        // Recalculate
+        const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
+        const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+        const totalFees = Math.max(0, grossFees - discount);
+        const balanceDue = Math.max(0, totalFees - totalPaid);
+
+        // Update payment status
+        if (balanceDue === 0 && totalPaid > 0) {
+            admission.paymentStatus = 'Paid';
+        } else if (totalPaid > 0) {
+            admission.paymentStatus = 'Partially Paid';
+        }
+        await admission.save();
+
+        res.json({
+            message: `Discount of ₹${discount} applied`,
+            feeSummary: { grossFees, discount, totalFees, totalPaid, balanceDue, paymentStatus: admission.paymentStatus }
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

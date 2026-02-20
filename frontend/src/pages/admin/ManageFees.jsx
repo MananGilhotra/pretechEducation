@@ -252,19 +252,49 @@ const ManageFees = () => {
                                 </div>
 
                                 {/* Fee summary grid */}
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                                     <div className="bg-gray-50 dark:bg-dark-bg rounded-xl p-4 text-center">
-                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Fees</div>
-                                        <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{feeSummary.totalFees.toLocaleString('en-IN')}</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gross Fees</div>
+                                        <div className="text-xl font-bold text-gray-900 dark:text-white">₹{(feeSummary.grossFees || feeSummary.totalFees)?.toLocaleString('en-IN')}</div>
+                                    </div>
+                                    <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 text-center">
+                                        <div className="text-xs text-amber-600 dark:text-amber-400 mb-1">Discount</div>
+                                        <div className="text-xl font-bold text-amber-700 dark:text-amber-400 mb-2">₹{(feeSummary.discount || 0).toLocaleString('en-IN')}</div>
+                                        <div className="flex gap-1">
+                                            <input
+                                                type="number" min="0" placeholder="₹"
+                                                id="discountInput"
+                                                defaultValue={feeSummary.discount || ''}
+                                                className="input-field !py-1 !text-xs w-full"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    const val = document.getElementById('discountInput').value;
+                                                    try {
+                                                        const { data } = await API.put(`/payments/discount/${selectedAdmission._id}`, { discount: Number(val || 0) });
+                                                        toast.success(data.message);
+                                                        setFeeSummary(data.feeSummary);
+                                                    } catch (err) {
+                                                        toast.error(err.response?.data?.message || 'Failed');
+                                                    }
+                                                }}
+                                                className="text-xs px-2 py-1 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors whitespace-nowrap"
+                                            >Apply</button>
+                                        </div>
+                                    </div>
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
+                                        <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Net Fees</div>
+                                        <div className="text-xl font-bold text-blue-700 dark:text-blue-400">₹{feeSummary.totalFees?.toLocaleString('en-IN')}</div>
                                     </div>
                                     <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
                                         <div className="text-xs text-green-600 dark:text-green-400 mb-1">Amount Paid</div>
-                                        <div className="text-2xl font-bold text-green-700 dark:text-green-400">₹{feeSummary.totalPaid.toLocaleString('en-IN')}</div>
+                                        <div className="text-xl font-bold text-green-700 dark:text-green-400">₹{feeSummary.totalPaid?.toLocaleString('en-IN')}</div>
                                     </div>
                                     <div className={`rounded-xl p-4 text-center ${feeSummary.balanceDue === 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
                                         <div className={`text-xs mb-1 ${feeSummary.balanceDue === 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>Balance Due</div>
-                                        <div className={`text-2xl font-bold ${feeSummary.balanceDue === 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                                            {feeSummary.balanceDue === 0 ? <span className="flex items-center justify-center gap-1"><HiCheckCircle /> Cleared</span> : <>₹{feeSummary.balanceDue.toLocaleString('en-IN')}</>}
+                                        <div className={`text-xl font-bold ${feeSummary.balanceDue === 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                                            {feeSummary.balanceDue === 0 ? <span className="flex items-center justify-center gap-1"><HiCheckCircle /> Cleared</span> : <>₹{feeSummary.balanceDue?.toLocaleString('en-IN')}</>}
                                         </div>
                                     </div>
                                 </div>
