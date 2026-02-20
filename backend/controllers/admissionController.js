@@ -11,9 +11,19 @@ const createAdmissionInternal = async (req, res, isAdmin) => {
         let admissionData = {
             ...req.body,
             studentId,
-            passportPhoto: req.files?.passportPhoto?.[0]?.filename || '',
-            signature: req.files?.signature?.[0]?.filename || ''
+            passportPhoto: '',
+            signature: ''
         };
+
+        // Store uploaded images as base64 data URIs (works on Render)
+        if (req.files?.passportPhoto?.[0]) {
+            const f = req.files.passportPhoto[0];
+            admissionData.passportPhoto = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        }
+        if (req.files?.signature?.[0]) {
+            const f = req.files.signature[0];
+            admissionData.signature = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        }
 
         const Course = require('../models/Course');
         const course = await Course.findById(req.body.courseApplied);
