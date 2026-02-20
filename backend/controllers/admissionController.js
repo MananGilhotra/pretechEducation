@@ -68,7 +68,7 @@ const createAdmissionInternal = async (req, res, isAdmin) => {
                 const user = await User.create({
                     name: req.body.name,
                     email: req.body.email,
-                    password: req.body.mobile, // Default password is mobile number
+                    password: req.body.studentPassword || req.body.mobile,
                     role: 'student',
                     studentId
                 });

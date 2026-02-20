@@ -199,6 +199,25 @@ const AddAdmission = () => {
                             </div>
                         </div>
 
+                        {/* Student Login Password - only shows when email is entered */}
+                        {watch('email') && (
+                            <div className="mt-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                                <h4 className="text-sm font-bold text-green-800 dark:text-green-300 mb-2">🔑 Student Login Credentials</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="label text-xs text-green-700 dark:text-green-400">Student Login Email</label>
+                                        <div className="input-field bg-white dark:bg-dark-bg text-sm py-2">{watch('email')}</div>
+                                    </div>
+                                    <div>
+                                        <label className="label text-xs text-green-700 dark:text-green-400">Student Login Password *</label>
+                                        <input type="text" {...register('studentPassword', { required: watch('email') ? 'Password required when email is provided' : false, minLength: { value: 6, message: 'Min 6 characters' } })} className="input-field bg-white dark:bg-dark-bg" placeholder="Set password for student" />
+                                        {errors.studentPassword && <p className="text-red-500 text-xs mt-0.5">{errors.studentPassword.message}</p>}
+                                    </div>
+                                </div>
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-2">📋 Give these credentials to the student for login. Student ID will be auto-generated.</p>
+                            </div>
+                        )}
+
                         <hr className="my-4 border-gray-200 dark:border-dark-border" />
 
                         {/* ===== FEE SECTION (3 cols) ===== */}
