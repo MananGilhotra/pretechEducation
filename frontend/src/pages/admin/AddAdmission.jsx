@@ -221,8 +221,7 @@ const AddAdmission = () => {
                                 {watch('paymentPlan') === 'Installment' && (
                                     <div className="space-y-2 animate-fadeIn pt-2">
                                         <label className="label">Number of Installments</label>
-                                        <select {...register('totalInstallments', { value: 1 })} className="input-field">
-                                            <option value="1">1 Installment</option>
+                                        <select {...register('totalInstallments', { value: 2 })} className="input-field">
                                             <option value="2">2 Installments</option>
                                             <option value="3">3 Installments</option>
                                             <option value="4">4 Installments</option>
