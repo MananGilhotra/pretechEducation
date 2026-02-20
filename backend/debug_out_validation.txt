@@ -1,0 +1,22 @@
+Server running on port 5001
+MongoDB Connected: ac-msxrmma-shard-00-00.qib5asg.mongodb.net
+ENTERING createAdmissionAdmin
+REQ.BODY: [Object: null prototype] {
+  name: 'Dummy Student',
+  email: 'dummy@example.com',
+  mobile: '1234567890',
+  fatherHusbandName: 'Dummy Father',
+  motherName: 'Dummy Mother',
+  dob: '2000-01-01',
+  gender: 'Male',
+  maritalStatus: 'Single',
+  address: 'Dummy AddressDummy Address',
+  qualification: 'Graduate',
+  courseApplied: '698faceaa06b1eb0c92cbdf9',
+  batchTiming: 'Morning (9AM-12PM)',
+  discount: '',
+  paymentPlan: 'Full',
+  paymentStatus: 'Pending'
+}
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-35662e6d098sm15116299a91.8 - gsmtp

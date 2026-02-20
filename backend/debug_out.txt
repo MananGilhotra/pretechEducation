@@ -1,0 +1,8 @@
+Server running on port 5001
+MongoDB Connected: ac-msxrmma-shard-00-02.qib5asg.mongodb.net
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-824c6b69f2asm5961843b3a.37 - gsmtp
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-824c68db466sm5925747b3a.0 - gsmtp
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2ad1a71f1efsm25009465ad.32 - gsmtp

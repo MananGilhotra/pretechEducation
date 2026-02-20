@@ -1,0 +1,59 @@
+Server running on port 5001
+MongoDB Connected: ac-msxrmma-shard-00-01.qib5asg.mongodb.net
+ENTERING createAdmissionAdmin
+REQ.BODY: [Object: null prototype] {
+  name: 'Verified Test Student',
+  email: 'verified@test.com',
+  mobile: '9876543210',
+  fatherHusbandName: 'Father Name',
+  motherName: 'Mother Name',
+  dob: '2000-01-01',
+  gender: 'Male',
+  maritalStatus: 'Single',
+  address: '123 Test Street',
+  qualification: 'Graduate',
+  courseApplied: '698faceaa06b1eb0c92cbdf9',
+  batchTiming: 'Morning (9AM-12PM)',
+  discount: '',
+  paymentPlan: 'Full',
+  paymentStatus: 'Paid'
+}
+VALIDATING USER: {
+  name: 'Verified Test Student',
+  email: 'verified@test.com',
+  password: '9876543210',
+  role: 'student',
+  studentId: 'PRETECH-2026-0022',
+  _id: new ObjectId('6990a8c4319ec8bdaa5b6037')
+}
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2ad1a6fa229sm23390315ad.18 - gsmtp
+ENTERING createAdmissionAdmin
+REQ.BODY: [Object: null prototype] {
+  name: 'nm',
+  email: 'nm@g.com',
+  mobile: '1234567890',
+  fatherHusbandName: 'njnj',
+  motherName: 'njnj',
+  dob: '2003-01-15',
+  gender: 'Male',
+  maritalStatus: 'Single',
+  address: 'asdfghjk',
+  qualification: 'btech',
+  courseApplied: '698faceaa06b1eb0c92cbdf9',
+  batchTiming: 'Afternoon (12PM-3PM)',
+  discount: '500',
+  paymentPlan: 'Installment',
+  paymentStatus: 'Paid',
+  totalInstallments: '3'
+}
+VALIDATING USER: {
+  name: 'nm',
+  email: 'nm@g.com',
+  password: '1234567890',
+  role: 'student',
+  studentId: 'PRETECH-2026-0023',
+  _id: new ObjectId('699188f8319ec8bdaa5b62ca')
+}
+Email error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2ad1a6f9e2asm37952575ad.7 - gsmtp
