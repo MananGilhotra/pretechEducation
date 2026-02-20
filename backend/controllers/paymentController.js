@@ -270,7 +270,7 @@ exports.downloadReceipt = async (req, res) => {
 // @route   POST /api/payments/record
 exports.recordPayment = async (req, res) => {
     try {
-        const { admissionId, amount, paymentMethod, transactionId, notes } = req.body;
+        const { admissionId, amount, paymentMethod, transactionId, notes, paymentDate } = req.body;
 
         if (!admissionId || !amount) {
             return res.status(400).json({ message: 'admissionId and amount are required' });
@@ -289,7 +289,8 @@ exports.recordPayment = async (req, res) => {
             transactionId: transactionId || '',
             paymentMethod: paymentMethod || 'Cash',
             status: 'paid',
-            currency: 'INR'
+            currency: 'INR',
+            ...(paymentDate ? { createdAt: new Date(paymentDate) } : {})
         });
 
         // Re-calculate total paid across all paid payments for this admission

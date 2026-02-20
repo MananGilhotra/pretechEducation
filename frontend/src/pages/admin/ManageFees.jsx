@@ -32,7 +32,7 @@ const ManageFees = () => {
     const [loadingSummary, setLoadingSummary] = useState(false);
 
     // Form state
-    const [form, setForm] = useState({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '' });
+    const [form, setForm] = useState({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '', paymentDate: new Date().toISOString().split('T')[0] });
     const [submitting, setSubmitting] = useState(false);
     const [updatingInstallment, setUpdatingInstallment] = useState(null);
 
@@ -96,11 +96,12 @@ const ManageFees = () => {
                 amount: Number(form.amount),
                 paymentMethod: form.paymentMethod,
                 transactionId: form.transactionId,
-                notes: form.notes
+                notes: form.notes,
+                paymentDate: form.paymentDate
             });
             toast.success('Payment recorded!');
             setFeeSummary(data.feeSummary);
-            setForm({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '' });
+            setForm({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '', paymentDate: new Date().toISOString().split('T')[0] });
             await loadSummary(selectedAdmission._id);
             // Refresh overview
             try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
@@ -343,6 +344,10 @@ const ManageFees = () => {
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Transaction / Reference ID <span className="text-gray-400 font-normal">(optional)</span></label>
                                             <input type="text" value={form.transactionId} onChange={e => setForm(f => ({ ...f, transactionId: e.target.value }))} placeholder="UTR / Cheque no. / etc." className="input-field" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Payment Date</label>
+                                            <input type="date" value={form.paymentDate} onChange={e => setForm(f => ({ ...f, paymentDate: e.target.value }))} className="input-field" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes <span className="text-gray-400 font-normal">(optional)</span></label>

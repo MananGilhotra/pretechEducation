@@ -123,6 +123,10 @@ const admissionSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    registrationDate: {
+        type: Date,
+        default: Date.now
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

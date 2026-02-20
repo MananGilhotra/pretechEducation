@@ -74,7 +74,7 @@ const AddAdmission = () => {
                             {/* --- Column 2 Row 1: Date --- */}
                             <div>
                                 <label className="label text-xs">Date of Reg.</label>
-                                <div className="input-field bg-gray-100 dark:bg-dark-card text-gray-500 text-sm py-2">{new Date().toLocaleDateString('en-IN')}</div>
+                                <input type="date" {...register('registrationDate')} defaultValue={new Date().toISOString().split('T')[0]} className="input-field" />
                             </div>
                             {/* --- Column 3 Row 1: Photo Upload --- */}
                             <div className="sm:row-span-4 flex flex-col items-center justify-start">
