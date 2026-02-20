@@ -14,6 +14,7 @@ const ViewAdmissions = () => {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentFees, setStudentFees] = useState(null);
     const [loadingDetail, setLoadingDetail] = useState(false);
+    const [viewingImage, setViewingImage] = useState(null);
 
     const fetchAdmissions = async () => {
         try {
@@ -303,10 +304,10 @@ const ViewAdmissions = () => {
                                                     src={selectedStudent.passportPhoto}
                                                     alt="Passport Photo"
                                                     className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-                                                    onClick={() => window.open(selectedStudent.passportPhoto, '_blank')}
+                                                    onClick={() => setViewingImage(selectedStudent.passportPhoto)}
                                                 />
                                                 <button
-                                                    onClick={() => window.open(selectedStudent.passportPhoto, '_blank')}
+                                                    onClick={() => setViewingImage(selectedStudent.passportPhoto)}
                                                     className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
                                                 >View Photo</button>
                                             </div>
@@ -317,10 +318,10 @@ const ViewAdmissions = () => {
                                                     src={selectedStudent.signature}
                                                     alt="Signature"
                                                     className="w-32 h-16 object-contain rounded-xl border border-gray-200 dark:border-dark-border bg-white cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-                                                    onClick={() => window.open(selectedStudent.signature, '_blank')}
+                                                    onClick={() => setViewingImage(selectedStudent.signature)}
                                                 />
                                                 <button
-                                                    onClick={() => window.open(selectedStudent.signature, '_blank')}
+                                                    onClick={() => setViewingImage(selectedStudent.signature)}
                                                     className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
                                                 >View Signature</button>
                                             </div>
@@ -332,6 +333,18 @@ const ViewAdmissions = () => {
                     </div>
                 )}
             </AnimatePresence>
+            {/* ======================== IMAGE LIGHTBOX ======================== */}
+            {viewingImage && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={() => setViewingImage(null)}>
+                    <div className="relative max-w-2xl max-h-[85vh]" onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={() => setViewingImage(null)}
+                            className="absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-dark-card rounded-full flex items-center justify-center shadow-lg text-gray-600 hover:text-red-500 transition-colors z-10"
+                        ><HiX /></button>
+                        <img src={viewingImage} alt="Full view" className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain bg-white" />
+                    </div>
+                </div>
+            )}
         </>
     );
 };
