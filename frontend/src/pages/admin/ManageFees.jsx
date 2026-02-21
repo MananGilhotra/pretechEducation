@@ -202,7 +202,9 @@ const ManageFees = () => {
                                         <button key={adm._id} onClick={() => selectStudent(adm)}
                                             className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-dark-bg flex items-center justify-between border-b border-gray-100 dark:border-dark-border last:border-0 transition-colors">
                                             <div>
-                                                <div className="font-medium text-gray-900 dark:text-white text-sm">{adm.name}</div>
+                                                <div className="font-medium text-gray-900 dark:text-white text-sm">
+                                                    {adm.name} {adm.fatherHusbandName && <span className="font-normal text-gray-500 dark:text-gray-400 text-xs ml-1">(D/S of {adm.fatherHusbandName})</span>}
+                                                </div>
                                                 <div className="text-xs text-gray-500">{adm.studentId} · {adm.courseApplied?.name || 'N/A'}</div>
                                             </div>
                                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor(adm.paymentStatus)}`}>{adm.paymentStatus}</span>

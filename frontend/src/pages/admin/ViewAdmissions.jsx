@@ -158,7 +158,10 @@ const ViewAdmissions = () => {
                                                     {adm.studentId}
                                                 </button>
                                             </td>
-                                            <td className="py-3 px-4 text-gray-900 dark:text-white font-medium">{adm.name}</td>
+                                            <td className="py-3 px-4">
+                                                <div className="text-gray-900 dark:text-white font-medium">{adm.name}</div>
+                                                {adm.fatherHusbandName && <div className="text-xs text-gray-500 font-normal mt-0.5">S/D of {adm.fatherHusbandName}</div>}
+                                            </td>
                                             <td className="py-3 px-4 text-gray-500 text-xs">{adm.email}</td>
                                             <td className="py-3 px-4 text-gray-600 dark:text-gray-400 text-xs">{adm.courseApplied?.name || 'N/A'}</td>
                                             <td className="py-3 px-4">

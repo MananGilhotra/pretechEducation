@@ -193,7 +193,8 @@ exports.getAdmissions = async (req, res) => {
             filter.$or = [
                 { name: { $regex: search, $options: 'i' } },
                 { studentId: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } }
+                { email: { $regex: search, $options: 'i' } },
+                { fatherHusbandName: { $regex: search, $options: 'i' } }
             ];
         }
 
