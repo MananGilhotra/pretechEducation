@@ -7,10 +7,10 @@ const Contact = () => {
     const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
     const contactInfo = [
-        { icon: HiPhone, label: 'Phone', value: '+91 98765 43210', href: 'tel:+919876543210' },
-        { icon: HiMail, label: 'Email', value: 'info@pretechcomputer.com', href: 'mailto:info@pretechcomputer.com' },
-        { icon: HiLocationMarker, label: 'Address', value: '123, Main Street, City Center, India', href: null },
-        { icon: HiClock, label: 'Working Hours', value: 'Mon - Sat: 9AM - 7PM', href: null },
+        { icon: HiPhone, label: 'Phone', value: '+91 94142 53105', href: 'tel:+919414253105' },
+        { icon: HiMail, label: 'Email', value: 'pretecheducation@gmail.com', href: 'mailto:pretecheducation@gmail.com' },
+        { icon: HiLocationMarker, label: 'Address', value: 'B-35, MP Nagar, Bikaner', href: null },
+        { icon: HiClock, label: 'Working Hours', value: '9:00 AM – 12:30 PM & 4:00 PM – 9:00 PM', href: null },
     ];
 
     return (
@@ -70,8 +70,8 @@ const Contact = () => {
                             <div className="text-center">
                                 <HiLocationMarker className="text-5xl text-primary-700 dark:text-primary-400 mx-auto mb-3" />
                                 <p className="font-heading font-semibold text-gray-900 dark:text-white">Pretech Computer Education</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">123, Main Street, City Center</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">India - 110001</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">B-35, MP Nagar</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Bikaner, Rajasthan</p>
                             </div>
                         </div>
                     </motion.div>

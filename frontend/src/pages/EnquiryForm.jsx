@@ -139,10 +139,8 @@ const EnquiryForm = () => {
                                 className="input-field"
                             >
                                 <option value="">Select batch timing</option>
-                                <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
-                                <option value="Afternoon (12PM-3PM)">Afternoon (12PM-3PM)</option>
-                                <option value="Evening (3PM-6PM)">Evening (3PM-6PM)</option>
-                                <option value="Weekend">Weekend</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Evening">Evening</option>
                             </select>
                             {errors.preferredBatchTime && <p className="text-red-500 text-xs mt-1">{errors.preferredBatchTime.message}</p>}
                         </div>

@@ -23,7 +23,7 @@ const enquirySchema = new mongoose.Schema({
     preferredBatchTime: {
         type: String,
         required: [true, 'Please select preferred batch time'],
-        enum: ['Morning (9AM-12PM)', 'Afternoon (12PM-3PM)', 'Evening (3PM-6PM)', 'Weekend']
+        enum: ['Morning', 'Evening', 'Morning (9AM-12PM)', 'Afternoon (12PM-3PM)', 'Evening (3PM-6PM)', 'Weekend']
     },
     message: {
         type: String,

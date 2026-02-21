@@ -87,22 +87,22 @@ const Footer = () => {
                     <div>
                         <h4 className="text-white font-heading font-semibold text-lg mb-4">Contact Us</h4>
                         <div className="space-y-3">
-                            <a href="tel:+919876543210" className="flex items-start space-x-3 group">
+                            <a href="tel:+919414253105" className="flex items-start space-x-3 group">
                                 <HiPhone className="text-accent-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-sm text-gray-400 group-hover:text-accent-400 transition-colors">
-                                    +91 98765 43210
+                                    +91 94142 53105
                                 </span>
                             </a>
-                            <a href="mailto:info@pretechcomputer.com" className="flex items-start space-x-3 group">
+                            <a href="mailto:pretecheducation@gmail.com" className="flex items-start space-x-3 group">
                                 <HiMail className="text-accent-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-sm text-gray-400 group-hover:text-accent-400 transition-colors">
-                                    info@pretechcomputer.com
+                                    pretecheducation@gmail.com
                                 </span>
                             </a>
                             <div className="flex items-start space-x-3">
                                 <HiLocationMarker className="text-accent-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-sm text-gray-400">
-                                    123, Main Street, City Center, India - 110001
+                                    B-35, MP Nagar, Bikaner, Rajasthan
                                 </span>
                             </div>
                         </div>

@@ -217,10 +217,8 @@ const AdmissionForm = () => {
                                     <label className="label">Batch Timing *</label>
                                     <select {...register('batchTiming', { required: 'Required' })} className="input-field">
                                         <option value="">Select batch</option>
-                                        <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
-                                        <option value="Afternoon (12PM-3PM)">Afternoon (12PM-3PM)</option>
-                                        <option value="Evening (3PM-6PM)">Evening (3PM-6PM)</option>
-                                        <option value="Weekend">Weekend</option>
+                                        <option value="Morning">Morning</option>
+                                        <option value="Evening">Evening</option>
                                     </select>
                                     {errors.batchTiming && <p className="text-red-500 text-xs mt-1">{errors.batchTiming.message}</p>}
                                 </div>
