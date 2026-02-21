@@ -78,11 +78,12 @@ const AddAdmission = () => {
                             </div>
                             {/* --- Column 3 Row 1: Photo Upload --- */}
                             <div className="sm:row-span-4 flex flex-col items-center justify-start">
-                                <label className="label text-xs text-center mb-1">Upload Photo</label>
-                                <div className="w-24 h-28 border-2 border-dashed border-gray-300 dark:border-dark-border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1">
+                                <label className="label text-xs text-center mb-1">Upload Photo *</label>
+                                <div className={`w-24 h-28 border-2 border-dashed ${errors.passportPhoto ? 'border-red-400' : 'border-gray-300 dark:border-dark-border'} rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1`}>
                                     <span className="text-3xl text-gray-300">📷</span>
                                 </div>
-                                <input type="file" accept="image/*" {...register('passportPhoto')} className="text-[10px] w-28" />
+                                <input type="file" accept="image/*" {...register('passportPhoto', { required: 'Photo is required' })} className="text-[10px] w-28" />
+                                {errors.passportPhoto && <p className="text-red-500 text-[10px] mt-0.5 text-center">{errors.passportPhoto.message}</p>}
 
                                 <label className="label text-xs text-center mb-1 mt-3">Signature</label>
                                 <div className="w-28 h-14 border-2 border-dashed border-gray-300 dark:border-dark-border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1">
