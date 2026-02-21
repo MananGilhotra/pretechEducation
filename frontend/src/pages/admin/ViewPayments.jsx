@@ -4,10 +4,12 @@ import { HiCurrencyRupee, HiCheck, HiX, HiDownload } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ViewPayments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: null, id: null });
 
     const fetchPayments = async () => {
         try { const { data } = await API.get('/payments'); setPayments(data); }
@@ -19,25 +21,15 @@ const ViewPayments = () => {
         fetchPayments();
     }, []);
 
-    const handleApprove = async (id) => {
-        if (!window.confirm('Are you sure you want to approve this payment?')) return;
+    const handleConfirmAction = async () => {
+        const { type, id } = confirmModal;
         try {
-            await API.put(`/payments/${id}/approve`);
-            toast.success('Payment Approved');
+            await API.put(`/payments/${id}/${type}`);
+            toast.success(type === 'approve' ? 'Payment Approved' : 'Payment Rejected');
             fetchPayments();
+            setConfirmModal({ isOpen: false, type: null, id: null });
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Approval Failed');
-        }
-    };
-
-    const handleReject = async (id) => {
-        if (!window.confirm('Are you sure you want to reject this payment?')) return;
-        try {
-            await API.put(`/payments/${id}/reject`);
-            toast.success('Payment Rejected');
-            fetchPayments();
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Rejection Failed');
+            toast.error(err.response?.data?.message || `${type === 'approve' ? 'Approval' : 'Rejection'} Failed`);
         }
     };
 
@@ -103,18 +95,18 @@ const ViewPayments = () => {
                                                 {pay.status === 'pending_approval' && (
                                                     <div className="flex space-x-2">
                                                         <button
-                                                            onClick={() => handleApprove(pay._id)}
-                                                            className="p-1 bg-green-100 text-green-600 rounded hover:bg-green-200"
+                                                            onClick={() => setConfirmModal({ isOpen: true, type: 'approve', id: pay._id })}
+                                                            className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
                                                             title="Approve Payment"
                                                         >
-                                                            <HiCheck />
+                                                            <HiCheck className="text-lg" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleReject(pay._id)}
-                                                            className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
+                                                            onClick={() => setConfirmModal({ isOpen: true, type: 'reject', id: pay._id })}
+                                                            className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                                                             title="Reject Payment"
                                                         >
-                                                            <HiX />
+                                                            <HiX className="text-lg" />
                                                         </button>
                                                     </div>
                                                 )}
@@ -138,6 +130,16 @@ const ViewPayments = () => {
                     </div>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                title={confirmModal.type === 'approve' ? "Approve Payment" : "Reject Payment"}
+                message={`Are you sure you want to ${confirmModal.type} this payment?`}
+                onConfirm={handleConfirmAction}
+                onCancel={() => setConfirmModal({ isOpen: false, type: null, id: null })}
+                confirmText={confirmModal.type === 'approve' ? "Approve" : "Reject"}
+                confirmColor={confirmModal.type === 'approve' ? "green" : "red"}
+            />
         </>
     );
 };

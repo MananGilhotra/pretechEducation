@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { HiSearch, HiDownload, HiCheck, HiX, HiEye, HiCurrencyRupee, HiUser, HiPhone, HiMail, HiLocationMarker, HiAcademicCap, HiCalendar, HiIdentification } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ViewAdmissions = () => {
     const [admissions, setAdmissions] = useState([]);
@@ -16,6 +17,7 @@ const ViewAdmissions = () => {
     const [viewingImage, setViewingImage] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({});
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     const fetchAdmissions = async () => {
         try {
@@ -38,13 +40,13 @@ const ViewAdmissions = () => {
         } catch { toast.error('Approval failed'); }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this admission?')) return;
+    const handleDelete = async () => {
         try {
-            await API.delete(`/admissions/${id}`);
+            await API.delete(`/admissions/${deleteModal.id}`);
             toast.success('Admission deleted');
             fetchAdmissions();
-            if (selectedStudent?._id === id) setSelectedStudent(null);
+            if (selectedStudent?._id === deleteModal.id) setSelectedStudent(null);
+            setDeleteModal({ isOpen: false, id: null });
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to delete');
         }
@@ -176,7 +178,7 @@ const ViewAdmissions = () => {
                                                     {!adm.approved && (
                                                         <>
                                                             <button onClick={() => handleApprove(adm._id)} className="p-2 rounded-lg hover:bg-green-100 text-green-600 transition-colors" title="Approve"><HiCheck /></button>
-                                                            <button onClick={() => handleDelete(adm._id)} className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors" title="Delete"><HiX /></button>
+                                                            <button onClick={() => setDeleteModal({ isOpen: true, id: adm._id })} className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors" title="Delete"><HiX /></button>
                                                         </>
                                                     )}
                                                 </div>
@@ -397,6 +399,17 @@ const ViewAdmissions = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Admission"
+                message="Are you sure you want to delete this admission? This action cannot be undone and will remove all associated payment records."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteModal({ isOpen: false, id: null })}
+                confirmText="Delete Admission"
+                confirmColor="red"
+            />
+
             {/* ======================== IMAGE LIGHTBOX ======================== */}
             {viewingImage && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={() => setViewingImage(null)}>

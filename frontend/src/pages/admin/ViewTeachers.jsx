@@ -6,10 +6,12 @@ import { HiUserGroup, HiPlus, HiPhone, HiTrash } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ViewTeachers = () => {
     const [teachers, setTeachers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     const fetchTeachers = async () => {
         try {
@@ -21,12 +23,12 @@ const ViewTeachers = () => {
 
     useEffect(() => { fetchTeachers(); }, []);
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Delete this teacher and all salary records?')) return;
+    const handleDelete = async () => {
         try {
-            await API.delete(`/teachers/${id}`);
+            await API.delete(`/teachers/${deleteModal.id}`);
             toast.success('Teacher deleted');
             fetchTeachers();
+            setDeleteModal({ isOpen: false, id: null });
         } catch (err) {
             toast.error(err.response?.data?.message || 'Delete failed');
         }
@@ -110,7 +112,7 @@ const ViewTeachers = () => {
                                         <Link to={`/admin/salaries?teacher=${t._id}`} className="text-xs text-primary-700 dark:text-primary-400 font-medium hover:underline">
                                             View Salary →
                                         </Link>
-                                        <button onClick={() => handleDelete(t._id)} className="text-xs text-red-500 hover:text-red-700 transition-colors">
+                                        <button onClick={() => setDeleteModal({ isOpen: true, id: t._id })} className="text-xs text-red-500 hover:text-red-700 transition-colors">
                                             <HiTrash className="text-base" />
                                         </button>
                                     </div>
@@ -120,6 +122,16 @@ const ViewTeachers = () => {
                     )}
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Teacher"
+                message="Are you sure you want to delete this teacher and all related salary records? This action cannot be undone."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteModal({ isOpen: false, id: null })}
+                confirmText="Delete Teacher"
+                confirmColor="red"
+            />
         </>
     );
 };

@@ -4,10 +4,12 @@ import toast from 'react-hot-toast';
 import { HiTrash } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ViewEnquiries = () => {
     const [enquiries, setEnquiries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     const fetchEnquiries = async () => {
         try { const { data } = await API.get('/enquiries'); setEnquiries(data); }
@@ -17,9 +19,13 @@ const ViewEnquiries = () => {
 
     useEffect(() => { fetchEnquiries(); }, []);
 
-    const handleDelete = async (id) => {
-        if (!confirm('Delete this enquiry?')) return;
-        try { await API.delete(`/enquiries/${id}`); toast.success('Deleted'); fetchEnquiries(); }
+    const handleDelete = async () => {
+        try {
+            await API.delete(`/enquiries/${deleteModal.id}`);
+            toast.success('Deleted');
+            fetchEnquiries();
+            setDeleteModal({ isOpen: false, id: null });
+        }
         catch { toast.error('Delete failed'); }
     };
 
@@ -61,7 +67,7 @@ const ViewEnquiries = () => {
                                             <td className="py-3 px-4 text-gray-500 text-xs max-w-[200px] truncate">{enq.message || '—'}</td>
                                             <td className="py-3 px-4 text-gray-500 text-xs">{new Date(enq.createdAt).toLocaleDateString()}</td>
                                             <td className="py-3 px-4">
-                                                <button onClick={() => handleDelete(enq._id)} className="p-2 rounded-lg hover:bg-red-100 text-red-500 transition-colors"><HiTrash /></button>
+                                                <button onClick={() => setDeleteModal({ isOpen: true, id: enq._id })} className="p-2 rounded-lg hover:bg-red-100 text-red-500 transition-colors"><HiTrash /></button>
                                             </td>
                                         </tr>
                                     ))}
@@ -71,6 +77,16 @@ const ViewEnquiries = () => {
                     </div>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Enquiry"
+                message="Are you sure you want to delete this enquiry? This action cannot be undone."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteModal({ isOpen: false, id: null })}
+                confirmText="Delete"
+                confirmColor="red"
+            />
         </>
     );
 };

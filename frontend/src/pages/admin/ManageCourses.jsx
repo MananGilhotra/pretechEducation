@@ -5,14 +5,16 @@ import toast from 'react-hot-toast';
 import { HiPlus, HiPencil, HiTrash, HiX } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(null);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
     const [form, setForm] = useState({
-        name: '', description: '', duration: '', fees: '', eligibility: '', category: '', status: 'Active'
+        name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active'
     });
 
     const fetchCourses = async () => {
@@ -37,7 +39,7 @@ const ManageCourses = () => {
             }
             setShowModal(false);
             setEditing(null);
-            setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: '', status: 'Active' });
+            setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
             fetchCourses();
         } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     };
@@ -48,12 +50,12 @@ const ManageCourses = () => {
         setShowModal(true);
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Are you sure?')) return;
+    const handleDelete = async () => {
         try {
-            await API.delete(`/courses/${id}`);
+            await API.delete(`/courses/${deleteModal.id}`);
             toast.success('Course deleted');
             fetchCourses();
+            setDeleteModal({ isOpen: false, id: null });
         } catch { toast.error('Delete failed'); }
     };
 
@@ -88,21 +90,21 @@ const ManageCourses = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {courses.map((course) => (
-                                        <tr key={course._id} className="border-b border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-card/50">
-                                            <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">{course.name}</td>
-                                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{course.category}</td>
-                                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{course.duration}</td>
-                                            <td className="py-3 px-4 font-semibold">₹{course.fees?.toLocaleString('en-IN')}</td>
+                                    {courses.map((c) => (
+                                        <tr key={c._id} className="border-b border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-card/50">
+                                            <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">{c.name}</td>
+                                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{c.category}</td>
+                                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{c.duration}</td>
+                                            <td className="py-3 px-4 font-semibold">₹{c.fees?.toLocaleString('en-IN')}</td>
                                             <td className="py-3 px-4">
-                                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${course.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {course.status}
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {c.status}
                                                 </span>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex space-x-2">
-                                                    <button onClick={() => handleEdit(course)} className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors"><HiPencil /></button>
-                                                    <button onClick={() => handleDelete(course._id)} className="p-2 rounded-lg hover:bg-red-100 text-red-500 transition-colors"><HiTrash /></button>
+                                                    <button onClick={() => handleEdit(c)} className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors"><HiPencil /></button>
+                                                    <button onClick={() => setDeleteModal({ isOpen: true, id: c._id })} className="p-2 rounded-lg hover:bg-red-100 text-red-500 transition-colors"><HiTrash /></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -166,6 +168,16 @@ const ManageCourses = () => {
                     </motion.div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Course"
+                message="Are you sure you want to delete this course? This action cannot be undone."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteModal({ isOpen: false, id: null })}
+                confirmText="Delete"
+                confirmColor="red"
+            />
         </>
     );
 };

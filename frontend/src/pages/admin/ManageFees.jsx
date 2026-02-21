@@ -4,6 +4,7 @@ import { HiCurrencyRupee, HiSearch, HiCheckCircle, HiX, HiUsers } from 'react-ic
 import { MdPayment } from 'react-icons/md';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const METHOD_OPTIONS = ['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Other'];
 
@@ -34,6 +35,10 @@ const ManageFees = () => {
     // Form state
     const [form, setForm] = useState({ amount: '', paymentMethod: 'Cash', transactionId: '', notes: '', paymentDate: new Date().toISOString().split('T')[0] });
     const [submitting, setSubmitting] = useState(false);
+
+    // Modal state
+    const [editModal, setEditModal] = useState({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' });
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, payment: null });
 
 
     const debounceRef = useRef(null);
@@ -108,6 +113,41 @@ const ManageFees = () => {
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to record payment');
         } finally { setSubmitting(false); }
+    };
+
+    const handleEditPaymentSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await API.put(`/payments/${editModal.payment._id}`, {
+                amount: Number(editModal.amount),
+                paymentMethod: editModal.paymentMethod,
+                transactionId: editModal.transactionId
+            });
+            toast.success('Payment updated');
+            setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' });
+
+            // Refresh summary
+            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
+            setFeeSummary(data.feeSummary);
+            setPaymentHistory(data.payments || []);
+            setAdmissionData(data.admission);
+            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
+        } catch (err) { toast.error(err.response?.data?.message || 'Update failed'); }
+    };
+
+    const handleDeletePayment = async () => {
+        try {
+            await API.delete(`/payments/${deleteModal.payment._id}`);
+            toast.success('Payment deleted');
+            setDeleteModal({ isOpen: false, payment: null });
+
+            // Refresh summary
+            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
+            setFeeSummary(data.feeSummary);
+            setPaymentHistory(data.payments || []);
+            setAdmissionData(data.admission);
+            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
+        } catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
     };
 
 
@@ -379,37 +419,17 @@ const ManageFees = () => {
                                                         <td className="py-2.5 px-4">
                                                             <div className="flex gap-1">
                                                                 <button
-                                                                    onClick={async () => {
-                                                                        const newAmt = prompt('Edit amount:', p.amount);
-                                                                        if (newAmt === null) return;
-                                                                        const newMethod = prompt('Edit method (Cash/UPI/Card/Bank Transfer/Cheque):', p.paymentMethod);
-                                                                        if (newMethod === null) return;
-                                                                        const newRef = prompt('Edit reference:', p.transactionId || '');
-                                                                        try {
-                                                                            await API.put(`/payments/${p._id}`, { amount: Number(newAmt), paymentMethod: newMethod, transactionId: newRef });
-                                                                            toast.success('Payment updated');
-                                                                            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
-                                                                            setFeeSummary(data.feeSummary);
-                                                                            setPaymentHistory(data.payments || []);
-                                                                            setAdmissionData(data.admission);
-                                                                            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
-                                                                        } catch (err) { toast.error(err.response?.data?.message || 'Update failed'); }
-                                                                    }}
+                                                                    onClick={() => setEditModal({
+                                                                        isOpen: true,
+                                                                        payment: p,
+                                                                        amount: p.amount,
+                                                                        paymentMethod: p.paymentMethod || 'Cash',
+                                                                        transactionId: p.transactionId || ''
+                                                                    })}
                                                                     className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors" title="Edit"
                                                                 >✏️</button>
                                                                 <button
-                                                                    onClick={async () => {
-                                                                        if (!confirm('Delete this payment of ₹' + p.amount.toLocaleString('en-IN') + '?')) return;
-                                                                        try {
-                                                                            await API.delete(`/payments/${p._id}`);
-                                                                            toast.success('Payment deleted');
-                                                                            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
-                                                                            setFeeSummary(data.feeSummary);
-                                                                            setPaymentHistory(data.payments || []);
-                                                                            setAdmissionData(data.admission);
-                                                                            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
-                                                                        } catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
-                                                                    }}
+                                                                    onClick={() => setDeleteModal({ isOpen: true, payment: p })}
                                                                     className="p-1.5 rounded-lg hover:bg-red-100 text-red-500 transition-colors" title="Delete"
                                                                 >🗑️</button>
                                                             </div>
@@ -425,6 +445,51 @@ const ManageFees = () => {
                     )}
                 </div>
             </div>
+            {/* ======================== MODALS ======================== */}
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Payment"
+                message={`Are you sure you want to delete this payment of ₹${deleteModal.payment?.amount?.toLocaleString('en-IN')}? This action cannot be undone.`}
+                onConfirm={handleDeletePayment}
+                onCancel={() => setDeleteModal({ isOpen: false, payment: null })}
+                confirmText="Delete"
+                confirmColor="red"
+            />
+
+            {/* Edit Payment Modal */}
+            {editModal.isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-dark-border">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Payment</h3>
+                            <button onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' })} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <HiX className="text-xl" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleEditPaymentSubmit} className="p-4 space-y-4">
+                            <div>
+                                <label className="label text-xs">Amount (₹)</label>
+                                <input type="number" required value={editModal.amount} onChange={(e) => setEditModal({ ...editModal, amount: e.target.value })} className="input-field" />
+                            </div>
+                            <div>
+                                <label className="label text-xs">Payment Method</label>
+                                <select required value={editModal.paymentMethod} onChange={(e) => setEditModal({ ...editModal, paymentMethod: e.target.value })} className="input-field">
+                                    {METHOD_OPTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="label text-xs">Reference ID / Txn Info</label>
+                                <input type="text" value={editModal.transactionId} onChange={(e) => setEditModal({ ...editModal, transactionId: e.target.value })} className="input-field" placeholder="Optional" />
+                            </div>
+                            <div className="flex justify-end gap-3 pt-2">
+                                <button type="button" onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' })} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:bg-dark-border dark:text-gray-300 dark:hover:bg-dark-bg">Cancel</button>
+                                <button type="submit" className="px-4 py-2 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-sm shadow-primary-500/30">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
