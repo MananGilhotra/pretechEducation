@@ -24,24 +24,18 @@ const Dashboard = () => {
                 setStats(statsRes.data);
                 setRecent(recentRes.data);
             } catch (err) {
-                // Demo data
+                console.error("Dashboard fetch error:", err);
                 setStats({
-                    totalStudents: 156,
-                    totalEnquiries: 89,
-                    totalRevenue: 2340000,
-                    activeCourses: 12,
-                    monthlyRevenue: [
-                        { month: '2026-01', revenue: 180000, admissions: 12 },
-                        { month: '2026-02', revenue: 250000, admissions: 18 },
-                    ],
-                    admissionsByCourse: [
-                        { _id: 'Web Development', count: 45 },
-                        { _id: 'Python', count: 32 },
-                        { _id: 'Data Science', count: 28 },
-                        { _id: 'Tally', count: 22 },
-                        { _id: 'Graphic Design', count: 18 },
-                        { _id: 'Others', count: 11 },
-                    ]
+                    totalStudents: 0,
+                    totalEnquiries: 0,
+                    totalRevenue: 0,
+                    grossRevenue: 0,
+                    totalSalaryPaid: 0,
+                    totalTeachers: 0,
+                    activeCourses: 0,
+                    monthlyRevenue: [],
+                    monthlySalary: [],
+                    admissionsByCourse: []
                 });
                 setRecent([]);
             } finally {
