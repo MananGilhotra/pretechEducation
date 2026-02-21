@@ -12,6 +12,7 @@ const ViewAdmissions = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+    const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentFees, setStudentFees] = useState(null);
     const [loadingDetail, setLoadingDetail] = useState(false);
     const [viewingImage, setViewingImage] = useState(null);
