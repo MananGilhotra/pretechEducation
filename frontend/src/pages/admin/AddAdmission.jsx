@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
@@ -9,7 +9,21 @@ import API from '../../api/axios';
 const AddAdmission = () => {
     const [courses, setCourses] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
+    const reAdmitData = location.state?.reAdmit ? location.state.studentData : null;
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm();
+
+    // Pre-fill form when re-admitting
+    useEffect(() => {
+        if (reAdmitData) {
+            reset({
+                ...reAdmitData,
+                registrationDate: new Date().toISOString().split('T')[0],
+                paymentPlan: 'Full',
+                paymentStatus: 'Pending',
+            });
+        }
+    }, []);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -53,9 +67,17 @@ const AddAdmission = () => {
             <div className="pt-24 pb-12 bg-gray-50 dark:bg-dark-bg min-h-screen">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-6 text-center">
-                        <h1 className="text-2xl font-bold font-heading text-gray-900 dark:text-white">REGISTRATION FORM</h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Pretech Computer Education — New Student Registration</p>
+                        <h1 className="text-2xl font-bold font-heading text-gray-900 dark:text-white">{reAdmitData ? 'RE-ADMISSION FORM' : 'REGISTRATION FORM'}</h1>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Pretech Computer Education — {reAdmitData ? 'Re-Admission' : 'New Student Registration'}</p>
                     </div>
+
+                    {reAdmitData && (
+                        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                            <p className="text-sm text-blue-800 dark:text-blue-300">
+                                🔄 <strong>Re-Admission</strong> — Student details for <strong>{reAdmitData.name}</strong> have been pre-filled. Please select the new course and update fee details.
+                            </p>
+                        </div>
+                    )}
 
                     <motion.form
                         initial={{ y: 20, opacity: 0 }}

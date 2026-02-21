@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -8,6 +9,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ConfirmModal from '../../components/ConfirmModal';
 
 const ViewAdmissions = () => {
+    const navigate = useNavigate();
     const [admissions, setAdmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -226,7 +228,31 @@ const ViewAdmissions = () => {
                                             <button onClick={handleSaveEdit} className="btn-primary px-4 py-1.5 text-xs">Save</button>
                                         </>
                                     ) : (
-                                        <button onClick={() => setIsEditing(true)} className="btn-outline px-3 py-1.5 text-xs">✏️ Edit Details</button>
+                                        <>
+                                            <button onClick={() => {
+                                                navigate('/admin/add-admission', {
+                                                    state: {
+                                                        reAdmit: true,
+                                                        studentData: {
+                                                            name: selectedStudent.name,
+                                                            fatherHusbandName: selectedStudent.fatherHusbandName,
+                                                            motherName: selectedStudent.motherName,
+                                                            dob: selectedStudent.dob ? new Date(selectedStudent.dob).toISOString().split('T')[0] : '',
+                                                            gender: selectedStudent.gender,
+                                                            maritalStatus: selectedStudent.maritalStatus,
+                                                            qualification: selectedStudent.qualification,
+                                                            occupation: selectedStudent.occupation,
+                                                            mobile: selectedStudent.mobile,
+                                                            email: selectedStudent.email,
+                                                            address: selectedStudent.address,
+                                                            aadharNumber: selectedStudent.aadharNumber,
+                                                            referenceBy: selectedStudent.referenceBy,
+                                                        }
+                                                    }
+                                                });
+                                            }} className="btn-primary px-3 py-1.5 text-xs">🔄 Re-Admit</button>
+                                            <button onClick={() => setIsEditing(true)} className="btn-outline px-3 py-1.5 text-xs">✏️ Edit</button>
+                                        </>
                                     )}
                                     <button onClick={closeDetail} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
                                         <HiX className="text-xl" />
