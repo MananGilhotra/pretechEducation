@@ -11,8 +11,13 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
-        const stored = localStorage.getItem('pretech_user');
-        return stored ? JSON.parse(stored) : null;
+        try {
+            const stored = localStorage.getItem('pretech_user');
+            return stored ? JSON.parse(stored) : null;
+        } catch {
+            localStorage.removeItem('pretech_user');
+            return null;
+        }
     });
     const [loading, setLoading] = useState(false);
 

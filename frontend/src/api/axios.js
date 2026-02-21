@@ -9,7 +9,12 @@ const API = axios.create({
 
 // Request interceptor to add auth token and handle FormData
 API.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem('pretech_user') || 'null');
+    let user = null;
+    try {
+        user = JSON.parse(localStorage.getItem('pretech_user') || 'null');
+    } catch (e) {
+        localStorage.removeItem('pretech_user');
+    }
     if (user?.token) {
         config.headers.Authorization = `Bearer ${user.token}`;
     }
@@ -25,8 +30,12 @@ API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('pretech_user');
-            window.location.href = '/login';
+            const path = window.location.pathname;
+            // Don't redirect if already on auth pages (prevents refresh loop on bad credentials)
+            if (path !== '/login' && path !== '/register') {
+                localStorage.removeItem('pretech_user');
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }
