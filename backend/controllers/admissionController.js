@@ -241,6 +241,41 @@ exports.approveAdmission = async (req, res) => {
     }
 };
 
+// @desc    Update admission (admin)
+// @route   PUT /api/admissions/:id
+exports.updateAdmission = async (req, res) => {
+    try {
+        let admission = await Admission.findById(req.params.id);
+        if (!admission) {
+            return res.status(404).json({ message: 'Admission not found' });
+        }
+
+        const updateData = { ...req.body };
+
+        // Handle profile photo
+        if (req.files?.passportPhoto?.[0]) {
+            const f = req.files.passportPhoto[0];
+            updateData.passportPhoto = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        }
+
+        // Handle signature
+        if (req.files?.signature?.[0]) {
+            const f = req.files.signature[0];
+            updateData.signature = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        }
+
+        // If email was changed and student login exists, we'd ideally sync it, but for now we just update admission
+        admission = await Admission.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+
+        res.json({ message: 'Admission updated successfully', admission });
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'An admission with this Email or Mobile Number already exists' });
+        }
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Export admissions as CSV (admin)
 // @route   GET /api/admissions/export
 exports.exportAdmissions = async (req, res) => {

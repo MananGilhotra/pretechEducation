@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createCheckout, verifyPayment, getPayments, getMyPayments, downloadReceipt, submitManualPayment, approvePayment, rejectPayment, recordPayment, getFeeSummary, updateInstallmentStatus, getFeeOverview, applyDiscount } = require('../controllers/paymentController');
+const { createCheckout, verifyPayment, getPayments, getMyPayments, downloadReceipt, submitManualPayment, approvePayment, rejectPayment, recordPayment, getFeeSummary, updateInstallmentStatus, getFeeOverview, applyDiscount, updatePayment, deletePayment } = require('../controllers/paymentController');
 const { protect, authorize } = require('../middleware/auth');
 
 // Deprecated: router.post('/create-checkout', protect, createCheckout);
@@ -20,5 +20,7 @@ router.put('/discount/:admissionId', protect, authorize('admin'), applyDiscount)
 router.get('/', protect, authorize('admin'), getPayments);
 router.get('/me', protect, getMyPayments);
 router.get('/:id/receipt', downloadReceipt);
+router.put('/:id', protect, authorize('admin'), updatePayment);
+router.delete('/:id', protect, authorize('admin'), deletePayment);
 
 module.exports = router;

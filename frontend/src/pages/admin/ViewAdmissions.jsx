@@ -11,10 +11,11 @@ const ViewAdmissions = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentFees, setStudentFees] = useState(null);
     const [loadingDetail, setLoadingDetail] = useState(false);
     const [viewingImage, setViewingImage] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({});
 
     const fetchAdmissions = async () => {
         try {
@@ -60,6 +61,21 @@ const ViewAdmissions = () => {
 
     const openDetail = async (admission) => {
         setSelectedStudent(admission);
+        setEditData({
+            name: admission.name || '',
+            fatherHusbandName: admission.fatherHusbandName || '',
+            motherName: admission.motherName || '',
+            dob: admission.dob ? new Date(admission.dob).toISOString().split('T')[0] : '',
+            gender: admission.gender || '',
+            maritalStatus: admission.maritalStatus || 'Single',
+            qualification: admission.qualification || '',
+            occupation: admission.occupation || '',
+            mobile: admission.mobile || '',
+            email: admission.email || '',
+            address: admission.address || '',
+            aadharNumber: admission.aadharNumber || ''
+        });
+        setIsEditing(false);
         setLoadingDetail(true);
         try {
             const { data } = await API.get(`/payments/summary/${admission._id}`);
@@ -71,6 +87,19 @@ const ViewAdmissions = () => {
     const closeDetail = () => {
         setSelectedStudent(null);
         setStudentFees(null);
+        setIsEditing(false);
+    };
+
+    const handleSaveEdit = async () => {
+        try {
+            const { data } = await API.put(`/admissions/${selectedStudent._id}`, editData);
+            toast.success('Student details updated');
+            setSelectedStudent(data.admission);
+            setIsEditing(false);
+            fetchAdmissions(); // Refresh list background
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Update failed');
+        }
     };
 
     if (loading) return <div className="pt-24"><LoadingSpinner /></div>;
@@ -172,17 +201,31 @@ const ViewAdmissions = () => {
                             {/* Header */}
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-700 to-accent-500 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-700 to-accent-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shrink-0">
                                         {selectedStudent.name?.charAt(0)?.toUpperCase()}
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selectedStudent.name}</h2>
+                                        {isEditing ? (
+                                            <input type="text" value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} className="input-field py-1 text-lg font-bold mb-1" placeholder="Student Name" />
+                                        ) : (
+                                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selectedStudent.name}</h2>
+                                        )}
                                         <p className="text-sm font-mono text-primary-700 dark:text-primary-400">{selectedStudent.studentId}</p>
                                     </div>
                                 </div>
-                                <button onClick={closeDetail} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
-                                    <HiX className="text-xl" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {isEditing ? (
+                                        <>
+                                            <button onClick={() => setIsEditing(false)} className="btn-outline px-3 py-1.5 text-xs">Cancel</button>
+                                            <button onClick={handleSaveEdit} className="btn-primary px-4 py-1.5 text-xs">Save</button>
+                                        </>
+                                    ) : (
+                                        <button onClick={() => setIsEditing(true)} className="btn-outline px-3 py-1.5 text-xs">✏️ Edit Details</button>
+                                    )}
+                                    <button onClick={closeDetail} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
+                                        <HiX className="text-xl" />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Fee Summary */}
@@ -219,17 +262,29 @@ const ViewAdmissions = () => {
                                     <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2"><HiUser className="text-primary-600" /> Personal Information</h3>
                                     <div className="space-y-2.5">
                                         {[
-                                            { label: 'Father/Husband', value: selectedStudent.fatherHusbandName },
-                                            { label: 'Mother', value: selectedStudent.motherName },
-                                            { label: 'DOB', value: selectedStudent.dob ? new Date(selectedStudent.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '' },
-                                            { label: 'Gender', value: selectedStudent.gender },
-                                            { label: 'Marital Status', value: selectedStudent.maritalStatus },
-                                            { label: 'Qualification', value: selectedStudent.qualification },
-                                            { label: 'Occupation', value: selectedStudent.occupation },
-                                        ].filter(r => r.value).map((row, i) => (
-                                            <div key={i} className="flex justify-between py-1.5 border-b border-gray-100 dark:border-dark-border last:border-0">
-                                                <span className="text-xs text-gray-500">{row.label}</span>
-                                                <span className="text-xs font-medium text-gray-900 dark:text-white text-right">{row.value}</span>
+                                            { label: 'Father/Husband', key: 'fatherHusbandName', value: selectedStudent.fatherHusbandName },
+                                            { label: 'Mother', key: 'motherName', value: selectedStudent.motherName },
+                                            { label: 'DOB', key: 'dob', type: 'date', value: selectedStudent.dob ? new Date(selectedStudent.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '' },
+                                            { label: 'Gender', key: 'gender', type: 'select', options: ['Male', 'Female', 'Other'], value: selectedStudent.gender },
+                                            { label: 'Marital Status', key: 'maritalStatus', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed'], value: selectedStudent.maritalStatus },
+                                            { label: 'Qualification', key: 'qualification', value: selectedStudent.qualification },
+                                            { label: 'Occupation', key: 'occupation', value: selectedStudent.occupation },
+                                        ].filter(r => isEditing || r.value).map((row, i) => (
+                                            <div key={i} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-dark-border last:border-0">
+                                                <span className="text-xs text-gray-500 w-1/3">{row.label}</span>
+                                                <div className="w-2/3 text-right">
+                                                    {isEditing ? (
+                                                        row.type === 'select' ? (
+                                                            <select value={editData[row.key]} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right">
+                                                                {row.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                            </select>
+                                                        ) : (
+                                                            <input type={row.type || 'text'} value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right" />
+                                                        )
+                                                    ) : (
+                                                        <span className="text-xs font-medium text-gray-900 dark:text-white">{row.value}</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -239,20 +294,26 @@ const ViewAdmissions = () => {
                                     <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2"><HiPhone className="text-primary-600" /> Contact & Course</h3>
                                     <div className="space-y-2.5">
                                         {[
-                                            { label: 'Mobile', value: selectedStudent.mobile },
-                                            { label: 'Email', value: selectedStudent.email },
-                                            { label: 'Address', value: selectedStudent.address },
-                                            { label: 'Aadhar', value: selectedStudent.aadharNumber },
-                                            { label: 'Course', value: selectedStudent.courseApplied?.name },
-                                            { label: 'Batch Timing', value: selectedStudent.batchTiming },
-                                            { label: 'Batch Month', value: selectedStudent.batchMonth },
-                                            { label: 'Payment Plan', value: selectedStudent.paymentPlan },
-                                            { label: 'Reference By', value: selectedStudent.referenceBy },
-                                            { label: 'Registered', value: selectedStudent.registrationDate ? new Date(selectedStudent.registrationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '' },
-                                        ].filter(r => r.value).map((row, i) => (
-                                            <div key={i} className="flex justify-between py-1.5 border-b border-gray-100 dark:border-dark-border last:border-0">
-                                                <span className="text-xs text-gray-500">{row.label}</span>
-                                                <span className="text-xs font-medium text-gray-900 dark:text-white text-right max-w-[60%] break-words">{row.value}</span>
+                                            { label: 'Mobile', key: 'mobile', value: selectedStudent.mobile, edit: true },
+                                            { label: 'Email', key: 'email', value: selectedStudent.email, edit: true, type: 'email' },
+                                            { label: 'Address', key: 'address', value: selectedStudent.address, edit: true },
+                                            { label: 'Aadhar', key: 'aadharNumber', value: selectedStudent.aadharNumber, edit: true },
+                                            { label: 'Course', key: 'courseApplied', value: selectedStudent.courseApplied?.name, edit: false },
+                                            { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: false },
+                                            { label: 'Batch Month', key: 'batchMonth', value: selectedStudent.batchMonth, edit: false },
+                                            { label: 'Payment Plan', key: 'paymentPlan', value: selectedStudent.paymentPlan, edit: false },
+                                            { label: 'Reference By', key: 'referenceBy', value: selectedStudent.referenceBy, edit: false },
+                                            { label: 'Registered', key: 'registrationDate', value: selectedStudent.registrationDate ? new Date(selectedStudent.registrationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '', edit: false },
+                                        ].filter(r => (isEditing && r.edit) || !isEditing && r.value).map((row, i) => (
+                                            <div key={i} className="flex justify-between py-1 border-b border-gray-100 dark:border-dark-border last:border-0" style={{ alignItems: isEditing && row.edit ? 'center' : 'flex-start' }}>
+                                                <span className="text-xs text-gray-500 w-1/3 pt-0.5">{row.label}</span>
+                                                <div className="w-2/3 text-right">
+                                                    {isEditing && row.edit ? (
+                                                        <input type={row.type || 'text'} value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right" />
+                                                    ) : (
+                                                        <span className="text-xs font-medium text-gray-900 dark:text-white break-words inline-block max-w-full text-right">{row.value}</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

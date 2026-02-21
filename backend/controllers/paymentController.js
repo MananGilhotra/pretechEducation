@@ -513,3 +513,71 @@ exports.getFeeOverview = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Update a payment record
+// @route   PUT /api/payments/:id
+exports.updatePayment = async (req, res) => {
+    try {
+        const payment = await Payment.findById(req.params.id);
+        if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+        const { amount, paymentMethod, transactionId, notes } = req.body;
+        if (amount) payment.amount = Number(amount);
+        if (paymentMethod) payment.paymentMethod = paymentMethod;
+        if (transactionId !== undefined) payment.transactionId = transactionId;
+        if (notes !== undefined) payment.notes = notes;
+        await payment.save();
+
+        // Recalculate admission payment status
+        const admission = await Admission.findById(payment.admission).populate('courseApplied', 'fees');
+        if (admission) {
+            const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
+            const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+            const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+            const discount = admission.discount || 0;
+            const totalFees = Math.max(0, grossFees - discount);
+            const balanceDue = Math.max(0, totalFees - totalPaid);
+
+            if (balanceDue === 0 && totalPaid > 0) admission.paymentStatus = 'Paid';
+            else if (totalPaid > 0) admission.paymentStatus = 'Partially Paid';
+            else admission.paymentStatus = 'Pending';
+            await admission.save();
+        }
+
+        res.json({ message: 'Payment updated', payment });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete a payment record
+// @route   DELETE /api/payments/:id
+exports.deletePayment = async (req, res) => {
+    try {
+        const payment = await Payment.findById(req.params.id);
+        if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+        const admissionId = payment.admission;
+        await Payment.findByIdAndDelete(req.params.id);
+
+        // Recalculate admission payment status
+        const admission = await Admission.findById(admissionId).populate('courseApplied', 'fees');
+        if (admission) {
+            const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
+            const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+            const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+            const discount = admission.discount || 0;
+            const totalFees = Math.max(0, grossFees - discount);
+            const balanceDue = Math.max(0, totalFees - totalPaid);
+
+            if (balanceDue === 0 && totalPaid > 0) admission.paymentStatus = 'Paid';
+            else if (totalPaid > 0) admission.paymentStatus = 'Partially Paid';
+            else admission.paymentStatus = 'Pending';
+            await admission.save();
+        }
+
+        res.json({ message: 'Payment deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

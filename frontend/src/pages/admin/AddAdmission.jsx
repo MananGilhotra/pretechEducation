@@ -83,6 +83,12 @@ const AddAdmission = () => {
                                     <span className="text-3xl text-gray-300">📷</span>
                                 </div>
                                 <input type="file" accept="image/*" {...register('passportPhoto')} className="text-[10px] w-28" />
+
+                                <label className="label text-xs text-center mb-1 mt-3">Signature</label>
+                                <div className="w-28 h-14 border-2 border-dashed border-gray-300 dark:border-dark-border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1">
+                                    <span className="text-sm text-gray-300">✍️</span>
+                                </div>
+                                <input type="file" accept="image/*" {...register('signature')} className="text-[10px] w-28" />
                             </div>
 
                             {/* --- Student's Name (spans 2 cols) --- */}
@@ -183,19 +189,19 @@ const AddAdmission = () => {
                             </div>
                         </div>
 
-                        {/* ===== ROW: DOB, Signature, Email ===== */}
+                        {/* ===== ROW: DOB, Email, Occupation ===== */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-3">
                             <div>
                                 <label className="label text-xs">Date of Birth *</label>
                                 <input type="date" {...register('dob', { required: 'Required' })} className="input-field" />
                             </div>
                             <div>
-                                <label className="label text-xs">Signature</label>
-                                <input type="file" accept="image/*" {...register('signature')} className="input-field !py-2 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary-100 file:text-primary-700" />
-                            </div>
-                            <div>
                                 <label className="label text-xs">Email <span className="text-gray-400 font-normal">(Optional)</span></label>
                                 <input type="email" {...register('email')} className="input-field" placeholder="Student Email" />
+                            </div>
+                            <div>
+                                <label className="label text-xs">Occupation</label>
+                                <input {...register('occupation')} className="input-field" placeholder="Optional" />
                             </div>
                         </div>
 

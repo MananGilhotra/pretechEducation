@@ -352,6 +352,7 @@ const ManageFees = () => {
                                                     <th className="text-left py-2.5 px-4 font-semibold text-gray-600 dark:text-gray-400">Reference</th>
                                                     <th className="text-left py-2.5 px-4 font-semibold text-gray-600 dark:text-gray-400">Date</th>
                                                     <th className="text-left py-2.5 px-4 font-semibold text-gray-600 dark:text-gray-400">Receipt</th>
+                                                    <th className="text-left py-2.5 px-4 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -372,6 +373,44 @@ const ManageFees = () => {
                                                             ) : (
                                                                 <span className="text-xs text-gray-400">—</span>
                                                             )}
+                                                        </td>
+                                                        <td className="py-2.5 px-4">
+                                                            <div className="flex gap-1">
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        const newAmt = prompt('Edit amount:', p.amount);
+                                                                        if (newAmt === null) return;
+                                                                        const newMethod = prompt('Edit method (Cash/UPI/Card/Bank Transfer/Cheque):', p.paymentMethod);
+                                                                        if (newMethod === null) return;
+                                                                        const newRef = prompt('Edit reference:', p.transactionId || '');
+                                                                        try {
+                                                                            await API.put(`/payments/${p._id}`, { amount: Number(newAmt), paymentMethod: newMethod, transactionId: newRef });
+                                                                            toast.success('Payment updated');
+                                                                            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
+                                                                            setFeeSummary(data.feeSummary);
+                                                                            setPaymentHistory(data.payments || []);
+                                                                            setAdmissionData(data.admission);
+                                                                            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
+                                                                        } catch (err) { toast.error(err.response?.data?.message || 'Update failed'); }
+                                                                    }}
+                                                                    className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors" title="Edit"
+                                                                >✏️</button>
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        if (!confirm('Delete this payment of ₹' + p.amount.toLocaleString('en-IN') + '?')) return;
+                                                                        try {
+                                                                            await API.delete(`/payments/${p._id}`);
+                                                                            toast.success('Payment deleted');
+                                                                            const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
+                                                                            setFeeSummary(data.feeSummary);
+                                                                            setPaymentHistory(data.payments || []);
+                                                                            setAdmissionData(data.admission);
+                                                                            try { const { data: o } = await API.get('/payments/overview'); setOverview(o); } catch { }
+                                                                        } catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
+                                                                    }}
+                                                                    className="p-1.5 rounded-lg hover:bg-red-100 text-red-500 transition-colors" title="Delete"
+                                                                >🗑️</button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))}
