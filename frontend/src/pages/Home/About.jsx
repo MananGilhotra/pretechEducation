@@ -78,28 +78,32 @@ const About = () => {
                         transition={{ duration: 0.8, delay: 0.3 }}
                         className="relative"
                     >
-                        <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                            <div className="aspect-[4/3] bg-gradient-to-br from-primary-700 via-primary-600 to-accent-500 flex items-center justify-center">
-                                <div className="text-center text-white p-10">
-                                    <HiAcademicCap className="text-7xl mx-auto mb-4 opacity-80" />
-                                    <h3 className="text-3xl font-bold font-heading mb-2">15+ Years</h3>
-                                    <p className="text-white/70">Of Excellence in Computer Education</p>
-                                </div>
+                        <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
+                            <img
+                                src="/pankaj-gilhotra.jpg"
+                                alt="Pankaj Gilhotra - Owner & Founder of Pretech Computer Education"
+                                className="w-full h-full object-cover aspect-[4/3] sm:aspect-[4/5] lg:aspect-[3/4] transform group-hover:scale-105 transition-transform duration-700 origin-center"
+                            />
+                            {/* Overlay gradient for text readability */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent p-6 md:p-8 pt-32">
+                                <h3 className="text-2xl md:text-3xl font-bold font-heading text-white mb-1 shadow-sm">Pankaj Gilhotra</h3>
+                                <p className="text-primary-300 font-medium text-sm md:text-base">Owner & Founder</p>
                             </div>
                         </div>
+
                         {/* Floating badge */}
                         <motion.div
                             animate={{ y: [0, -10, 0] }}
                             transition={{ duration: 3, repeat: Infinity }}
-                            className="absolute -bottom-4 -left-4 bg-white dark:bg-dark-card rounded-2xl shadow-xl p-4 border border-gray-100 dark:border-dark-border"
+                            className="absolute -bottom-6 -left-2 sm:-left-6 bg-white dark:bg-dark-card rounded-2xl shadow-xl p-4 md:p-5 border border-gray-100 dark:border-dark-border z-10"
                         >
-                            <div className="flex items-center space-x-3">
-                                <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                    <span className="text-2xl">🏆</span>
+                            <div className="flex items-center space-x-3 md:space-x-4">
+                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                    <span className="text-2xl md:text-3xl">🏆</span>
                                 </div>
                                 <div>
-                                    <div className="text-sm font-bold text-gray-900 dark:text-white">ISO Certified</div>
-                                    <div className="text-xs text-gray-500">Quality Education</div>
+                                    <div className="text-sm md:text-base font-bold text-gray-900 dark:text-white">15+ Years</div>
+                                    <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">Of IT Excellence</div>
                                 </div>
                             </div>
                         </motion.div>
