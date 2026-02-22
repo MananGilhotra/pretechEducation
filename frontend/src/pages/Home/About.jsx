@@ -85,9 +85,11 @@ const About = () => {
                                 className="w-full h-full object-cover aspect-video transform group-hover:scale-105 transition-transform duration-700 origin-center"
                             />
                             {/* Overlay gradient for text readability */}
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent p-6 md:p-8 pt-32">
-                                <h3 className="text-2xl md:text-3xl font-bold font-heading text-white mb-1 shadow-sm">Pankaj Gilhotra</h3>
-                                <p className="text-primary-300 font-medium text-sm md:text-base">Owner & Founder</p>
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent px-6 pb-12 pt-32 md:px-8 md:pb-16 md:pt-40">
+                                <h3 className="text-3xl md:text-4xl font-bold font-heading text-white mb-2 tracking-wide drop-shadow-md">
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Pankaj Gilhotra</span>
+                                </h3>
+                                <p className="text-gray-300 font-medium text-sm md:text-base tracking-wider uppercase">Owner & Founder</p>
                             </div>
                         </div>
 
