@@ -13,9 +13,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="lg:col-span-1">
                         <div className="flex items-center space-x-2 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center">
-                                <HiAcademicCap className="text-white text-xl" />
-                            </div>
+                            <img src="/logo.png" alt="Pretech Logo" className="w-10 h-10 rounded-xl object-cover" />
                             <div>
                                 <h3 className="text-white font-bold font-heading text-lg">Pretech</h3>
                                 <p className="text-[10px] text-gray-500 -mt-1">Computer Education</p>

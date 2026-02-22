@@ -148,15 +148,12 @@ const SplashScreen = ({ onComplete }) => {
                         {/* Logo */}
                         <div
                             ref={logoRef}
-                            className="w-20 h-20 mx-auto mb-8 rounded-2xl flex items-center justify-center"
+                            className="w-24 h-24 mx-auto mb-8 rounded-2xl overflow-hidden flex items-center justify-center"
                             style={{
-                                background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)',
                                 boxShadow: '0 0 30px rgba(99, 102, 241, 0.3)'
                             }}
                         >
-                            <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
-                            </svg>
+                            <img src="/logo.png" alt="Pretech Logo" className="w-full h-full object-cover" />
                         </div>
 
                         {/* Welcome text */}
