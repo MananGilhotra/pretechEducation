@@ -46,7 +46,7 @@ const About = () => {
                             <span className="gradient-text">Pretech Computer Education</span>
                         </h2>
                         <p className="about-animate text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-                            Established with a vision to bridge the digital divide, Pretech Computer Education has been at the forefront of computer training for over 15 years. We offer industry-relevant courses designed to equip students with practical skills demanded by today's job market.
+                            Established with a vision to bridge the digital divide, Pretech Computer Education has been at the forefront of computer training for over 15 years. Under the expert guidance of our founder, Pankaj Gilhotra—who brings decades of excellence and mastery in MS-Office, Tally, and Professional Typing—we offer industry-relevant courses designed to equip students with highly demanded practical skills.
                         </p>
                         <p className="about-animate text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
                             Our state-of-the-art labs, experienced faculty, and placement-focused curriculum ensure that every student graduates ready for the professional world.
@@ -80,9 +80,9 @@ const About = () => {
                     >
                         <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
                             <img
-                                src="/pankaj-gilhotra.jpg"
+                                src="/pankaj-gilhotra-wide.png"
                                 alt="Pankaj Gilhotra - Owner & Founder of Pretech Computer Education"
-                                className="w-full h-full object-cover aspect-[4/3] sm:aspect-[4/5] lg:aspect-[3/4] transform group-hover:scale-105 transition-transform duration-700 origin-center"
+                                className="w-full h-full object-cover aspect-video transform group-hover:scale-105 transition-transform duration-700 origin-center"
                             />
                             {/* Overlay gradient for text readability */}
                             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent p-6 md:p-8 pt-32">
