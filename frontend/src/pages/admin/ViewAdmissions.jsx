@@ -247,6 +247,8 @@ const ViewAdmissions = () => {
                                                             address: selectedStudent.address,
                                                             aadharNumber: selectedStudent.aadharNumber,
                                                             referenceBy: selectedStudent.referenceBy,
+                                                            existingPhoto: selectedStudent.passportPhoto,
+                                                            existingSignature: selectedStudent.signature,
                                                         }
                                                     }
                                                 });

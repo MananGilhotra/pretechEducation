@@ -19,10 +19,16 @@ const createAdmissionInternal = async (req, res, isAdmin) => {
         if (req.files?.passportPhoto?.[0]) {
             const f = req.files.passportPhoto[0];
             admissionData.passportPhoto = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        } else if (req.body.existingPhoto) {
+            // Re-admission: carry forward existing photo
+            admissionData.passportPhoto = req.body.existingPhoto;
         }
         if (req.files?.signature?.[0]) {
             const f = req.files.signature[0];
             admissionData.signature = `data:${f.mimetype};base64,${f.buffer.toString('base64')}`;
+        } else if (req.body.existingSignature) {
+            // Re-admission: carry forward existing signature
+            admissionData.signature = req.body.existingSignature;
         }
 
         const Course = require('../models/Course');

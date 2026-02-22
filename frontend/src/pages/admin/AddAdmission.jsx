@@ -8,6 +8,8 @@ import API from '../../api/axios';
 
 const AddAdmission = () => {
     const [courses, setCourses] = useState([]);
+    const [existingPhoto, setExistingPhoto] = useState('');
+    const [existingSignature, setExistingSignature] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
     const reAdmitData = location.state?.reAdmit ? location.state.studentData : null;
@@ -16,8 +18,13 @@ const AddAdmission = () => {
     // Pre-fill form when re-admitting
     useEffect(() => {
         if (reAdmitData) {
+            // Extract existing photo/signature URLs
+            if (reAdmitData.existingPhoto) setExistingPhoto(reAdmitData.existingPhoto);
+            if (reAdmitData.existingSignature) setExistingSignature(reAdmitData.existingSignature);
+
+            const { existingPhoto: _p, existingSignature: _s, ...formFields } = reAdmitData;
             reset({
-                ...reAdmitData,
+                ...formFields,
                 registrationDate: new Date().toISOString().split('T')[0],
                 paymentPlan: 'Full',
                 paymentStatus: 'Pending',
@@ -42,11 +49,21 @@ const AddAdmission = () => {
             const formData = new FormData();
             Object.keys(data).forEach(key => {
                 if (key === 'passportPhoto' || key === 'signature') {
-                    if (data[key]?.[0]) formData.append(key, data[key][0]);
+                    if (data[key]?.[0]) {
+                        formData.append(key, data[key][0]);
+                    }
                 } else {
                     formData.append(key, data[key]);
                 }
             });
+
+            // If re-admitting and no new file uploaded, pass existing URLs
+            if (!data.passportPhoto?.[0] && existingPhoto) {
+                formData.append('existingPhoto', existingPhoto);
+            }
+            if (!data.signature?.[0] && existingSignature) {
+                formData.append('existingSignature', existingSignature);
+            }
 
             await API.post('/admissions/admin', formData);
             toast.success('Admission created successfully!');
@@ -100,18 +117,32 @@ const AddAdmission = () => {
                             </div>
                             {/* --- Column 3 Row 1: Photo Upload --- */}
                             <div className="sm:row-span-4 flex flex-col items-center justify-start">
-                                <label className="label text-xs text-center mb-1">Upload Photo *</label>
-                                <div className={`w-24 h-28 border-2 border-dashed ${errors.passportPhoto ? 'border-red-400' : 'border-gray-300 dark:border-dark-border'} rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1`}>
-                                    <span className="text-3xl text-gray-300">📷</span>
+                                <label className="label text-xs text-center mb-1">Upload Photo {existingPhoto ? '' : '*'}</label>
+                                <div className={`w-24 h-28 border-2 border-dashed ${errors.passportPhoto ? 'border-red-400' : 'border-gray-300 dark:border-dark-border'} rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1 overflow-hidden`}>
+                                    {existingPhoto && !watch('passportPhoto')?.[0] ? (
+                                        <img src={existingPhoto} alt="Existing Photo" className="w-full h-full object-cover" />
+                                    ) : watch('passportPhoto')?.[0] ? (
+                                        <img src={URL.createObjectURL(watch('passportPhoto')[0])} alt="New Photo" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-3xl text-gray-300">📷</span>
+                                    )}
                                 </div>
-                                <input type="file" accept="image/*" {...register('passportPhoto', { required: 'Photo is required' })} className="text-[10px] w-28" />
+                                <input type="file" accept="image/*" {...register('passportPhoto', { required: existingPhoto ? false : 'Photo is required' })} className="text-[10px] w-28" />
                                 {errors.passportPhoto && <p className="text-red-500 text-[10px] mt-0.5 text-center">{errors.passportPhoto.message}</p>}
+                                {existingPhoto && !watch('passportPhoto')?.[0] && <p className="text-green-600 text-[10px] mt-0.5">✓ Using existing</p>}
 
                                 <label className="label text-xs text-center mb-1 mt-3">Signature</label>
-                                <div className="w-28 h-14 border-2 border-dashed border-gray-300 dark:border-dark-border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1">
-                                    <span className="text-sm text-gray-300">✍️</span>
+                                <div className="w-28 h-14 border-2 border-dashed border-gray-300 dark:border-dark-border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-dark-card mb-1 overflow-hidden">
+                                    {existingSignature && !watch('signature')?.[0] ? (
+                                        <img src={existingSignature} alt="Existing Signature" className="w-full h-full object-contain" />
+                                    ) : watch('signature')?.[0] ? (
+                                        <img src={URL.createObjectURL(watch('signature')[0])} alt="New Signature" className="w-full h-full object-contain" />
+                                    ) : (
+                                        <span className="text-sm text-gray-300">✍️</span>
+                                    )}
                                 </div>
                                 <input type="file" accept="image/*" {...register('signature')} className="text-[10px] w-28" />
+                                {existingSignature && !watch('signature')?.[0] && <p className="text-green-600 text-[10px] mt-0.5">✓ Using existing</p>}
                             </div>
 
                             {/* --- Student's Name (spans 2 cols) --- */}
