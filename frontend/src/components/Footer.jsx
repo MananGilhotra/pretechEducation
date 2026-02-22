@@ -13,7 +13,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="lg:col-span-1">
                         <div className="flex items-center space-x-2 mb-4">
-                            <img src="/logo.png" alt="Pretech Logo" className="w-11 h-11 rounded-full object-cover" />
+                            <img src="/logo.png" alt="Pretech Logo" className="h-10 w-auto object-contain" />
                             <div>
                                 <h3 className="text-white font-bold font-heading text-lg">Pretech</h3>
                                 <p className="text-[10px] text-gray-500 -mt-1">Computer Education</p>

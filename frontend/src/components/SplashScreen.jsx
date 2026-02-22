@@ -148,12 +148,12 @@ const SplashScreen = ({ onComplete }) => {
                         {/* Logo */}
                         <div
                             ref={logoRef}
-                            className="w-28 h-28 mx-auto mb-8 rounded-full overflow-hidden ring-4 ring-white/20"
+                            className="h-28 mx-auto mb-8 flex items-center justify-center"
                             style={{
-                                boxShadow: '0 0 40px rgba(99, 102, 241, 0.4)'
+                                filter: 'drop-shadow(0 0 30px rgba(99, 102, 241, 0.4))'
                             }}
                         >
-                            <img src="/logo.png" alt="Pretech Logo" className="w-full h-full object-cover" />
+                            <img src="/logo.png" alt="Pretech Logo" className="h-full w-auto object-contain" />
                         </div>
 
                         {/* Welcome text */}

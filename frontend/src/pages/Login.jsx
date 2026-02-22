@@ -37,7 +37,7 @@ const Login = () => {
                 >
                     <div className="card p-8">
                         <div className="text-center mb-8">
-                            <img src="/logo.png" alt="Pretech Logo" className="w-20 h-20 rounded-full object-cover mx-auto mb-4 shadow-lg ring-4 ring-primary-100 dark:ring-primary-900/30" />
+                            <img src="/logo.png" alt="Pretech Logo" className="h-20 w-auto object-contain mx-auto mb-5 drop-shadow-xl" />
                             <h1 className="text-2xl font-bold font-heading text-gray-900 dark:text-white">Welcome Back</h1>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Sign in to your Pretech account</p>
                         </div>
