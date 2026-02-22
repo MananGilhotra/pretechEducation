@@ -48,7 +48,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
                     <Link to="/" className="flex items-center space-x-2 group">
-                        <img src="/logo.png" alt="Pretech Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg group-hover:shadow-xl transition-shadow" />
+                        <img src="/logo.png" alt="Pretech Logo" className="w-11 h-11 rounded-full object-cover shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105" />
                         <div>
                             <span className="text-lg font-bold font-heading text-primary-800 dark:text-white">
                                 Pretech
