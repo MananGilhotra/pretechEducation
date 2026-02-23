@@ -215,6 +215,7 @@ const AddAdmission = () => {
                                     <option value="">Select Batch</option>
                                     <option value="Morning">Morning</option>
                                     <option value="Evening">Evening</option>
+                                    <option value="Direct Student">Direct Student</option>
                                 </select>
                                 {errors.batchTiming && <p className="text-red-500 text-xs mt-0.5">{errors.batchTiming.message}</p>}
                             </div>

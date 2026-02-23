@@ -90,8 +90,8 @@ const CoursesPage = () => {
                                 key={cat}
                                 onClick={() => setFilter(cat)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === cat
-                                        ? 'bg-primary-700 text-white shadow-lg'
-                                        : 'bg-gray-100 dark:bg-dark-card text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border'
+                                    ? 'bg-primary-700 text-white shadow-lg'
+                                    : 'bg-gray-100 dark:bg-dark-card text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border'
                                     }`}
                             >
                                 {cat}
@@ -112,8 +112,18 @@ const CoursesPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="card-hover group"
+                                className="card-hover group overflow-hidden"
                             >
+                                {/* Course Image */}
+                                {course.image ? (
+                                    <div className="-mx-6 -mt-6 mb-4">
+                                        <img src={course.image} alt={course.name} className="w-full h-40 object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="-mx-6 -mt-6 mb-4 h-40 bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-900/30 dark:to-accent-900/30 flex items-center justify-center">
+                                        <span className="text-4xl font-bold text-primary-300 dark:text-primary-700">{course.name?.charAt(0)}</span>
+                                    </div>
+                                )}
                                 <div className={`inline-flex px-3 py-1 rounded-full text-xs font-medium mb-4 ${categoryColors[course.category] || 'bg-gray-100 text-gray-700'}`}>
                                     {course.category}
                                 </div>

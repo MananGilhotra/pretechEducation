@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { HiPlus, HiPencil, HiTrash, HiX } from 'react-icons/hi';
+import { HiPlus, HiPencil, HiTrash, HiX, HiPhotograph } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -13,6 +13,8 @@ const ManageCourses = () => {
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(null);
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
     const [form, setForm] = useState({
         name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active'
     });
@@ -27,18 +29,40 @@ const ManageCourses = () => {
 
     useEffect(() => { fetchCourses(); }, []);
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const formData = new FormData();
+            formData.append('name', form.name);
+            formData.append('description', form.description);
+            formData.append('duration', form.duration);
+            formData.append('fees', Number(form.fees));
+            formData.append('eligibility', form.eligibility);
+            formData.append('category', form.category);
+            formData.append('status', form.status);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
             if (editing) {
-                await API.put(`/courses/${editing}`, { ...form, fees: Number(form.fees) });
+                await API.put(`/courses/${editing}`, formData);
                 toast.success('Course updated!');
             } else {
-                await API.post('/courses', { ...form, fees: Number(form.fees) });
+                await API.post('/courses', formData);
                 toast.success('Course created!');
             }
             setShowModal(false);
             setEditing(null);
+            setImageFile(null);
+            setImagePreview('');
             setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
             fetchCourses();
         } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
@@ -47,6 +71,8 @@ const ManageCourses = () => {
     const handleEdit = (course) => {
         setEditing(course._id);
         setForm({ name: course.name, description: course.description, duration: course.duration, fees: course.fees, eligibility: course.eligibility, category: course.category, status: course.status });
+        setImageFile(null);
+        setImagePreview(course.image || '');
         setShowModal(true);
     };
 
@@ -57,6 +83,14 @@ const ManageCourses = () => {
             fetchCourses();
             setDeleteModal({ isOpen: false, id: null });
         } catch { toast.error('Delete failed'); }
+    };
+
+    const openAddModal = () => {
+        setEditing(null);
+        setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
+        setImageFile(null);
+        setImagePreview('');
+        setShowModal(true);
     };
 
     if (loading) return <div className="pt-24"><LoadingSpinner /></div>;
@@ -71,7 +105,7 @@ const ManageCourses = () => {
                             <h1 className="text-3xl font-bold font-heading text-gray-900 dark:text-white">Manage Courses</h1>
                             <p className="text-gray-500 mt-1">{courses.length} courses total</p>
                         </div>
-                        <button onClick={() => { setEditing(null); setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' }); setShowModal(true); }} className="btn-primary">
+                        <button onClick={openAddModal} className="btn-primary">
                             <HiPlus className="mr-2" /> Add Course
                         </button>
                     </div>
@@ -92,7 +126,18 @@ const ManageCourses = () => {
                                 <tbody>
                                     {courses.map((c) => (
                                         <tr key={c._id} className="border-b border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-card/50">
-                                            <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">{c.name}</td>
+                                            <td className="py-3 px-4">
+                                                <div className="flex items-center space-x-3">
+                                                    {c.image ? (
+                                                        <img src={c.image} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                                                    ) : (
+                                                        <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-dark-border flex items-center justify-center flex-shrink-0">
+                                                            <HiPhotograph className="text-gray-400" />
+                                                        </div>
+                                                    )}
+                                                    <span className="font-medium text-gray-900 dark:text-white">{c.name}</span>
+                                                </div>
+                                            </td>
                                             <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{c.category}</td>
                                             <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{c.duration}</td>
                                             <td className="py-3 px-4 font-semibold">₹{c.fees?.toLocaleString('en-IN')}</td>
@@ -125,6 +170,29 @@ const ManageCourses = () => {
                             <button onClick={() => setShowModal(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border"><HiX /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Course Image Upload */}
+                            <div>
+                                <label className="label">Course Image</label>
+                                <div className="flex items-center space-x-4">
+                                    {imagePreview ? (
+                                        <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-lg object-cover border-2 border-gray-200 dark:border-dark-border" />
+                                    ) : (
+                                        <div className="w-20 h-20 rounded-lg bg-gray-100 dark:bg-dark-border flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                            <HiPhotograph className="text-2xl text-gray-400" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className="input-field text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 dark:file:bg-primary-900/30 dark:file:text-primary-400 hover:file:bg-primary-100"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">JPG, PNG, WebP. Max 5MB.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="label">Course Name</label>
                                 <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="input-field" required />

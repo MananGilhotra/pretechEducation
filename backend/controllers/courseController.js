@@ -34,7 +34,14 @@ exports.getCourse = async (req, res) => {
 // @route   POST /api/courses
 exports.createCourse = async (req, res) => {
     try {
-        const course = await Course.create(req.body);
+        const courseData = { ...req.body };
+
+        // Handle image upload (base64)
+        if (req.file) {
+            courseData.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+        }
+
+        const course = await Course.create(courseData);
         res.status(201).json(course);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -45,7 +52,14 @@ exports.createCourse = async (req, res) => {
 // @route   PUT /api/courses/:id
 exports.updateCourse = async (req, res) => {
     try {
-        const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+        const updateData = { ...req.body };
+
+        // Handle image upload (base64)
+        if (req.file) {
+            updateData.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+        }
+
+        const course = await Course.findByIdAndUpdate(req.params.id, updateData, {
             new: true,
             runValidators: true
         });

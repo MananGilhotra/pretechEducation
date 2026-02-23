@@ -77,7 +77,7 @@ const admissionSchema = new mongoose.Schema({
     batchTiming: {
         type: String,
         required: [true, 'Please select batch timing'],
-        enum: ['Morning', 'Evening', 'Morning (9AM-12PM)', 'Afternoon (12PM-3PM)', 'Evening (3PM-6PM)', 'Weekend']
+        enum: ['Morning', 'Evening', 'Morning (9AM-12PM)', 'Afternoon (12PM-3PM)', 'Evening (3PM-6PM)', 'Weekend', 'Direct Student']
     },
     passportPhoto: {
         type: String,
