@@ -207,6 +207,29 @@ exports.getAdmissions = async (req, res) => {
         const admissions = await Admission.find(filter)
             .populate('courseApplied', 'name fees')
             .sort({ createdAt: -1 });
+
+        // Recalculate paymentStatus from actual payment records to fix stale statuses
+        const Payment = require('../models/Payment');
+        for (const adm of admissions) {
+            const totalFees = adm.finalFees || adm.courseApplied?.fees || 0;
+            if (totalFees <= 0) continue;
+
+            const paidPayments = await Payment.find({ admission: adm._id, status: 'paid' });
+            const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+            const balanceDue = Math.max(0, totalFees - totalPaid);
+
+            let correctStatus;
+            if (totalPaid === 0) correctStatus = 'Pending';
+            else if (balanceDue <= 0) correctStatus = 'Paid';
+            else correctStatus = 'Partially Paid';
+
+            // Auto-fix stale status in DB
+            if (adm.paymentStatus !== correctStatus) {
+                adm.paymentStatus = correctStatus;
+                await adm.save();
+            }
+        }
+
         res.json(admissions);
     } catch (error) {
         res.status(500).json({ message: error.message });
