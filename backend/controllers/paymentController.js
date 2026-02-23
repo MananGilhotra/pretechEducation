@@ -67,10 +67,20 @@ exports.approvePayment = async (req, res) => {
                 installment.paidAt = new Date();
                 installment.paymentRef = payment._id;
             }
-            const allPaid = admission.installments.every(i => i.status === 'Paid');
-            admission.paymentStatus = allPaid ? 'Paid' : 'Partially Paid';
-        } else {
+        }
+
+        // Recalculate paymentStatus based on actual paid amounts vs total fees
+        const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
+        const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const balanceDue = Math.max(0, totalFees - totalPaid);
+
+        if (totalPaid === 0) {
+            admission.paymentStatus = 'Pending';
+        } else if (balanceDue <= 0) {
             admission.paymentStatus = 'Paid';
+        } else {
+            admission.paymentStatus = 'Partially Paid';
         }
         await admission.save();
 
@@ -431,18 +441,29 @@ exports.updateInstallmentStatus = async (req, res) => {
         installment.status = status;
         installment.paidAt = status === 'Paid' ? new Date() : undefined;
 
-        // Recalculate admission paymentStatus
-        const allPaid = admission.installments.every(i => i.status === 'Paid');
-        const anyPaid = admission.installments.some(i => i.status === 'Paid');
-        admission.paymentStatus = allPaid ? 'Paid' : anyPaid ? 'Partially Paid' : 'Pending';
+        // Recalculate admission paymentStatus based on actual paid amounts
+        const paidPayments = await Payment.find({ admission: admissionId, status: 'paid' });
+        const totalPaidCalc = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+        const totalFeesCalc = admission.finalFees || admission.courseApplied?.fees || 0;
+        const balanceDueCalc = Math.max(0, totalFeesCalc - totalPaidCalc);
+
+        if (totalPaidCalc === 0) {
+            // Also check installment statuses as fallback (for manual marking without payment records)
+            const anyInstPaid = admission.installments.some(i => i.status === 'Paid');
+            admission.paymentStatus = anyInstPaid ? 'Partially Paid' : 'Pending';
+        } else if (balanceDueCalc <= 0) {
+            admission.paymentStatus = 'Paid';
+        } else {
+            admission.paymentStatus = 'Partially Paid';
+        }
 
         await admission.save();
 
-        // Return updated data
-        const paidPayments = await Payment.find({ admission: admissionId, status: 'paid' }).sort({ createdAt: -1 });
-        const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
-        const balanceDue = Math.max(0, totalFees - totalPaid);
+        // Return updated data (reuse computed values, just re-sort for response)
+        const sortedPayments = paidPayments.sort((a, b) => b.createdAt - a.createdAt);
+        const totalPaid = totalPaidCalc;
+        const totalFees = totalFeesCalc;
+        const balanceDue = balanceDueCalc;
 
         res.json({
             message: `Installment #${instNum} updated to ${status}`,
@@ -459,7 +480,7 @@ exports.updateInstallmentStatus = async (req, res) => {
                 totalInstallments: admission.totalInstallments,
             },
             feeSummary: { totalFees, totalPaid, balanceDue, paymentStatus: admission.paymentStatus },
-            payments: paidPayments
+            payments: sortedPayments
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
