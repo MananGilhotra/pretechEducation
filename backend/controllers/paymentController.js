@@ -349,6 +349,17 @@ exports.getFeeSummary = async (req, res) => {
         const totalFees = Math.max(0, grossFees - discount);
         const balanceDue = Math.max(0, totalFees - totalPaid);
 
+        // Auto-fix stale paymentStatus
+        let correctStatus;
+        if (totalPaid === 0) correctStatus = 'Pending';
+        else if (balanceDue <= 0) correctStatus = 'Paid';
+        else correctStatus = 'Partially Paid';
+
+        if (admission.paymentStatus !== correctStatus) {
+            admission.paymentStatus = correctStatus;
+            await admission.save();
+        }
+
         res.json({
             admission: {
                 _id: admission._id,
