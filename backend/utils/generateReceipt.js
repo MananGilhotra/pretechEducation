@@ -21,7 +21,7 @@ const numberToWords = (num) => {
  * Generate a receipt PDF and return it as a Buffer (no filesystem writes).
  * This works on Render's ephemeral filesystem.
  */
-const generateReceipt = (paymentData, admissionData) => {
+const generateReceipt = (paymentData, admissionData, totalPaid = 0) => {
     return new Promise((resolve, reject) => {
         // A5 Landscape to match physical receipt shape
         const doc = new PDFDocument({ margin: 30, size: 'A5', layout: 'landscape' });
@@ -192,8 +192,12 @@ const generateReceipt = (paymentData, admissionData) => {
             doc.font('Helvetica-Bold').fontSize(10).fillColor('#000').text(value, col2X + 5, rowY + 2);
         };
 
-        // Total Fees
-        drawFeeRow('Total Fees', `₹${(admissionData.finalFees || 0).toLocaleString('en-IN')}/-`, y);
+        // Gross Fees (before discount)
+        const grossFees = admissionData.courseApplied?.fees || admissionData.finalFees || 0;
+        const discount = admissionData.discount || 0;
+        const netFees = Math.max(0, grossFees - discount);
+
+        drawFeeRow('Total Fees', `₹${grossFees.toLocaleString('en-IN')}/-`, y);
 
         // Installment label on right
         let installmentText = 'NIL';
@@ -207,18 +211,25 @@ const generateReceipt = (paymentData, admissionData) => {
 
         y += boxH + 6;
 
+        // Discount row (only if discount > 0)
+        if (discount > 0) {
+            drawFeeRow('Discount', `₹${discount.toLocaleString('en-IN')}/-`, y);
+
+            // Net fees after discount on right
+            doc.font('Helvetica').fontSize(9).fillColor('#333');
+            doc.text('Net Fees', rightEdge - 200, y + 2, { continued: true });
+            doc.font('Helvetica-Bold').fillColor('#000').text(`  ₹${netFees.toLocaleString('en-IN')}/-`);
+
+            y += boxH + 6;
+        }
+
         // Deposit Fee (amount paid now)
         drawFeeRow('Deposit Fee', `₹${(paymentData.amount || 0).toLocaleString('en-IN')}/-`, y);
 
         y += boxH + 6;
 
-        // Balance calculation
-        let balance = 0;
-        if (admissionData.finalFees) {
-            const paidFromInstallments = admissionData.installments?.reduce((sum, inst) =>
-                (inst.status === 'Paid' ? sum + inst.amount : sum), 0) || 0;
-            balance = Math.max(0, admissionData.finalFees - Math.max(paidFromInstallments, paymentData.amount));
-        }
+        // Balance calculation using actual total paid
+        const balance = Math.max(0, netFees - totalPaid);
 
         drawFeeRow('Balance', balance === 0 ? 'NIL' : `₹${balance.toLocaleString('en-IN')}/-`, y);
 

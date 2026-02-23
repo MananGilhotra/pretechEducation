@@ -253,15 +253,19 @@ exports.downloadReceipt = async (req, res) => {
         const payment = await Payment.findById(req.params.id)
             .populate({
                 path: 'admission',
-                populate: { path: 'courseApplied', select: 'name' }
+                populate: { path: 'courseApplied', select: 'name fees' }
             });
 
         if (!payment) {
             return res.status(404).json({ message: 'Payment not found' });
         }
 
+        // Fetch all paid payments for this admission to calculate correct balance
+        const allPaidPayments = await Payment.find({ admission: payment.admission._id, status: 'paid' });
+        const totalPaid = allPaidPayments.reduce((sum, p) => sum + p.amount, 0);
+
         // Generate receipt as PDF buffer
-        const pdfBuffer = await generateReceipt(payment, payment.admission);
+        const pdfBuffer = await generateReceipt(payment, payment.admission, totalPaid);
 
         // Stream directly to browser
         const filename = `receipt-${payment.transactionId || payment._id}.pdf`;
