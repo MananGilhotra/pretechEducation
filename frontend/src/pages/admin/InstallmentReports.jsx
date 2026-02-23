@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { HiSearch, HiCurrencyRupee, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi';
+import { HiSearch, HiCurrencyRupee, HiCheckCircle, HiExclamationCircle, HiDownload } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import toast from 'react-hot-toast';
@@ -66,6 +66,28 @@ const InstallmentReports = () => {
     const totalPaid = filteredStudents.reduce((sum, s) => sum + s.paidAmount, 0);
     const pendingCount = filteredStudents.filter(s => s.balance > 0).length;
 
+    const handleExport = () => {
+        const headers = ['Student ID', 'Name', 'Course', 'Total Fees', 'Discount', 'Paid', 'Balance', 'Last Payment Date', 'Last Payment Amount', 'Status'];
+        const rows = filteredStudents.map(s => [
+            s.studentId || '',
+            s.name || '',
+            s.courseApplied?.name || '',
+            s.totalFees || 0,
+            s.discount || 0,
+            s.paidAmount || 0,
+            s.balance || 0,
+            s.lastPayment ? new Date(s.lastPayment.createdAt).toLocaleDateString('en-IN') : '',
+            s.lastPayment?.amount || '',
+            s.balance === 0 ? 'Cleared' : 'Pending'
+        ]);
+        const csv = [headers, ...rows].map(row => row.map(v => `"${v}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'installment_report.csv'; a.click();
+        URL.revokeObjectURL(url);
+        toast.success('CSV exported');
+    };
+
     if (loading) return <div className="pt-24"><LoadingSpinner /></div>;
 
     return (
@@ -78,6 +100,7 @@ const InstallmentReports = () => {
                             <h1 className="text-3xl font-bold font-heading text-gray-900 dark:text-white">Payment Reports</h1>
                             <p className="text-gray-500 mt-1">Track fees, payments, and pending balances</p>
                         </div>
+                        <button onClick={handleExport} className="btn-outline self-start"><HiDownload className="mr-2" /> Export CSV</button>
                     </div>
 
                     {/* Summary Cards */}
