@@ -72,19 +72,28 @@ const StudentDashboard = () => {
                                 <div className="space-y-3">
                                     {(() => {
                                         const totalPaid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + (p.amount || 0), 0);
-                                        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
-                                        const balanceDue = Math.max(0, totalFees - totalPaid);
-                                        return [
+                                        const grossFees = admission.courseApplied?.fees || 0;
+                                        const discount = admission.discount || 0;
+                                        const netFees = admission.finalFees || Math.max(0, grossFees - discount);
+                                        const balanceDue = Math.max(0, netFees - totalPaid);
+                                        const rows = [
                                             { label: 'Student ID', value: admission.studentId, mono: true },
                                             { label: 'Course', value: admission.courseApplied?.name },
                                             { label: 'Duration', value: admission.courseApplied?.duration },
                                             { label: 'Batch', value: admission.batchTiming },
                                             { label: 'Status', value: admission.paymentStatus, badge: true },
                                             { label: 'Approved', value: admission.approved ? '✓ Yes' : 'Pending' },
-                                            { label: 'Total Fees', value: `₹${totalFees.toLocaleString('en-IN')}`, bold: true },
+                                            { label: 'Total Fees', value: `₹${grossFees.toLocaleString('en-IN')}`, bold: true },
+                                        ];
+                                        if (discount > 0) {
+                                            rows.push({ label: 'Discount', value: `- ₹${discount.toLocaleString('en-IN')}`, amber: true });
+                                            rows.push({ label: 'Net Fees', value: `₹${netFees.toLocaleString('en-IN')}`, bold: true });
+                                        }
+                                        rows.push(
                                             { label: 'Amount Paid', value: `₹${totalPaid.toLocaleString('en-IN')}`, green: true },
                                             { label: 'Balance Due', value: balanceDue === 0 ? '✓ Fully Paid' : `₹${balanceDue.toLocaleString('en-IN')}`, red: balanceDue > 0, green: balanceDue === 0 },
-                                        ];
+                                        );
+                                        return rows;
                                     })().map((item, i) => (
                                         <div key={i} className="flex justify-between py-2 border-b border-gray-100 dark:border-dark-border last:border-0">
                                             <span className="text-sm text-gray-500 dark:text-gray-400">{item.label}</span>
@@ -94,7 +103,7 @@ const StudentDashboard = () => {
                                                         'bg-amber-100 text-amber-700'
                                                     }`}>{item.value}</span>
                                             ) : (
-                                                <span className={`text-sm font-semibold ${item.mono ? 'font-mono text-primary-700 dark:text-primary-400' : ''} ${item.red ? 'text-red-600 dark:text-red-400' : ''} ${item.green ? 'text-green-600 dark:text-green-400' : ''} ${item.bold ? 'text-gray-900 dark:text-white' : ''} ${!item.red && !item.green && !item.bold && !item.mono ? 'text-gray-900 dark:text-white' : ''}`}>
+                                                <span className={`text-sm font-semibold ${item.mono ? 'font-mono text-primary-700 dark:text-primary-400' : ''} ${item.red ? 'text-red-600 dark:text-red-400' : ''} ${item.green ? 'text-green-600 dark:text-green-400' : ''} ${item.amber ? 'text-amber-600 dark:text-amber-400' : ''} ${item.bold ? 'text-gray-900 dark:text-white' : ''} ${!item.red && !item.green && !item.amber && !item.bold && !item.mono ? 'text-gray-900 dark:text-white' : ''}`}>
                                                     {item.value || 'N/A'}
                                                 </span>
                                             )}
