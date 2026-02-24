@@ -74,7 +74,7 @@ const StudentDashboard = () => {
                                         const totalPaid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + (p.amount || 0), 0);
                                         const grossFees = admission.courseApplied?.fees || 0;
                                         const discount = admission.discount || 0;
-                                        const netFees = admission.finalFees || Math.max(0, grossFees - discount);
+                                        const netFees = Math.max(0, grossFees - discount);
                                         const balanceDue = Math.max(0, netFees - totalPaid);
                                         const rows = [
                                             { label: 'Student ID', value: admission.studentId, mono: true },
