@@ -50,7 +50,7 @@ const Dashboard = () => {
     const statCards = [
         { label: 'Total Students', value: stats?.totalStudents || 0, icon: HiUsers, color: 'from-blue-500 to-blue-700', link: '/admin/admissions' },
         { label: 'Total Enquiries', value: stats?.totalEnquiries || 0, icon: HiQuestionMarkCircle, color: 'from-purple-500 to-purple-700', link: '/admin/enquiries' },
-        { label: 'Net Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-green-500 to-green-700', link: '/admin/payments', subtitle: `Gross: ₹${(stats?.grossRevenue || 0).toLocaleString('en-IN')} – Salary: ₹${(stats?.totalSalaryPaid || 0).toLocaleString('en-IN')}` },
+        { label: 'Net Revenue', value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-green-500 to-green-700', link: '/admin/payments', subtitle: `Gross: ₹${(stats?.grossRevenue || 0).toLocaleString('en-IN')} – Salary: ₹${(stats?.totalSalaryPaid || 0).toLocaleString('en-IN')} – Expenses: ₹${(stats?.totalExpenses || 0).toLocaleString('en-IN')}` },
         { label: 'Active Courses', value: stats?.activeCourses || 0, icon: HiBookOpen, color: 'from-orange-500 to-orange-700', link: '/admin/courses' },
         { label: 'Total Teachers', value: stats?.totalTeachers || 0, icon: HiUserGroup, color: 'from-teal-500 to-teal-700', link: '/admin/teachers' },
         { label: 'Salary Paid', value: `₹${(stats?.totalSalaryPaid || 0).toLocaleString('en-IN')}`, icon: HiCurrencyRupee, color: 'from-red-500 to-red-700', link: '/admin/salaries' },
@@ -199,6 +199,7 @@ const Dashboard = () => {
                             { label: 'View Payments', path: '/admin/payments', icon: '💳' },
                             { label: 'Manage Fees', path: '/admin/fees', icon: '💰' },
                             { label: 'Installment Reports', path: '/admin/installments', icon: '📊' },
+                            { label: 'Manage Expenses', path: '/admin/expenses', icon: '🧾' },
                         ].map((link, i) => (
                             <Link key={i} to={link.path} className="card-hover text-center">
                                 <div className="text-3xl mb-2">{link.icon}</div>
