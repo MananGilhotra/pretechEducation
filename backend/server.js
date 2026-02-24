@@ -41,6 +41,7 @@ app.use('/api/admissions', require('./routes/admissions'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/teachers', require('./routes/teachers'));
+app.use('/api/expenses', require('./routes/expenses'));
 
 // Root route
 app.get('/', (req, res) => {

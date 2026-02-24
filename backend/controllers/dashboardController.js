@@ -4,6 +4,7 @@ const Payment = require('../models/Payment');
 const Course = require('../models/Course');
 const Teacher = require('../models/Teacher');
 const Salary = require('../models/Salary');
+const Expense = require('../models/Expense');
 
 // @desc    Get dashboard stats
 // @route   GET /api/dashboard/stats
@@ -28,8 +29,14 @@ exports.getStats = async (req, res) => {
         ]);
         const totalSalaryPaid = salaryResult.length > 0 ? salaryResult[0].total : 0;
 
-        // Net revenue = gross revenue - salary expenses
-        const totalRevenue = grossRevenue - totalSalaryPaid;
+        // Calculate total expenses
+        const expenseResult = await Expense.aggregate([
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
+        const totalExpenses = expenseResult.length > 0 ? expenseResult[0].total : 0;
+
+        // Net revenue = gross revenue - salary - expenses
+        const totalRevenue = grossRevenue - totalSalaryPaid - totalExpenses;
 
         // Monthly revenue for chart
         const monthlyRevenue = await Payment.aggregate([
@@ -88,6 +95,7 @@ exports.getStats = async (req, res) => {
             totalRevenue,
             grossRevenue,
             totalSalaryPaid,
+            totalExpenses,
             totalTeachers,
             activeCourses,
             monthlyRevenue: monthlyRevenue.map(m => ({
