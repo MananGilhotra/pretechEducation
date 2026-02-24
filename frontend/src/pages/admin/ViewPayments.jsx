@@ -11,6 +11,7 @@ const ViewPayments = () => {
     const [loading, setLoading] = useState(true);
     const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: null, id: null });
     const [totalExpenses, setTotalExpenses] = useState(0);
+    const [totalSalary, setTotalSalary] = useState(0);
 
     // Filters
     const [search, setSearch] = useState('');
@@ -31,9 +32,15 @@ const ViewPayments = () => {
         catch { setTotalExpenses(0); }
     };
 
+    const fetchSalaryTotal = async () => {
+        try { const { data } = await API.get('/teachers/salary-overview'); setTotalSalary(data.totalSalaryPaid || 0); }
+        catch { setTotalSalary(0); }
+    };
+
     useEffect(() => {
         fetchPayments();
         fetchExpensesTotal();
+        fetchSalaryTotal();
     }, []);
 
     const handleConfirmAction = async () => {
@@ -77,7 +84,7 @@ const ViewPayments = () => {
 
     const grossRevenue = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
     const filteredTotal = filtered.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
-    const netRevenue = grossRevenue - totalExpenses;
+    const netRevenue = grossRevenue - totalSalary - totalExpenses;
 
     // Unique courses from payments
     const courses = [...new Set(payments.map(p => p.admission?.courseApplied?.name).filter(Boolean))].sort();
@@ -103,7 +110,7 @@ const ViewPayments = () => {
                     </div>
 
                     {/* Revenue Summary Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div className="card !p-4 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg">
                                 <HiCurrencyRupee className="text-white text-lg" />
@@ -111,6 +118,15 @@ const ViewPayments = () => {
                             <div>
                                 <div className="text-xs text-gray-500">Gross Revenue</div>
                                 <div className="text-lg font-bold text-gray-900 dark:text-white">₹{grossRevenue.toLocaleString('en-IN')}</div>
+                            </div>
+                        </div>
+                        <div className="card !p-4 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center shadow-lg">
+                                <HiCurrencyRupee className="text-white text-lg" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-gray-500">Salary Paid</div>
+                                <div className="text-lg font-bold text-orange-600">₹{totalSalary.toLocaleString('en-IN')}</div>
                             </div>
                         </div>
                         <div className="card !p-4 flex items-center gap-3">
