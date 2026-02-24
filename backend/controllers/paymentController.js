@@ -72,7 +72,9 @@ exports.approvePayment = async (req, res) => {
         // Recalculate paymentStatus based on actual paid amounts vs total fees
         const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
         const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFees = admission.courseApplied?.fees || 0;
+        const discount = admission.discount || 0;
+        const totalFees = Math.max(0, grossFees - discount);
         const balanceDue = Math.max(0, totalFees - totalPaid);
 
         if (totalPaid === 0) {
@@ -310,7 +312,9 @@ exports.recordPayment = async (req, res) => {
         // Re-calculate total paid across all paid payments for this admission
         const paidPayments = await Payment.find({ admission: admissionId, status: 'paid' });
         const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const totalFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFees = admission.courseApplied?.fees || 0;
+        const discount = admission.discount || 0;
+        const totalFees = Math.max(0, grossFees - discount);
         const balanceDue = Math.max(0, totalFees - totalPaid);
 
         // Update admission paymentStatus
@@ -348,7 +352,7 @@ exports.getFeeSummary = async (req, res) => {
         const paidPayments = await Payment.find({ admission: req.params.admissionId, status: 'paid' })
             .sort({ createdAt: -1 });
         const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFees = admission.courseApplied?.fees || 0;
         const discount = admission.discount || 0;
         const totalFees = Math.max(0, grossFees - discount);
         const balanceDue = Math.max(0, totalFees - totalPaid);
@@ -400,12 +404,13 @@ exports.applyDiscount = async (req, res) => {
             return res.status(404).json({ message: 'Admission not found' });
         }
 
-        const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFees = admission.courseApplied?.fees || 0;
         if (discount > grossFees) {
             return res.status(400).json({ message: 'Discount cannot exceed total fees' });
         }
 
         admission.discount = Number(discount);
+        admission.finalFees = Math.max(0, grossFees - Number(discount));
         await admission.save();
 
         // Recalculate
@@ -459,7 +464,9 @@ exports.updateInstallmentStatus = async (req, res) => {
         // Recalculate admission paymentStatus based on actual paid amounts
         const paidPayments = await Payment.find({ admission: admissionId, status: 'paid' });
         const totalPaidCalc = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-        const totalFeesCalc = admission.finalFees || admission.courseApplied?.fees || 0;
+        const grossFeesCalc = admission.courseApplied?.fees || 0;
+        const discountCalc = admission.discount || 0;
+        const totalFeesCalc = Math.max(0, grossFeesCalc - discountCalc);
         const balanceDueCalc = Math.max(0, totalFeesCalc - totalPaidCalc);
 
         if (totalPaidCalc === 0) {
@@ -525,7 +532,9 @@ exports.getFeeOverview = async (req, res) => {
         });
 
         admissions.forEach(adm => {
-            const fees = adm.finalFees || adm.courseApplied?.fees || 0;
+            const grossFee = adm.courseApplied?.fees || 0;
+            const disc = adm.discount || 0;
+            const fees = Math.max(0, grossFee - disc);
             const paid = paymentsByAdmission[adm._id.toString()] || 0;
             totalFeesAll += fees;
             totalCollected += paid;
@@ -569,7 +578,7 @@ exports.updatePayment = async (req, res) => {
         if (admission) {
             const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
             const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-            const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+            const grossFees = admission.courseApplied?.fees || 0;
             const discount = admission.discount || 0;
             const totalFees = Math.max(0, grossFees - discount);
             const balanceDue = Math.max(0, totalFees - totalPaid);
@@ -601,7 +610,7 @@ exports.deletePayment = async (req, res) => {
         if (admission) {
             const paidPayments = await Payment.find({ admission: admission._id, status: 'paid' });
             const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
-            const grossFees = admission.finalFees || admission.courseApplied?.fees || 0;
+            const grossFees = admission.courseApplied?.fees || 0;
             const discount = admission.discount || 0;
             const totalFees = Math.max(0, grossFees - discount);
             const balanceDue = Math.max(0, totalFees - totalPaid);

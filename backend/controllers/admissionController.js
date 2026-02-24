@@ -211,7 +211,7 @@ exports.getAdmissions = async (req, res) => {
         // Recalculate paymentStatus from actual payment records to fix stale statuses
         const Payment = require('../models/Payment');
         for (const adm of admissions) {
-            const grossFees = adm.finalFees || adm.courseApplied?.fees || 0;
+            const grossFees = adm.courseApplied?.fees || 0;
             const discount = adm.discount || 0;
             const totalFees = Math.max(0, grossFees - discount);
             if (totalFees <= 0 && grossFees <= 0) continue;
