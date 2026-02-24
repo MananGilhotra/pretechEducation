@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     addTeacher, getTeachers, getTeacher, updateTeacher, deleteTeacher,
-    recordSalary, getSalaryOverview, getMyTeacher
+    recordSalary, updateSalary, deleteSalary, getSalaryOverview, getMyTeacher
 } = require('../controllers/teacherController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -11,6 +11,8 @@ router.get('/me', protect, getMyTeacher);
 
 // Salary endpoints (admin)
 router.post('/salary', protect, authorize('admin'), recordSalary);
+router.put('/salary/:id', protect, authorize('admin'), updateSalary);
+router.delete('/salary/:id', protect, authorize('admin'), deleteSalary);
 router.get('/salary-overview', protect, authorize('admin'), getSalaryOverview);
 
 // CRUD

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { HiCurrencyRupee, HiSearch, HiCheckCircle, HiUserGroup } from 'react-icons/hi';
+import { HiCurrencyRupee, HiSearch, HiCheckCircle, HiUserGroup, HiPencil, HiTrash, HiX } from 'react-icons/hi';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -28,6 +28,9 @@ const ManageSalaries = () => {
         paidAt: now.toISOString().split('T')[0]
     });
     const [submitting, setSubmitting] = useState(false);
+    const [editingSalary, setEditingSalary] = useState(null);
+    const [editForm, setEditForm] = useState({});
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     useEffect(() => {
         const fetch = async () => {
@@ -80,6 +83,42 @@ const ManageSalaries = () => {
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to record salary');
         } finally { setSubmitting(false); }
+    };
+
+    const startEditSalary = (s) => {
+        setEditingSalary(s._id);
+        setEditForm({
+            amount: s.amount,
+            month: s.month,
+            year: s.year,
+            paymentMethod: s.paymentMethod || 'Cash',
+            notes: s.notes || '',
+            paidAt: s.paidAt ? new Date(s.paidAt).toISOString().split('T')[0] : ''
+        });
+    };
+
+    const handleUpdateSalary = async () => {
+        try {
+            await API.put(`/teachers/salary/${editingSalary}`, editForm);
+            toast.success('Salary updated');
+            setEditingSalary(null);
+            await selectTeacher(selectedTeacher);
+            try { const { data } = await API.get('/teachers/salary-overview'); setOverview(data); } catch { }
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Update failed');
+        }
+    };
+
+    const handleDeleteSalary = async () => {
+        try {
+            await API.delete(`/teachers/salary/${deleteModal.id}`);
+            toast.success('Salary record deleted');
+            setDeleteModal({ isOpen: false, id: null });
+            await selectTeacher(selectedTeacher);
+            try { const { data } = await API.get('/teachers/salary-overview'); setOverview(data); } catch { }
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Delete failed');
+        }
     };
 
     if (loading) return <div className="pt-24"><LoadingSpinner /></div>;
@@ -198,6 +237,7 @@ const ManageSalaries = () => {
                                                         <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Amount</th>
                                                         <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Method</th>
                                                         <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Date</th>
+                                                        <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -208,6 +248,12 @@ const ManageSalaries = () => {
                                                             <td className="py-2.5 px-3 font-semibold text-green-600">₹{s.amount?.toLocaleString('en-IN')}</td>
                                                             <td className="py-2.5 px-3 text-gray-600 dark:text-gray-400">{s.paymentMethod}</td>
                                                             <td className="py-2.5 px-3 text-gray-500 text-xs">{new Date(s.paidAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                                                            <td className="py-2.5 px-3">
+                                                                <div className="flex gap-1">
+                                                                    <button onClick={() => startEditSalary(s)} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors" title="Edit"><HiPencil /></button>
+                                                                    <button onClick={() => setDeleteModal({ isOpen: true, id: s._id })} className="p-1.5 rounded-lg hover:bg-red-100 text-red-600 transition-colors" title="Delete"><HiTrash /></button>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -220,6 +266,62 @@ const ManageSalaries = () => {
                     )}
                 </div>
             </div>
+
+            {/* Edit Salary Modal */}
+            {editingSalary && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setEditingSalary(null)}>
+                    <div className="card w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Salary Record</h3>
+                            <button onClick={() => setEditingSalary(null)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border"><HiX /></button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Amount (₹)</label>
+                                <input type="number" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: e.target.value })} className="input-field" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Month</label>
+                                <select value={editForm.month} onChange={e => setEditForm({ ...editForm, month: e.target.value })} className="input-field">
+                                    {MONTH_NAMES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Year</label>
+                                <input type="number" value={editForm.year} onChange={e => setEditForm({ ...editForm, year: e.target.value })} className="input-field" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Method</label>
+                                <select value={editForm.paymentMethod} onChange={e => setEditForm({ ...editForm, paymentMethod: e.target.value })} className="input-field">
+                                    {METHOD_OPTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Payment Date</label>
+                                <input type="date" value={editForm.paidAt} onChange={e => setEditForm({ ...editForm, paidAt: e.target.value })} className="input-field" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Notes</label>
+                                <input type="text" value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} className="input-field" placeholder="Optional" />
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <button onClick={handleUpdateSalary} className="btn-primary">Save Changes</button>
+                            <button onClick={() => setEditingSalary(null)} className="btn-outline">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Salary Record"
+                message="Are you sure you want to delete this salary record? This action cannot be undone."
+                onConfirm={handleDeleteSalary}
+                onCancel={() => setDeleteModal({ isOpen: false, id: null })}
+                confirmText="Delete"
+                confirmColor="red"
+            />
         </>
     );
 };

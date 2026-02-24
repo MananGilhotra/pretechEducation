@@ -132,6 +132,46 @@ exports.recordSalary = async (req, res) => {
     }
 };
 
+// @desc    Update salary record
+// @route   PUT /api/teachers/salary/:id
+exports.updateSalary = async (req, res) => {
+    try {
+        const salary = await Salary.findById(req.params.id);
+        if (!salary) return res.status(404).json({ message: 'Salary record not found' });
+
+        const { amount, month, year, paymentMethod, transactionId, notes, paidAt } = req.body;
+        if (amount !== undefined) salary.amount = Number(amount);
+        if (month !== undefined) salary.month = Number(month);
+        if (year !== undefined) salary.year = Number(year);
+        if (paymentMethod !== undefined) salary.paymentMethod = paymentMethod;
+        if (transactionId !== undefined) salary.transactionId = transactionId;
+        if (notes !== undefined) salary.notes = notes;
+        if (paidAt !== undefined) salary.paidAt = new Date(paidAt);
+
+        await salary.save();
+        res.json({ message: 'Salary updated', salary });
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'Salary already exists for this month/year' });
+        }
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete salary record
+// @route   DELETE /api/teachers/salary/:id
+exports.deleteSalary = async (req, res) => {
+    try {
+        const salary = await Salary.findById(req.params.id);
+        if (!salary) return res.status(404).json({ message: 'Salary record not found' });
+
+        await Salary.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Salary record deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get salary overview (for dashboard)
 // @route   GET /api/teachers/salary-overview
 exports.getSalaryOverview = async (req, res) => {
