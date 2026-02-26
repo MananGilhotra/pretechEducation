@@ -37,7 +37,7 @@ const ManageFees = () => {
     const [submitting, setSubmitting] = useState(false);
 
     // Modal state
-    const [editModal, setEditModal] = useState({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' });
+    const [editModal, setEditModal] = useState({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '', paymentDate: '' });
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, payment: null });
 
 
@@ -121,10 +121,11 @@ const ManageFees = () => {
             await API.put(`/payments/${editModal.payment._id}`, {
                 amount: Number(editModal.amount),
                 paymentMethod: editModal.paymentMethod,
-                transactionId: editModal.transactionId
+                transactionId: editModal.transactionId,
+                createdAt: editModal.paymentDate
             });
             toast.success('Payment updated');
-            setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' });
+            setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '', paymentDate: '' });
 
             // Refresh summary
             const { data } = await API.get(`/payments/summary/${selectedAdmission._id}`);
@@ -424,7 +425,8 @@ const ManageFees = () => {
                                                                         payment: p,
                                                                         amount: p.amount,
                                                                         paymentMethod: p.paymentMethod || 'Cash',
-                                                                        transactionId: p.transactionId || ''
+                                                                        transactionId: p.transactionId || '',
+                                                                        paymentDate: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : ''
                                                                     })}
                                                                     className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors" title="Edit"
                                                                 >✏️</button>
@@ -463,7 +465,7 @@ const ManageFees = () => {
                     <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-dark-border">
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Payment</h3>
-                            <button onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' })} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <button onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '', paymentDate: '' })} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                 <HiX className="text-xl" />
                             </button>
                         </div>
@@ -482,8 +484,12 @@ const ManageFees = () => {
                                 <label className="label text-xs">Reference ID / Txn Info</label>
                                 <input type="text" value={editModal.transactionId} onChange={(e) => setEditModal({ ...editModal, transactionId: e.target.value })} className="input-field" placeholder="Optional" />
                             </div>
+                            <div>
+                                <label className="label text-xs">Payment Date</label>
+                                <input type="date" value={editModal.paymentDate} onChange={(e) => setEditModal({ ...editModal, paymentDate: e.target.value })} className="input-field" />
+                            </div>
                             <div className="flex justify-end gap-3 pt-2">
-                                <button type="button" onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '' })} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:bg-dark-border dark:text-gray-300 dark:hover:bg-dark-bg">Cancel</button>
+                                <button type="button" onClick={() => setEditModal({ isOpen: false, payment: null, amount: '', paymentMethod: '', transactionId: '', paymentDate: '' })} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:bg-dark-border dark:text-gray-300 dark:hover:bg-dark-bg">Cancel</button>
                                 <button type="submit" className="px-4 py-2 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-sm shadow-primary-500/30">Save Changes</button>
                             </div>
                         </form>

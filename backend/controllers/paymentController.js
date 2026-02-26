@@ -566,11 +566,12 @@ exports.updatePayment = async (req, res) => {
         const payment = await Payment.findById(req.params.id);
         if (!payment) return res.status(404).json({ message: 'Payment not found' });
 
-        const { amount, paymentMethod, transactionId, notes } = req.body;
+        const { amount, paymentMethod, transactionId, notes, createdAt } = req.body;
         if (amount) payment.amount = Number(amount);
         if (paymentMethod) payment.paymentMethod = paymentMethod;
         if (transactionId !== undefined) payment.transactionId = transactionId;
         if (notes !== undefined) payment.notes = notes;
+        if (createdAt) payment.createdAt = new Date(createdAt);
         await payment.save();
 
         // Recalculate admission payment status
