@@ -79,7 +79,8 @@ const ViewAdmissions = () => {
             mobile: admission.mobile || '',
             email: admission.email || '',
             address: admission.address || '',
-            aadharNumber: admission.aadharNumber || ''
+            aadharNumber: admission.aadharNumber || '',
+            registrationDate: admission.registrationDate ? new Date(admission.registrationDate).toISOString().split('T')[0] : ''
         });
         setIsEditing(false);
         setLoadingDetail(true);
@@ -373,7 +374,7 @@ const ViewAdmissions = () => {
                                             { label: 'Batch Month', key: 'batchMonth', value: selectedStudent.batchMonth, edit: false },
                                             { label: 'Payment Plan', key: 'paymentPlan', value: selectedStudent.paymentPlan, edit: false },
                                             { label: 'Reference By', key: 'referenceBy', value: selectedStudent.referenceBy, edit: false },
-                                            { label: 'Registered', key: 'registrationDate', value: selectedStudent.registrationDate ? new Date(selectedStudent.registrationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '', edit: false },
+                                            { label: 'Registered', key: 'registrationDate', value: selectedStudent.registrationDate ? new Date(selectedStudent.registrationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '', edit: true, type: 'date' },
                                         ].filter(r => (isEditing && r.edit) || !isEditing && r.value).map((row, i) => (
                                             <div key={i} className="flex justify-between py-1 border-b border-gray-100 dark:border-dark-border last:border-0" style={{ alignItems: isEditing && row.edit ? 'center' : 'flex-start' }}>
                                                 <span className="text-xs text-gray-500 w-1/3 pt-0.5">{row.label}</span>
