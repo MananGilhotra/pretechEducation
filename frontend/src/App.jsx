@@ -29,6 +29,7 @@ import AddTeacher from './pages/admin/AddTeacher';
 import ViewTeachers from './pages/admin/ViewTeachers';
 import ManageSalaries from './pages/admin/ManageSalaries';
 import ManageExpenses from './pages/admin/ManageExpenses';
+import ManageAttendance from './pages/admin/ManageAttendance';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -85,6 +86,7 @@ function App() {
                                     <Route path="/admin/add-teacher" element={<AddTeacher />} />
                                     <Route path="/admin/salaries" element={<ManageSalaries />} />
                                     <Route path="/admin/expenses" element={<ManageExpenses />} />
+                                    <Route path="/admin/attendance" element={<ManageAttendance />} />
                                 </Route>
                             </Route>
 
