@@ -21,6 +21,7 @@ const ViewAdmissions = () => {
     const [viewingImage, setViewingImage] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({});
+    const [editFiles, setEditFiles] = useState({ passportPhoto: null, signature: null });
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     const fetchAdmissions = async () => {
@@ -82,6 +83,7 @@ const ViewAdmissions = () => {
             aadharNumber: admission.aadharNumber || '',
             registrationDate: admission.registrationDate ? new Date(admission.registrationDate).toISOString().split('T')[0] : ''
         });
+        setEditFiles({ passportPhoto: null, signature: null });
         setIsEditing(false);
         setLoadingDetail(true);
         try {
@@ -95,11 +97,27 @@ const ViewAdmissions = () => {
         setSelectedStudent(null);
         setStudentFees(null);
         setIsEditing(false);
+        setEditFiles({ passportPhoto: null, signature: null });
     };
 
     const handleSaveEdit = async () => {
         try {
-            const { data } = await API.put(`/admissions/${selectedStudent._id}`, editData);
+            const formData = new FormData();
+            Object.keys(editData).forEach(key => {
+                if (editData[key] !== null && editData[key] !== undefined) {
+                    formData.append(key, editData[key]);
+                }
+            });
+            if (editFiles.passportPhoto) {
+                formData.append('passportPhoto', editFiles.passportPhoto);
+            }
+            if (editFiles.signature) {
+                formData.append('signature', editFiles.signature);
+            }
+
+            const { data } = await API.put(`/admissions/${selectedStudent._id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             toast.success('Student details updated');
             setSelectedStudent(data.admission);
             setIsEditing(false);
@@ -426,36 +444,66 @@ const ViewAdmissions = () => {
                             )}
 
                             {/* Passport Photo & Signature */}
-                            {(selectedStudent.passportPhoto || selectedStudent.signature) && (
+                            {(isEditing || selectedStudent.passportPhoto || selectedStudent.signature) && (
                                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-border">
                                     <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Documents</h3>
                                     <div className="flex gap-4 flex-wrap">
-                                        {selectedStudent.passportPhoto && (
+                                        {(isEditing || selectedStudent.passportPhoto) && (
                                             <div className="text-center">
-                                                <img
-                                                    src={selectedStudent.passportPhoto}
-                                                    alt="Passport Photo"
-                                                    className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-                                                    onClick={() => setViewingImage(selectedStudent.passportPhoto)}
-                                                />
-                                                <button
-                                                    onClick={() => setViewingImage(selectedStudent.passportPhoto)}
-                                                    className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
-                                                >View Photo</button>
+                                                {isEditing ? (
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        {editFiles.passportPhoto ? (
+                                                            <img src={URL.createObjectURL(editFiles.passportPhoto)} alt="New Photo" className="w-24 h-28 object-cover rounded-xl border border-primary-500" />
+                                                        ) : selectedStudent.passportPhoto ? (
+                                                            <img src={selectedStudent.passportPhoto} alt="Passport Photo" className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border opacity-50" />
+                                                        ) : (
+                                                            <div className="w-24 h-28 bg-gray-100 dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-dark-border flex items-center justify-center text-xs text-gray-500">No Photo</div>
+                                                        )}
+                                                        <input type="file" accept="image/*" onChange={e => setEditFiles({ ...editFiles, passportPhoto: e.target.files[0] })} className="text-[10px] w-32" />
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <img
+                                                            src={selectedStudent.passportPhoto}
+                                                            alt="Passport Photo"
+                                                            className="w-24 h-28 object-cover rounded-xl border border-gray-200 dark:border-dark-border cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
+                                                            onClick={() => setViewingImage(selectedStudent.passportPhoto)}
+                                                        />
+                                                        <button
+                                                            onClick={() => setViewingImage(selectedStudent.passportPhoto)}
+                                                            className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
+                                                        >View Photo</button>
+                                                    </>
+                                                )}
                                             </div>
                                         )}
-                                        {selectedStudent.signature && (
+                                        {(isEditing || selectedStudent.signature) && (
                                             <div className="text-center">
-                                                <img
-                                                    src={selectedStudent.signature}
-                                                    alt="Signature"
-                                                    className="w-32 h-16 object-contain rounded-xl border border-gray-200 dark:border-dark-border bg-white cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-                                                    onClick={() => setViewingImage(selectedStudent.signature)}
-                                                />
-                                                <button
-                                                    onClick={() => setViewingImage(selectedStudent.signature)}
-                                                    className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
-                                                >View Signature</button>
+                                                {isEditing ? (
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        {editFiles.signature ? (
+                                                            <img src={URL.createObjectURL(editFiles.signature)} alt="New Signature" className="w-32 h-16 object-contain rounded-xl border border-primary-500 bg-white" />
+                                                        ) : selectedStudent.signature ? (
+                                                            <img src={selectedStudent.signature} alt="Signature" className="w-32 h-16 object-contain rounded-xl border border-gray-200 dark:border-dark-border bg-white opacity-50" />
+                                                        ) : (
+                                                            <div className="w-32 h-16 bg-white rounded-xl border border-gray-200 dark:border-dark-border flex items-center justify-center text-xs text-gray-500">No Signature</div>
+                                                        )}
+                                                        <input type="file" accept="image/*" onChange={e => setEditFiles({ ...editFiles, signature: e.target.files[0] })} className="text-[10px] w-32" />
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <img
+                                                            src={selectedStudent.signature}
+                                                            alt="Signature"
+                                                            className="w-32 h-16 object-contain rounded-xl border border-gray-200 dark:border-dark-border bg-white cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
+                                                            onClick={() => setViewingImage(selectedStudent.signature)}
+                                                        />
+                                                        <button
+                                                            onClick={() => setViewingImage(selectedStudent.signature)}
+                                                            className="mt-1.5 text-xs text-primary-700 dark:text-primary-400 hover:underline"
+                                                        >View Signature</button>
+                                                    </>
+                                                )}
                                             </div>
                                         )}
                                     </div>
