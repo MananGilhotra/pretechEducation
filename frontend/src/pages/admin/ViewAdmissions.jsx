@@ -309,6 +309,8 @@ const ViewAdmissions = () => {
                                                 });
                                             }} className="btn-primary px-3 py-1.5 text-xs">🔄 Re-Admit</button>
                                             <button onClick={() => setIsEditing(true)} className="btn-outline px-3 py-1.5 text-xs">✏️ Edit</button>
+                                            <button onClick={() => window.open(`/admin/certificate/${selectedStudent._id}`, '_blank')} className="btn-outline px-3 py-1.5 text-xs" style={{ borderColor: '#059669', color: '#059669' }}>📜 Certificate</button>
+                                            <button onClick={() => window.open(`/admin/idcard/${selectedStudent._id}`, '_blank')} className="btn-outline px-3 py-1.5 text-xs" style={{ borderColor: '#d97706', color: '#d97706' }}>🪪 ID Card</button>
                                         </>
                                     )}
                                     <button onClick={closeDetail} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">

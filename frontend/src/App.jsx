@@ -30,6 +30,8 @@ import ViewTeachers from './pages/admin/ViewTeachers';
 import ManageSalaries from './pages/admin/ManageSalaries';
 import ManageExpenses from './pages/admin/ManageExpenses';
 import ManageAttendance from './pages/admin/ManageAttendance';
+import StudentCertificate from './pages/admin/StudentCertificate';
+import StudentIdCard from './pages/admin/StudentIdCard';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -88,6 +90,9 @@ function App() {
                                     <Route path="/admin/expenses" element={<ManageExpenses />} />
                                     <Route path="/admin/attendance" element={<ManageAttendance />} />
                                 </Route>
+                                {/* Printable pages (no Layout) */}
+                                <Route path="/admin/certificate/:id" element={<StudentCertificate />} />
+                                <Route path="/admin/idcard/:id" element={<StudentIdCard />} />
                             </Route>
 
                             {/* Student Routes */}

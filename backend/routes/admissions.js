@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createAdmission, createAdmissionAdmin, getAdmissions, getMyAdmission, approveAdmission, exportAdmissions, deleteAdmission, updateAdmission } = require('../controllers/admissionController');
+const { createAdmission, createAdmissionAdmin, getAdmissions, getAdmissionById, getMyAdmission, approveAdmission, exportAdmissions, deleteAdmission, updateAdmission } = require('../controllers/admissionController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
@@ -18,6 +18,7 @@ router.post('/admin', protect, authorize('admin'), upload.fields([
 
 router.get('/me', protect, getMyAdmission);
 router.get('/export', protect, authorize('admin'), exportAdmissions);
+router.get('/:id', protect, authorize('admin'), getAdmissionById);
 router.put('/:id/approve', protect, authorize('admin'), approveAdmission);
 router.delete('/:id', protect, authorize('admin'), deleteAdmission);
 

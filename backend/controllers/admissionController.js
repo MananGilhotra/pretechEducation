@@ -238,6 +238,21 @@ exports.getAdmissions = async (req, res) => {
     }
 };
 
+// @desc    Get single admission by ID (admin)
+// @route   GET /api/admissions/:id
+exports.getAdmissionById = async (req, res) => {
+    try {
+        const admission = await Admission.findById(req.params.id)
+            .populate('courseApplied', 'name fees duration category');
+        if (!admission) {
+            return res.status(404).json({ message: 'Admission not found' });
+        }
+        res.json(admission);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get my admission (student)
 // @route   GET /api/admissions/me
 exports.getMyAdmission = async (req, res) => {
