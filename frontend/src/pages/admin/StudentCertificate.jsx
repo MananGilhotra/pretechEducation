@@ -64,12 +64,16 @@ const StudentCertificate = () => {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    font-size: 120px;
-                    font-weight: 900;
-                    color: rgba(30, 64, 175, 0.04);
-                    white-space: nowrap;
+                    width: 400px;
+                    height: 400px;
+                    opacity: 0.04;
                     pointer-events: none;
-                    letter-spacing: 10px;
+                }
+
+                .cert-watermark img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
                 }
 
                 .cert-border-inner {
@@ -123,26 +127,14 @@ const StudentCertificate = () => {
                 }
 
                 .cert-main-logo {
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6);
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: 800;
-                    font-size: 8px;
-                    text-align: center;
-                    border: 3px solid #ffd700;
-                    box-shadow: 0 4px 15px rgba(30,64,175,0.3);
-                    line-height: 1.2;
+                    width: 90px;
+                    height: 90px;
                 }
 
-                .cert-main-logo .logo-icon {
-                    font-size: 18px;
-                    margin-bottom: 2px;
+                .cert-main-logo img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
                 }
 
                 .govt-badge {
@@ -625,7 +617,7 @@ const StudentCertificate = () => {
             </button>
 
             <div className="cert-page">
-                <div className="cert-watermark">PRETECH EDUCATION</div>
+                <div className="cert-watermark"><img src="/logo.png" alt="Pretech" /></div>
                 <div className="cert-border-inner" />
 
                 <div className="cert-content">
@@ -638,10 +630,7 @@ const StudentCertificate = () => {
                             Digital<br />India
                         </div>
                         <div className="cert-main-logo">
-                            <span className="logo-icon">🔥</span>
-                            <span>PRETECH</span>
-                            <span>COMPUTER</span>
-                            <span>EDUCATION</span>
+                            <img src="/logo.png" alt="Pretech Computer Education" />
                         </div>
                         <div className="govt-badge">MAKE<br />IN<br />INDIA</div>
                         <div className="govt-badge">भारत<br />सरकार</div>

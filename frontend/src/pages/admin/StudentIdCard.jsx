@@ -96,30 +96,15 @@ const StudentIdCard = () => {
 
                 /* Logo in header */
                 .id-logo-circle {
-                    width: 65px;
-                    height: 65px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, #ff6600, #ff8533);
+                    width: 75px;
+                    height: 75px;
                     margin: 0 auto 6px;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    border: 3px solid #ffd700;
-                    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
                 }
 
-                .id-logo-circle .logo-icon {
-                    font-size: 20px;
-                }
-
-                .id-logo-circle .logo-text {
-                    font-size: 5px;
-                    font-weight: 800;
-                    color: white;
-                    letter-spacing: 0.5px;
-                    text-align: center;
-                    line-height: 1.1;
+                .id-logo-circle img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
                 }
 
                 .id-institute-name {
@@ -214,25 +199,20 @@ const StudentIdCard = () => {
                 /* Watermark */
                 .id-watermark {
                     position: absolute;
-                    top: 45%;
+                    top: 50%;
                     left: 50%;
-                    transform: translate(-50%, -50%) rotate(-20deg);
-                    font-family: 'Great Vibes', cursive;
-                    font-size: 80px;
-                    color: rgba(139, 0, 0, 0.04);
-                    white-space: nowrap;
+                    transform: translate(-50%, -50%);
+                    width: 250px;
+                    height: 250px;
+                    opacity: 0.05;
                     pointer-events: none;
                     z-index: 0;
                 }
 
-                .id-watermark-logo {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    font-size: 100px;
-                    opacity: 0.03;
-                    pointer-events: none;
+                .id-watermark img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
                 }
 
                 /* Student fields */
@@ -358,16 +338,14 @@ const StudentIdCard = () => {
                     {/* Top bar */}
                     <div className="id-top-bar" />
 
-                    {/* Watermarks */}
-                    <div className="id-watermark">Pretech Computer Education</div>
-                    <div className="id-watermark-logo">🔥</div>
+                    {/* Watermark */}
+                    <div className="id-watermark"><img src="/logo.png" alt="Pretech" /></div>
 
                     {/* Maroon curve header */}
                     <div className="id-maroon-curve">
                         <div className="id-msme-badge">MSME<br />GOVT<br />INDIA</div>
                         <div className="id-logo-circle">
-                            <span className="logo-icon">🔥</span>
-                            <span className="logo-text">Pretech Computer<br />Education</span>
+                            <img src="/logo.png" alt="Pretech Computer Education" />
                         </div>
                         <div className="id-institute-name">PRETECH COMPUTER EDUCATION</div>
                         <div className="id-iso-text">An ISO 9001:2015 Certified Organization</div>
