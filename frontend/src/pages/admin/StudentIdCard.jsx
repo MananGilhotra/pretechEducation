@@ -14,7 +14,8 @@ const StudentIdCard = () => {
                 const { data } = await API.get(`/admissions/${id}`);
                 setStudent(data);
             } catch (err) {
-                setError('Failed to load student data');
+                console.error('ID Card API Error:', err.response?.status, err.response?.data, err.message);
+                setError(err.response?.data?.message || err.message || 'Failed to load student data');
             } finally {
                 setLoading(false);
             }
