@@ -84,10 +84,12 @@ const StudentCertificate = () => {
                         width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
                         border-radius: 10px; font-size: 15px; font-family: 'Inter', sans-serif;
                         outline: none; transition: border-color 0.2s;
+                        color: #111; background: white;
                     }
                     .form-group input:focus, .form-group select:focus {
                         border-color: #1E40AF;
                     }
+                    .form-group select option { color: #111; background: white; }
                     .generate-btn {
                         width: 100%; padding: 14px; background: linear-gradient(135deg, #1E40AF, #3B82F6);
                         color: white; border: none; border-radius: 12px; font-size: 16px;
@@ -416,7 +418,7 @@ const StudentCertificate = () => {
                 </div>
 
                 <div className="cert-address-bar">
-                    ADDRESS: PRETECH COMPUTER EDUCATION, BIKANER, RAJASTHAN
+                    ADDRESS: B-35, MP NAGAR, BIKANER, RAJASTHAN
                     <div className="contact">CONTACT: PANKAJ GILHOTRA (DIRECTOR)</div>
                 </div>
             </div>
