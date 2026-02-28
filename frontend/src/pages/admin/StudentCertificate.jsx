@@ -41,7 +41,7 @@ const StudentCertificate = () => {
     endDate.setFullYear(endDate.getFullYear() + 1);
     const formatDate = (d) => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     const certNo = `PTECH-${student.studentId || 'XXXX'}`;
-    const verificationUrl = `${window.location.origin}/student/login`;
+    const verificationUrl = `${window.location.origin}/login`;
 
     // Marks input form
     if (!ready) {
