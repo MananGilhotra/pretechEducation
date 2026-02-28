@@ -45,7 +45,7 @@ const StudentIdCard = () => {
 
                 /* ===== LANDSCAPE ID CARD ===== */
                 .id-card {
-                    width: 580px; height: 360px;
+                    width: 580px; height: 380px;
                     background: linear-gradient(145deg, #fdf8ef 0%, #f5e6c8 40%, #ecd9a8 70%, #f0deb0 100%);
                     border-radius: 16px; position: relative; overflow: hidden;
                     font-family: 'Inter', sans-serif;

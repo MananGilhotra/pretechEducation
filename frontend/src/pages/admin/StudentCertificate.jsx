@@ -44,73 +44,67 @@ const StudentCertificate = () => {
     const certNo = `PTECH-${student.studentId || 'XXXX'}`;
     const verificationUrl = `${window.location.origin}/verify/${certNo}`;
 
-    // Show marks input form if not ready
+    // Marks input form
     if (!ready) {
         return (
             <>
                 <style>{`
                     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
                     * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { background: #f0f2f5; font-family: 'Inter', sans-serif; }
-                    .marks-form-wrapper {
+                    body { background: #0f172a; font-family: 'Inter', sans-serif; }
+                    .mf-wrapper {
                         display: flex; justify-content: center; align-items: center;
                         min-height: 100vh; padding: 20px;
                     }
-                    .marks-form {
+                    .mf-card {
                         background: white; border-radius: 20px; padding: 40px;
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 420px; width: 100%;
+                        box-shadow: 0 25px 60px rgba(0,0,0,0.3); max-width: 440px; width: 100%;
+                        border: 1px solid #e2e8f0;
                     }
-                    .marks-form h2 {
+                    .mf-card h2 {
                         font-family: 'Outfit', sans-serif; font-size: 24px;
                         font-weight: 800; color: #1E40AF; margin-bottom: 6px;
                     }
-                    .marks-form p { font-size: 14px; color: #666; margin-bottom: 24px; }
-                    .marks-form .student-info {
-                        background: #f0f4ff; border-radius: 12px; padding: 14px;
-                        margin-bottom: 24px; border: 1px solid #dbeafe;
+                    .mf-card .mf-sub { font-size: 14px; color: #64748b; margin-bottom: 24px; }
+                    .mf-info {
+                        background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 12px; padding: 14px;
+                        margin-bottom: 24px; border: 1px solid #bfdbfe;
                     }
-                    .marks-form .student-info .name {
-                        font-weight: 700; font-size: 16px; color: #111;
-                    }
-                    .marks-form .student-info .course {
-                        font-size: 13px; color: #555; margin-top: 2px;
-                    }
-                    .form-group { margin-bottom: 18px; }
-                    .form-group label {
+                    .mf-info .mf-name { font-weight: 700; font-size: 16px; color: #1e293b; }
+                    .mf-info .mf-course { font-size: 13px; color: #475569; margin-top: 2px; }
+                    .mf-group { margin-bottom: 18px; }
+                    .mf-group label {
                         display: block; font-size: 13px; font-weight: 600;
-                        color: #333; margin-bottom: 6px;
+                        color: #334155; margin-bottom: 6px;
                     }
-                    .form-group input, .form-group select {
-                        width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+                    .mf-group input, .mf-group select {
+                        width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0;
                         border-radius: 10px; font-size: 15px; font-family: 'Inter', sans-serif;
-                        outline: none; transition: border-color 0.2s;
-                        color: #111; background: white;
+                        outline: none; transition: all 0.2s; color: #1e293b; background: white;
                     }
-                    .form-group input:focus, .form-group select:focus {
-                        border-color: #1E40AF;
-                    }
-                    .form-group select option { color: #111; background: white; }
-                    .generate-btn {
+                    .mf-group select option { color: #1e293b; background: white; }
+                    .mf-group input:focus, .mf-group select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+                    .mf-btn {
                         width: 100%; padding: 14px; background: linear-gradient(135deg, #1E40AF, #3B82F6);
                         color: white; border: none; border-radius: 12px; font-size: 16px;
                         font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
                         transition: all 0.3s; margin-top: 8px;
                     }
-                    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30,64,175,0.3); }
+                    .mf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30,64,175,0.35); }
                 `}</style>
-                <div className="marks-form-wrapper">
-                    <div className="marks-form">
+                <div className="mf-wrapper">
+                    <div className="mf-card">
                         <h2>📜 Generate Certificate</h2>
-                        <p>Enter marks and grade for this student</p>
-                        <div className="student-info">
-                            <div className="name">{student.name}</div>
-                            <div className="course">{courseName} • {student.studentId}</div>
+                        <p className="mf-sub">Enter marks and grade for this student</p>
+                        <div className="mf-info">
+                            <div className="mf-name">{student.name}</div>
+                            <div className="mf-course">{courseName} • {student.studentId}</div>
                         </div>
-                        <div className="form-group">
+                        <div className="mf-group">
                             <label>Marks Percentage (%)</label>
                             <input type="number" min="0" max="100" value={marks} onChange={e => setMarks(e.target.value)} placeholder="e.g. 85" />
                         </div>
-                        <div className="form-group">
+                        <div className="mf-group">
                             <label>Grade</label>
                             <select value={grade} onChange={e => setGrade(e.target.value)}>
                                 <option value="A+">A+ (Outstanding)</option>
@@ -121,9 +115,7 @@ const StudentCertificate = () => {
                                 <option value="D">D (Below Average)</option>
                             </select>
                         </div>
-                        <button className="generate-btn" onClick={() => setReady(true)}>
-                            Generate Certificate →
-                        </button>
+                        <button className="mf-btn" onClick={() => setReady(true)}>Generate Certificate →</button>
                     </div>
                 </div>
             </>
@@ -133,167 +125,267 @@ const StudentCertificate = () => {
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700;800;900&display=swap');
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { background: #e8e8e8; }
+                body { background: #1a1a2e; }
 
                 .cert-page {
                     width: 210mm; min-height: 297mm; margin: 20px auto;
-                    background: linear-gradient(160deg, #d4eaf7 0%, #b8d9f0 20%, #a8d4f0 40%, #c8e8f8 60%, #d8f0e8 80%, #c8e8d8 100%);
+                    background: #fff;
                     position: relative; overflow: hidden; font-family: 'Inter', sans-serif;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
                 }
-                .cert-watermark {
-                    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                    width: 400px; height: 400px; opacity: 0.04; pointer-events: none;
+
+                /* ===== ORNAMENTAL BORDER LAYERS ===== */
+                .cert-border-outer {
+                    position: absolute; top: 5mm; left: 5mm; right: 5mm; bottom: 5mm;
+                    border: 3px solid #1E40AF; pointer-events: none;
                 }
-                .cert-watermark img { width: 100%; height: 100%; object-fit: contain; }
                 .cert-border-inner {
                     position: absolute; top: 8mm; left: 8mm; right: 8mm; bottom: 8mm;
-                    border: 2px solid rgba(30, 64, 175, 0.15); border-radius: 4px; pointer-events: none;
+                    border: 1px solid #b8860b; pointer-events: none;
                 }
-                .cert-content { padding: 12mm 15mm; position: relative; z-index: 1; }
-
-                .cert-header-logos {
-                    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
-                }
-                .cert-badge {
-                    width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
-                    justify-content: center; font-size: 7px; font-weight: 700; text-align: center; line-height: 1.1;
-                }
-                .msme-badge { background: linear-gradient(135deg, #1e3a5f, #2d5a8e); color: white; border: 2px solid #ffd700; }
-                .digital-india-badge { background: linear-gradient(135deg, #ff6600, #ff9933); color: white; border: 2px solid #cc5200; }
-                .cert-main-logo { width: 90px; height: 90px; }
-                .cert-main-logo img { width: 100%; height: 100%; object-fit: contain; }
-                .govt-badge {
-                    width: 40px; height: 40px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1e3a5f, #0a1628); display: flex;
-                    align-items: center; justify-content: center; font-size: 6px; color: white;
-                    font-weight: 700; border: 1.5px solid #ffd700; text-align: center; line-height: 1;
+                .cert-border-deco {
+                    position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm;
+                    border: 1px dashed rgba(30,64,175,0.2); pointer-events: none;
                 }
 
-                .cert-institute-name { text-align: center; margin-bottom: 3px; }
-                .cert-institute-name h1 {
-                    font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900;
-                    color: #1E40AF; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-                }
-                .cert-institute-name .iso-text { font-size: 12px; font-weight: 600; color: #1e3a5f; margin-top: 2px; }
+                /* Corner ornaments */
+                .corner { position: absolute; width: 50px; height: 50px; pointer-events: none; z-index: 2; }
+                .corner svg { width: 100%; height: 100%; }
+                .corner-tl { top: 5mm; left: 5mm; }
+                .corner-tr { top: 5mm; right: 5mm; transform: scaleX(-1); }
+                .corner-bl { bottom: 5mm; left: 5mm; transform: scaleY(-1); }
+                .corner-br { bottom: 5mm; right: 5mm; transform: scale(-1,-1); }
 
-                .cert-title { text-align: center; margin: 10px 0 15px; }
-                .cert-title h2 { font-family: 'Great Vibes', cursive; font-size: 58px; color: #1E40AF; font-weight: 400; line-height: 1; }
+                /* Watermark */
+                .cert-watermark {
+                    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    width: 350px; height: 350px; opacity: 0.03; pointer-events: none;
+                }
+                .cert-watermark img { width: 100%; height: 100%; object-fit: contain; }
 
-                .cert-badges-row {
-                    display: flex; justify-content: space-between; align-items: flex-start;
-                    margin-bottom: 12px; padding: 0 10mm;
+                /* Background decorative circles */
+                .cert-bg-circle-1 {
+                    position: absolute; top: -100px; right: -100px; width: 300px; height: 300px;
+                    border-radius: 50%; background: radial-gradient(circle, rgba(30,64,175,0.03), transparent 70%);
+                    pointer-events: none;
                 }
-                .cert-side-badges { display: flex; flex-direction: column; gap: 8px; align-items: center; }
-                .iso-round-badge {
-                    width: 55px; height: 55px; border-radius: 50%;
-                    background: linear-gradient(135deg, #ffd700, #f0c000); display: flex;
-                    align-items: center; justify-content: center; font-size: 6px; font-weight: 800;
-                    color: #1e3a5f; text-align: center; line-height: 1.1; border: 2px solid #c8a000;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                .cert-bg-circle-2 {
+                    position: absolute; bottom: -80px; left: -80px; width: 250px; height: 250px;
+                    border-radius: 50%; background: radial-gradient(circle, rgba(184,134,11,0.04), transparent 70%);
+                    pointer-events: none;
                 }
-                .iaf-badge {
-                    width: 55px; height: 55px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1a237e, #283593); display: flex;
-                    align-items: center; justify-content: center; color: #ffd700; font-weight: 900;
-                    font-size: 13px; border: 3px solid #ffd700; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+                .cert-content { padding: 14mm 18mm; position: relative; z-index: 1; }
+
+                /* ===== HEADER ===== */
+                .cert-header {
+                    display: flex; align-items: center; justify-content: center;
+                    gap: 16px; margin-bottom: 6px;
                 }
-                .cert-photo-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
+                .cert-header-badges-left, .cert-header-badges-right {
+                    display: flex; flex-direction: column; gap: 4px; align-items: center;
+                }
+                .cert-mini-badge {
+                    width: 38px; height: 38px; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 5.5px; font-weight: 700; text-align: center; line-height: 1.1;
+                }
+                .badge-msme { background: linear-gradient(135deg, #0c2340, #1e3a5f); color: white; border: 1.5px solid #b8860b; }
+                .badge-digital { background: linear-gradient(135deg, #e65100, #ff8f00); color: white; border: 1.5px solid #bf360c; }
+                .badge-make { background: linear-gradient(135deg, #0d47a1, #1565c0); color: white; border: 1.5px solid #b8860b; }
+                .badge-govt { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; border: 1.5px solid #b8860b; }
+
+                .cert-header-center { text-align: center; }
+                .cert-logo { width: 80px; height: 80px; margin: 0 auto 4px; }
+                .cert-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+                .cert-inst-name {
+                    font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 900;
+                    background: linear-gradient(135deg, #1E40AF, #1565c0, #1E40AF);
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                    background-clip: text; letter-spacing: 2px;
+                }
+                .cert-iso-line {
+                    font-size: 10px; font-weight: 600; color: #b8860b;
+                    letter-spacing: 1px; margin-top: 1px;
+                }
+
+                /* Gold divider */
+                .gold-divider {
+                    height: 2px; margin: 8px 25mm;
+                    background: linear-gradient(90deg, transparent, #b8860b, #ffd700, #b8860b, transparent);
+                }
+                .gold-divider-thin {
+                    height: 1px; margin: 3px 30mm;
+                    background: linear-gradient(90deg, transparent, #b8860b, transparent);
+                }
+
+                /* ===== CERTIFICATE TITLE ===== */
+                .cert-title-section { text-align: center; margin: 12px 0 8px; }
+                .cert-title-word {
+                    font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 700;
+                    color: #1E40AF; letter-spacing: 8px;
+                    text-shadow: 0 2px 4px rgba(30,64,175,0.15);
+                }
+                .cert-of-excellence {
+                    font-family: 'Great Vibes', cursive; font-size: 24px;
+                    color: #b8860b; margin-top: -4px;
+                }
+
+                /* ===== BODY: Photo + QR row ===== */
+                .cert-body-row {
+                    display: flex; justify-content: center; align-items: flex-start;
+                    gap: 40px; margin: 12px 0 10px; padding: 0 10mm;
+                }
+                .cert-side-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
                 .cert-photo {
-                    width: 110px; height: 130px; border: 3px solid #1E40AF; border-radius: 8px;
-                    object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 8px; background: #f0f0f0;
+                    width: 105px; height: 125px; border-radius: 6px; object-fit: cover;
+                    border: 3px solid #1E40AF; box-shadow: 0 4px 12px rgba(0,0,0,0.15); background: #f0f0f0;
                 }
                 .cert-photo-placeholder {
-                    width: 110px; height: 130px; border: 3px solid #1E40AF; border-radius: 8px;
-                    background: linear-gradient(135deg, #e8f0fe, #d0e0f0); display: flex;
-                    align-items: center; justify-content: center; font-size: 32px; color: #1E40AF; margin-bottom: 8px;
+                    width: 105px; height: 125px; border-radius: 6px;
+                    border: 3px solid #1E40AF; background: linear-gradient(135deg, #e8f0fe, #d0e0f0);
+                    display: flex; align-items: center; justify-content: center; font-size: 30px; color: #1E40AF;
                 }
-
-                .cert-qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+                .cert-iso-badge {
+                    width: 45px; height: 45px; border-radius: 50%;
+                    background: linear-gradient(135deg, #ffd700, #daa520);
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    font-size: 5px; font-weight: 800; color: #1a1a1a; text-align: center;
+                    line-height: 1.1; border: 2px solid #b8860b; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                }
+                .cert-iaf-badge {
+                    width: 45px; height: 45px; border-radius: 50%;
+                    background: linear-gradient(135deg, #0d1b4a, #1a237e);
+                    display: flex; align-items: center; justify-content: center;
+                    color: #ffd700; font-weight: 900; font-size: 12px;
+                    border: 2px solid #ffd700; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                }
                 .cert-qr-wrapper {
-                    padding: 6px; background: white; border-radius: 6px;
-                    border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    padding: 5px; background: white; border-radius: 6px;
+                    border: 2px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                 }
-                .cert-qr-label { font-size: 8px; font-weight: 700; color: #1e3a5f; text-align: center; line-height: 1.2; }
+                .cert-qr-label {
+                    font-size: 7px; font-weight: 700; color: #1e3a5f;
+                    text-align: center; line-height: 1.2; margin-top: 2px;
+                }
 
-                .cert-certify { text-align: center; margin-bottom: 8px; }
-                .cert-certify .certify-text { font-family: 'Great Vibes', cursive; font-size: 22px; color: #333; }
-                .cert-student-name { text-align: center; margin-bottom: 4px; }
-                .cert-student-name h3 {
-                    font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+                /* ===== CERTIFY TEXT ===== */
+                .cert-certify {
+                    text-align: center; font-family: 'Great Vibes', cursive;
+                    font-size: 22px; color: #444; margin-bottom: 6px;
+                }
+                .cert-student-name {
+                    text-align: center; margin-bottom: 4px;
+                    font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 800;
                     color: #111; letter-spacing: 1px; text-transform: uppercase;
                 }
+                .cert-student-name-underline {
+                    width: 200px; height: 2px; margin: 0 auto 6px;
+                    background: linear-gradient(90deg, transparent, #b8860b, transparent);
+                }
                 .cert-father-name {
-                    text-align: center; font-size: 20px; font-weight: 700; color: #111;
-                    margin-bottom: 8px; text-transform: uppercase;
+                    text-align: center; font-size: 16px; font-weight: 700; color: #333;
+                    margin-bottom: 6px; text-transform: uppercase;
                 }
-                .cert-institute-highlight { text-align: center; margin-bottom: 12px; }
-                .cert-institute-highlight span {
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
-                    padding: 4px 20px; border-radius: 20px; font-weight: 800; font-size: 14px;
-                    letter-spacing: 1px; display: inline-block;
+                .cert-institute-pill {
+                    text-align: center; margin-bottom: 10px;
+                }
+                .cert-institute-pill span {
+                    background: linear-gradient(135deg, #1E40AF, #2563eb);
+                    color: white; padding: 4px 24px; border-radius: 20px;
+                    font-weight: 800; font-size: 12px; letter-spacing: 1px;
+                    display: inline-block; box-shadow: 0 2px 8px rgba(30,64,175,0.2);
                 }
 
-                .cert-exam-row {
-                    display: flex; justify-content: center; align-items: baseline; gap: 8px;
-                    margin-bottom: 8px; font-size: 14px; color: #333; flex-wrap: wrap;
+                /* ===== EXAM DETAILS ===== */
+                .cert-exam-section {
+                    text-align: center; margin-bottom: 6px; line-height: 1.8;
                 }
-                .cert-exam-row .label-italic { font-style: italic; }
-                .cert-exam-row .value-box {
-                    border: 1.5px solid #1E40AF; padding: 2px 12px; border-radius: 4px;
-                    font-weight: 700; color: #1E40AF; background: rgba(255,255,255,0.6);
-                    min-width: 40px; text-align: center;
+                .cert-exam-text { font-size: 13px; color: #444; font-style: italic; }
+                .cert-exam-value {
+                    display: inline-block; border: 1.5px solid #1E40AF;
+                    padding: 1px 14px; border-radius: 4px; font-weight: 800;
+                    color: #1E40AF; background: rgba(30,64,175,0.04);
+                    margin: 0 4px; min-width: 35px; text-align: center; font-size: 14px;
                 }
-                .cert-awarded-text { text-align: center; font-style: italic; font-size: 13px; color: #444; margin-bottom: 6px; }
-                .cert-course-title { text-align: center; margin-bottom: 4px; }
-                .cert-course-title h4 {
-                    font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800;
-                    color: #1E40AF; text-transform: uppercase; letter-spacing: 1px;
+                .cert-awarded { font-size: 13px; color: #555; font-style: italic; margin-bottom: 4px; text-align: center; }
+                .cert-course-name {
+                    text-align: center; font-family: 'Outfit', sans-serif;
+                    font-size: 19px; font-weight: 800; color: #1E40AF;
+                    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;
                 }
-                .cert-course-meta { text-align: center; font-size: 11px; color: #555; font-weight: 600; margin-bottom: 3px; }
-                .cert-standards-text { text-align: center; margin: 10px 0 5px; }
-                .cert-standards-text .designed { font-family: 'Great Vibes', cursive; font-size: 18px; color: #333; }
-                .cert-standards-text .institute-name { font-weight: 900; font-size: 16px; color: #1E40AF; display: block; margin-top: 2px; }
-                .cert-iso-line { text-align: center; font-size: 11px; font-weight: 600; color: #1e3a5f; margin-bottom: 10px; }
+                .cert-course-meta {
+                    text-align: center; font-size: 10px; font-weight: 600;
+                    color: #666; margin-bottom: 2px;
+                }
+                .cert-standards {
+                    text-align: center; margin: 8px 0 4px;
+                }
+                .cert-standards .designed {
+                    font-family: 'Great Vibes', cursive; font-size: 17px; color: #444;
+                }
+                .cert-standards .inst {
+                    font-weight: 900; font-size: 14px; color: #1E40AF;
+                    display: block; margin-top: 1px;
+                }
+                .cert-standards-iso {
+                    text-align: center; font-size: 10px; font-weight: 600;
+                    color: #b8860b; margin-bottom: 8px;
+                }
 
-                .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; padding: 0 5mm; }
-                .cert-footer-left { text-align: center; }
-                .cert-footer-left .signature-line { font-family: 'Great Vibes', cursive; font-size: 22px; color: #1e3a5f; margin-bottom: 2px; }
-                .cert-footer-left .signer-name { font-weight: 800; font-size: 11px; color: #111; text-transform: uppercase; }
-                .cert-footer-left .signer-title { font-size: 10px; color: #555; font-weight: 600; }
-                .cert-footer-center { text-align: center; flex: 1; }
-                .cert-footer-center .cert-number { font-size: 11px; font-weight: 700; color: #111; margin-bottom: 2px; }
-                .cert-footer-center .cert-date { font-size: 11px; font-weight: 600; color: #333; margin-bottom: 2px; }
-                .cert-footer-center .cert-verify { font-size: 9px; color: #777; }
-                .cert-footer-right { text-align: center; }
-                .cert-footer-right .iso-badge-sm {
-                    width: 50px; height: 50px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); display: flex;
-                    flex-direction: column; align-items: center; justify-content: center;
-                    color: white; font-size: 7px; font-weight: 800; line-height: 1.1;
-                    margin: 0 auto 4px; border: 2px solid #ffd700;
+                /* ===== FOOTER ===== */
+                .cert-footer {
+                    display: flex; justify-content: space-between; align-items: flex-end;
+                    padding: 0 3mm; margin-top: 6px;
                 }
-                .cert-footer-right .director-sig { font-family: 'Great Vibes', cursive; font-size: 20px; color: #1e3a5f; margin-bottom: 2px; }
-                .cert-footer-right .director-name { font-weight: 800; font-size: 10px; color: #111; text-transform: uppercase; }
-                .cert-footer-right .director-title { font-size: 9px; font-weight: 600; color: #555; }
-
-                .cert-address-bar {
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
-                    text-align: center; padding: 8px 15px; font-size: 9px; font-weight: 600;
-                    letter-spacing: 0.5px; margin-top: 12px; line-height: 1.5;
+                .cert-footer-col { text-align: center; min-width: 120px; }
+                .cert-sig-line {
+                    width: 100px; height: 1px; background: #333; margin: 0 auto 4px;
                 }
-                .cert-address-bar .contact { font-size: 11px; font-weight: 800; margin-top: 2px; }
+                .cert-sig-cursive { font-family: 'Great Vibes', cursive; font-size: 20px; color: #1e3a5f; margin-bottom: 2px; }
+                .cert-sig-name { font-weight: 800; font-size: 10px; color: #111; text-transform: uppercase; }
+                .cert-sig-title { font-size: 9px; font-weight: 600; color: #555; }
 
+                .cert-footer-mid { text-align: center; flex: 1; }
+                .cert-footer-mid .cert-no { font-size: 11px; font-weight: 700; color: #111; }
+                .cert-footer-mid .cert-date { font-size: 10px; font-weight: 600; color: #444; }
+                .cert-footer-mid .cert-verify-text { font-size: 8px; color: #888; margin-top: 2px; }
+
+                .cert-footer-right-badge {
+                    width: 44px; height: 44px; border-radius: 50%;
+                    background: linear-gradient(135deg, #1E40AF, #2563eb);
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    color: white; font-size: 6px; font-weight: 800; line-height: 1.1;
+                    margin: 0 auto 4px; border: 2px solid #b8860b;
+                }
+
+                /* Seal */
                 .cert-seal {
-                    width: 50px; height: 50px; background: radial-gradient(circle, #dc2626, #991b1b);
-                    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                    color: white; font-size: 7px; font-weight: 800; text-align: center;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.3); line-height: 1;
-                    position: absolute; bottom: 95px; left: 45px;
+                    position: absolute; bottom: 75px; left: 40px;
+                    width: 55px; height: 55px;
+                    background: radial-gradient(circle, #dc2626 30%, #991b1b 100%);
+                    border-radius: 50%; display: flex; flex-direction: column;
+                    align-items: center; justify-content: center;
+                    color: white; font-size: 6px; font-weight: 800; text-align: center;
+                    box-shadow: 0 3px 12px rgba(153,27,27,0.4); line-height: 1.1;
+                    border: 2px solid #fca5a5; z-index: 3;
                 }
+                .cert-seal .seal-star { font-size: 14px; margin-bottom: 1px; }
 
+                /* ===== ADDRESS BAR ===== */
+                .cert-address-bar {
+                    background: linear-gradient(135deg, #0c2340, #1E40AF);
+                    color: white; text-align: center; padding: 8px 15px;
+                    font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
+                    line-height: 1.6; position: relative; z-index: 1;
+                }
+                .cert-address-bar .addr-bold { font-size: 11px; font-weight: 800; }
+
+                /* ===== BUTTONS ===== */
                 .print-btn {
                     position: fixed; bottom: 30px; right: 30px;
                     background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
@@ -303,12 +395,11 @@ const StudentCertificate = () => {
                     transition: all 0.3s; font-family: 'Inter', sans-serif;
                 }
                 .print-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(30,64,175,0.5); }
-
                 .edit-btn {
                     position: fixed; bottom: 30px; right: 220px;
-                    background: linear-gradient(135deg, #d97706, #f59e0b); color: white;
+                    background: linear-gradient(135deg, #92400e, #d97706); color: white;
                     border: none; padding: 14px 28px; border-radius: 14px; font-size: 16px;
-                    font-weight: 700; cursor: pointer; box-shadow: 0 6px 25px rgba(217,119,6,0.4);
+                    font-weight: 700; cursor: pointer; box-shadow: 0 6px 25px rgba(217,119,6,0.35);
                     z-index: 1000; display: flex; align-items: center; gap: 8px;
                     transition: all 0.3s; font-family: 'Inter', sans-serif;
                 }
@@ -326,32 +417,62 @@ const StudentCertificate = () => {
             <button className="print-btn" onClick={handlePrint}>🖨️ Print Certificate</button>
 
             <div className="cert-page">
-                <div className="cert-watermark"><img src="/logo.png" alt="Pretech" /></div>
+                {/* Background decorations */}
+                <div className="cert-bg-circle-1" />
+                <div className="cert-bg-circle-2" />
+                <div className="cert-watermark"><img src="/logo.png" alt="" /></div>
+
+                {/* Triple border frame */}
+                <div className="cert-border-outer" />
                 <div className="cert-border-inner" />
+                <div className="cert-border-deco" />
+
+                {/* Corner ornaments */}
+                {['tl', 'tr', 'bl', 'br'].map(pos => (
+                    <div key={pos} className={`corner corner-${pos}`}>
+                        <svg viewBox="0 0 50 50" fill="none">
+                            <path d="M0 0 L50 0 L50 8 Q30 8 20 18 Q10 28 8 50 L0 50 Z" fill="#1E40AF" opacity="0.15" />
+                            <path d="M0 0 L40 0 L40 5 Q25 6 16 14 Q8 22 5 40 L0 40 Z" fill="#b8860b" opacity="0.2" />
+                            <circle cx="6" cy="6" r="3" fill="#b8860b" opacity="0.3" />
+                        </svg>
+                    </div>
+                ))}
 
                 <div className="cert-content">
-                    <div className="cert-header-logos">
-                        <div className="cert-badge msme-badge">MSME<br />GOVT OF<br />INDIA</div>
-                        <div className="cert-badge digital-india-badge">Digital<br />India</div>
-                        <div className="cert-main-logo"><img src="/logo.png" alt="Pretech Computer Education" /></div>
-                        <div className="govt-badge">MAKE<br />IN<br />INDIA</div>
-                        <div className="govt-badge">भारत<br />सरकार</div>
+                    {/* Header: badges + logo + institute name */}
+                    <div className="cert-header">
+                        <div className="cert-header-badges-left">
+                            <div className="cert-mini-badge badge-msme">MSME<br />GOVT OF<br />INDIA</div>
+                            <div className="cert-mini-badge badge-digital">Digital<br />India</div>
+                        </div>
+                        <div className="cert-header-center">
+                            <div className="cert-logo"><img src="/logo.png" alt="Pretech" /></div>
+                            <div className="cert-inst-name">PRETECH COMPUTER EDUCATION</div>
+                            <div className="cert-iso-line">✦ AN ISO 9001:2015 CERTIFIED ORGANISATION ✦</div>
+                        </div>
+                        <div className="cert-header-badges-right">
+                            <div className="cert-mini-badge badge-make">MAKE<br />IN<br />INDIA</div>
+                            <div className="cert-mini-badge badge-govt">भारत<br />सरकार</div>
+                        </div>
                     </div>
 
-                    <div className="cert-institute-name">
-                        <h1>PRETECH COMPUTER EDUCATION</h1>
-                        <p className="iso-text">An ISO 9001:2015 Certified Organisation</p>
+                    <div className="gold-divider" />
+                    <div className="gold-divider-thin" />
+
+                    {/* Title */}
+                    <div className="cert-title-section">
+                        <div className="cert-title-word">CERTIFICATE</div>
+                        <div className="cert-of-excellence">of Excellence</div>
                     </div>
 
-                    <div className="cert-title"><h2>Certificate</h2></div>
-
-                    <div className="cert-badges-row">
-                        <div className="cert-side-badges">
-                            <div className="iso-round-badge">ISO<br />9001<br />2015<br />CERTIFIED</div>
-                            <div className="iaf-badge">IAF</div>
+                    {/* Body row: ISO badges | Photo | QR code */}
+                    <div className="cert-body-row">
+                        <div className="cert-side-col">
+                            <div className="cert-iso-badge">ISO<br />9001<br />2015<br />CERTIFIED</div>
+                            <div className="cert-iaf-badge">IAF</div>
                         </div>
 
-                        <div className="cert-photo-section">
+                        <div className="cert-side-col">
                             {student.passportPhoto ? (
                                 <img src={student.passportPhoto} alt="Student" className="cert-photo" />
                             ) : (
@@ -359,67 +480,79 @@ const StudentCertificate = () => {
                             )}
                         </div>
 
-                        <div className="cert-qr-box">
+                        <div className="cert-side-col">
                             <div className="cert-qr-wrapper">
-                                <QRCode value={verificationUrl} size={70} level="M" />
+                                <QRCode value={verificationUrl} size={65} level="M" />
                             </div>
-                            <span className="cert-qr-label">FOR ONLINE<br />VERIFICATION SCAN</span>
+                            <span className="cert-qr-label">SCAN FOR<br />VERIFICATION</span>
                         </div>
                     </div>
 
-                    <div className="cert-certify"><span className="certify-text">This is to certify that,</span></div>
-                    <div className="cert-student-name"><h3>{student.name}</h3></div>
+                    {/* Certify text */}
+                    <div className="cert-certify">This is to certify that,</div>
+                    <div className="cert-student-name">{student.name}</div>
+                    <div className="cert-student-name-underline" />
                     {student.fatherHusbandName && (
                         <div className="cert-father-name">
                             {student.gender === 'Female' ? 'D/O' : 'S/O'} {student.fatherHusbandName}
                         </div>
                     )}
-                    <div className="cert-institute-highlight"><span>PRETECH COMPUTER EDUCATION</span></div>
+                    <div className="cert-institute-pill"><span>PRETECH COMPUTER EDUCATION</span></div>
 
-                    <div className="cert-exam-row">
-                        <span className="label-italic">has passed the prescribed examination with</span>
-                        <span className="value-box">{grade}</span>
-                        <span>Grade (</span>
-                        <span className="value-box">{marks}%</span>
-                        <span>Marks)</span>
+                    {/* Exam details */}
+                    <div className="cert-exam-section">
+                        <span className="cert-exam-text">has passed the prescribed examination with </span>
+                        <span className="cert-exam-value">{grade}</span>
+                        <span className="cert-exam-text"> Grade (</span>
+                        <span className="cert-exam-value">{marks}%</span>
+                        <span className="cert-exam-text"> Marks)</span>
                     </div>
 
-                    <div className="cert-awarded-text">has been awarded the</div>
-                    <div className="cert-course-title"><h4>{courseName}</h4></div>
+                    <div className="cert-awarded">has been awarded the</div>
+                    <div className="cert-course-name">{courseName}</div>
                     <div className="cert-course-meta">(COURSE DURATION: {courseDuration})</div>
                     <div className="cert-course-meta">(COURSE PERIOD: {formatDate(regDate)} TO {formatDate(endDate)})</div>
 
-                    <div className="cert-standards-text">
+                    <div className="cert-standards">
                         <span className="designed">designed and developed as per the standards of</span>
-                        <span className="institute-name">PRETECH COMPUTER EDUCATION</span>
+                        <span className="inst">PRETECH COMPUTER EDUCATION</span>
                     </div>
-                    <div className="cert-iso-line">An ISO 9001:2015 Certified Organisation</div>
+                    <div className="cert-standards-iso">An ISO 9001:2015 Certified Organisation</div>
 
+                    {/* Footer: signatures */}
                     <div className="cert-footer">
-                        <div className="cert-footer-left">
-                            <div className="signature-line">Pankaj Gilhotra</div>
-                            <div className="signer-name">PANKAJ GILHOTRA</div>
-                            <div className="signer-title">Controller Of Examination</div>
+                        <div className="cert-footer-col">
+                            <div className="cert-sig-cursive">Pankaj Gilhotra</div>
+                            <div className="cert-sig-line" />
+                            <div className="cert-sig-name">PANKAJ GILHOTRA</div>
+                            <div className="cert-sig-title">Controller Of Examination</div>
                         </div>
-                        <div className="cert-footer-center">
-                            <div className="cert-number">Certificate No: {certNo}</div>
+                        <div className="cert-footer-mid">
+                            <div className="cert-no">Certificate No: {certNo}</div>
                             <div className="cert-date">Date Of Issue: {formatDate(issueDate)}</div>
-                            <div className="cert-verify">Online Certificate Verification available on.</div>
+                            <div className="cert-verify-text">Online Certificate Verification Available</div>
                         </div>
-                        <div className="cert-footer-right">
-                            <div className="iso-badge-sm"><span>ISO</span><span>9001</span><span>2015</span></div>
-                            <div className="director-sig">Pankaj Gilhotra</div>
-                            <div className="director-name">PANKAJ GILHOTRA</div>
-                            <div className="director-title">DIRECTOR</div>
+                        <div className="cert-footer-col">
+                            <div className="cert-footer-right-badge"><span>ISO</span><span>9001</span><span>2015</span></div>
+                            <div className="cert-sig-cursive">Pankaj Gilhotra</div>
+                            <div className="cert-sig-line" />
+                            <div className="cert-sig-name">PANKAJ GILHOTRA</div>
+                            <div className="cert-sig-title">DIRECTOR</div>
                         </div>
                     </div>
 
-                    <div className="cert-seal">CERTIFIED<br />★</div>
+                    {/* Red seal */}
+                    <div className="cert-seal">
+                        <span className="seal-star">★</span>
+                        <span>CERTIFIED</span>
+                        <span>VERIFIED</span>
+                    </div>
                 </div>
 
+                {/* Address bar */}
                 <div className="cert-address-bar">
                     ADDRESS: B-35, MP NAGAR, BIKANER, RAJASTHAN
-                    <div className="contact">CONTACT: PANKAJ GILHOTRA (DIRECTOR)</div>
+                    <div className="addr-bold">📞 CONTACT: PANKAJ GILHOTRA (DIRECTOR)</div>
                 </div>
             </div>
         </>
