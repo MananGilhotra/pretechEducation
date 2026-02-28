@@ -41,7 +41,7 @@ const StudentCertificate = () => {
     endDate.setFullYear(endDate.getFullYear() + 1);
     const formatDate = (d) => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     const certNo = `PTECH-${student.studentId || 'XXXX'}`;
-    const verificationUrl = `${window.location.origin}/verify/${certNo}`;
+    const verificationUrl = `${window.location.origin}/student/login`;
 
     // Marks input form
     if (!ready) {
@@ -261,13 +261,13 @@ const StudentCertificate = () => {
 
                 /* ====== RED SEAL ====== */
                 .c-seal{
-                    position:absolute;bottom:85px;left:40px;width:55px;height:55px;z-index:3;
+                    position:absolute;bottom:130px;left:15mm;width:50px;height:50px;z-index:3;
                     background:radial-gradient(circle,#dc2626 30%,#991b1b 100%);border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    color:#fff;font-size:6px;font-weight:800;text-align:center;line-height:1.1;
+                    color:#fff;font-size:5px;font-weight:800;text-align:center;line-height:1.1;
                     box-shadow:0 3px 12px rgba(153,27,27,.4);border:2px solid #fca5a5;
                 }
-                .c-seal .st{font-size:14px;margin-bottom:1px;}
+                .c-seal .st{font-size:12px;margin-bottom:1px;}
 
                 /* ====== ADDRESS BAR ====== */
                 .c-addr{
