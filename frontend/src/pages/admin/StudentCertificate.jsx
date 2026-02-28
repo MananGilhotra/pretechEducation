@@ -29,8 +29,8 @@ const StudentCertificate = () => {
 
     const handlePrint = () => window.print();
 
-    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#555' }}>Loading certificate...</div>;
-    if (error) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Inter, sans-serif', fontSize: 18, color: '#dc2626' }}>{error}</div>;
+    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Inter,sans-serif', fontSize: 18, color: '#555' }}>Loading certificate...</div>;
+    if (error) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Inter,sans-serif', fontSize: 18, color: '#dc2626' }}>{error}</div>;
     if (!student) return null;
 
     const courseName = student.courseApplied?.name || 'N/A';
@@ -39,93 +39,43 @@ const StudentCertificate = () => {
     const issueDate = new Date();
     const endDate = new Date(regDate);
     endDate.setFullYear(endDate.getFullYear() + 1);
-
     const formatDate = (d) => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     const certNo = `PTECH-${student.studentId || 'XXXX'}`;
     const verificationUrl = `${window.location.origin}/verify/${certNo}`;
 
-    // Show marks input form if not ready
+    // Marks input form
     if (!ready) {
         return (
             <>
                 <style>{`
                     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { background: #f0f2f5; font-family: 'Inter', sans-serif; }
-                    .marks-form-wrapper {
-                        display: flex; justify-content: center; align-items: center;
-                        min-height: 100vh; padding: 20px;
-                    }
-                    .marks-form {
-                        background: white; border-radius: 20px; padding: 40px;
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 420px; width: 100%;
-                    }
-                    .marks-form h2 {
-                        font-family: 'Outfit', sans-serif; font-size: 24px;
-                        font-weight: 800; color: #1E40AF; margin-bottom: 6px;
-                    }
-                    .marks-form p { font-size: 14px; color: #666; margin-bottom: 24px; }
-                    .marks-form .student-info {
-                        background: #f0f4ff; border-radius: 12px; padding: 14px;
-                        margin-bottom: 24px; border: 1px solid #dbeafe;
-                    }
-                    .marks-form .student-info .name {
-                        font-weight: 700; font-size: 16px; color: #111;
-                    }
-                    .marks-form .student-info .course {
-                        font-size: 13px; color: #555; margin-top: 2px;
-                    }
-                    .form-group { margin-bottom: 18px; }
-                    .form-group label {
-                        display: block; font-size: 13px; font-weight: 600;
-                        color: #333; margin-bottom: 6px;
-                    }
-                    .form-group input, .form-group select {
-                        width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
-                        border-radius: 10px; font-size: 15px; font-family: 'Inter', sans-serif;
-                        outline: none; transition: border-color 0.2s;
-                        color: #111; background: white;
-                    }
-                    .form-group input:focus, .form-group select:focus {
-                        border-color: #1E40AF;
-                    }
-                    .form-group select option { color: #111; background: white; }
-                    .generate-btn {
-                        width: 100%; padding: 14px; background: linear-gradient(135deg, #1E40AF, #3B82F6);
-                        color: white; border: none; border-radius: 12px; font-size: 16px;
-                        font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
-                        transition: all 0.3s; margin-top: 8px;
-                    }
-                    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30,64,175,0.3); }
+                    *{margin:0;padding:0;box-sizing:border-box;}
+                    body{background:#f0f2f5;font-family:'Inter',sans-serif;}
+                    .mf-w{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
+                    .mf-c{background:#fff;border-radius:20px;padding:40px;box-shadow:0 10px 40px rgba(0,0,0,.1);max-width:420px;width:100%;}
+                    .mf-c h2{font-family:'Outfit',sans-serif;font-size:24px;font-weight:800;color:#1E40AF;margin-bottom:6px;}
+                    .mf-c .mf-s{font-size:14px;color:#666;margin-bottom:24px;}
+                    .mf-i{background:#f0f4ff;border-radius:12px;padding:14px;margin-bottom:24px;border:1px solid #dbeafe;}
+                    .mf-i .n{font-weight:700;font-size:16px;color:#111;} .mf-i .co{font-size:13px;color:#555;margin-top:2px;}
+                    .fg{margin-bottom:18px;} .fg label{display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;}
+                    .fg input,.fg select{width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:15px;font-family:'Inter',sans-serif;outline:none;color:#111;background:#fff;}
+                    .fg select option{color:#111;background:#fff;}
+                    .fg input:focus,.fg select:focus{border-color:#1E40AF;}
+                    .gb{width:100%;padding:14px;background:linear-gradient(135deg,#1E40AF,#3B82F6);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:8px;}
+                    .gb:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(30,64,175,.3);}
                 `}</style>
-                <div className="marks-form-wrapper">
-                    <div className="marks-form">
-                        <h2>📜 Generate Certificate</h2>
-                        <p>Enter marks and grade for this student</p>
-                        <div className="student-info">
-                            <div className="name">{student.name}</div>
-                            <div className="course">{courseName} • {student.studentId}</div>
-                        </div>
-                        <div className="form-group">
-                            <label>Marks Percentage (%)</label>
-                            <input type="number" min="0" max="100" value={marks} onChange={e => setMarks(e.target.value)} placeholder="e.g. 85" />
-                        </div>
-                        <div className="form-group">
-                            <label>Grade</label>
-                            <select value={grade} onChange={e => setGrade(e.target.value)}>
-                                <option value="A+">A+ (Outstanding)</option>
-                                <option value="A">A (Excellent)</option>
-                                <option value="B+">B+ (Very Good)</option>
-                                <option value="B">B (Good)</option>
-                                <option value="C">C (Average)</option>
-                                <option value="D">D (Below Average)</option>
-                            </select>
-                        </div>
-                        <button className="generate-btn" onClick={() => setReady(true)}>
-                            Generate Certificate →
-                        </button>
-                    </div>
-                </div>
+                <div className="mf-w"><div className="mf-c">
+                    <h2>📜 Generate Certificate</h2>
+                    <p className="mf-s">Enter marks and grade for this student</p>
+                    <div className="mf-i"><div className="n">{student.name}</div><div className="co">{courseName} • {student.studentId}</div></div>
+                    <div className="fg"><label>Marks Percentage (%)</label><input type="number" min="0" max="100" value={marks} onChange={e => setMarks(e.target.value)} /></div>
+                    <div className="fg"><label>Grade</label><select value={grade} onChange={e => setGrade(e.target.value)}>
+                        <option value="A+">A+ (Outstanding)</option><option value="A">A (Excellent)</option>
+                        <option value="B+">B+ (Very Good)</option><option value="B">B (Good)</option>
+                        <option value="C">C (Average)</option><option value="D">D (Below Average)</option>
+                    </select></div>
+                    <button className="gb" onClick={() => setReady(true)}>Generate Certificate →</button>
+                </div></div>
             </>
         );
     }
@@ -134,292 +84,368 @@ const StudentCertificate = () => {
         <>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { background: #e8e8e8; }
+                *{margin:0;padding:0;box-sizing:border-box;}
+                body{background:#555;}
 
-                .cert-page {
-                    width: 210mm; min-height: 297mm; margin: 20px auto;
-                    background: linear-gradient(160deg, #d4eaf7 0%, #b8d9f0 20%, #a8d4f0 40%, #c8e8f8 60%, #d8f0e8 80%, #c8e8d8 100%);
-                    position: relative; overflow: hidden; font-family: 'Inter', sans-serif;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-                }
-                .cert-watermark {
-                    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                    width: 400px; height: 400px; opacity: 0.04; pointer-events: none;
-                }
-                .cert-watermark img { width: 100%; height: 100%; object-fit: contain; }
-                .cert-border-inner {
-                    position: absolute; top: 8mm; left: 8mm; right: 8mm; bottom: 8mm;
-                    border: 2px solid rgba(30, 64, 175, 0.15); border-radius: 4px; pointer-events: none;
-                }
-                .cert-content { padding: 12mm 15mm; position: relative; z-index: 1; }
-
-                .cert-header-logos {
-                    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
-                }
-                .cert-badge {
-                    width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
-                    justify-content: center; font-size: 7px; font-weight: 700; text-align: center; line-height: 1.1;
-                }
-                .msme-badge { background: linear-gradient(135deg, #1e3a5f, #2d5a8e); color: white; border: 2px solid #ffd700; }
-                .digital-india-badge { background: linear-gradient(135deg, #ff6600, #ff9933); color: white; border: 2px solid #cc5200; }
-                .cert-main-logo { width: 90px; height: 90px; }
-                .cert-main-logo img { width: 100%; height: 100%; object-fit: contain; }
-                .govt-badge {
-                    width: 40px; height: 40px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1e3a5f, #0a1628); display: flex;
-                    align-items: center; justify-content: center; font-size: 6px; color: white;
-                    font-weight: 700; border: 1.5px solid #ffd700; text-align: center; line-height: 1;
+                /* ====== PAGE ====== */
+                .c-page{
+                    width:210mm;min-height:297mm;margin:20px auto;position:relative;overflow:hidden;
+                    font-family:'Inter',sans-serif;
+                    background:linear-gradient(170deg,#fdf6e3 0%,#f5e0b0 30%,#ecd39a 50%,#f0d8a0 70%,#fdf6e3 100%);
+                    box-shadow:0 15px 50px rgba(0,0,0,.35);
                 }
 
-                .cert-institute-name { text-align: center; margin-bottom: 3px; }
-                .cert-institute-name h1 {
-                    font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900;
-                    color: #1E40AF; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+                /* Decorative maroon corner curves */
+                .c-corner-tl{
+                    position:absolute;top:0;left:0;width:180px;height:180px;pointer-events:none;z-index:0;
                 }
-                .cert-institute-name .iso-text { font-size: 12px; font-weight: 600; color: #1e3a5f; margin-top: 2px; }
-
-                .cert-title { text-align: center; margin: 10px 0 15px; }
-                .cert-title h2 { font-family: 'Great Vibes', cursive; font-size: 58px; color: #1E40AF; font-weight: 400; line-height: 1; }
-
-                .cert-badges-row {
-                    display: flex; justify-content: space-between; align-items: flex-start;
-                    margin-bottom: 12px; padding: 0 10mm;
+                .c-corner-tr{
+                    position:absolute;top:0;right:0;width:180px;height:180px;pointer-events:none;z-index:0;
                 }
-                .cert-side-badges { display: flex; flex-direction: column; gap: 8px; align-items: center; }
-                .iso-round-badge {
-                    width: 55px; height: 55px; border-radius: 50%;
-                    background: linear-gradient(135deg, #ffd700, #f0c000); display: flex;
-                    align-items: center; justify-content: center; font-size: 6px; font-weight: 800;
-                    color: #1e3a5f; text-align: center; line-height: 1.1; border: 2px solid #c8a000;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                }
-                .iaf-badge {
-                    width: 55px; height: 55px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1a237e, #283593); display: flex;
-                    align-items: center; justify-content: center; color: #ffd700; font-weight: 900;
-                    font-size: 13px; border: 3px solid #ffd700; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                }
-                .cert-photo-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
-                .cert-photo {
-                    width: 110px; height: 130px; border: 3px solid #1E40AF; border-radius: 8px;
-                    object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 8px; background: #f0f0f0;
-                }
-                .cert-photo-placeholder {
-                    width: 110px; height: 130px; border: 3px solid #1E40AF; border-radius: 8px;
-                    background: linear-gradient(135deg, #e8f0fe, #d0e0f0); display: flex;
-                    align-items: center; justify-content: center; font-size: 32px; color: #1E40AF; margin-bottom: 8px;
+                .c-corner-bl-deco{
+                    position:absolute;bottom:0;right:0;width:200px;height:200px;pointer-events:none;z-index:0;
+                    opacity:.15;
                 }
 
-                .cert-qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-                .cert-qr-wrapper {
-                    padding: 6px; background: white; border-radius: 6px;
-                    border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                }
-                .cert-qr-label { font-size: 8px; font-weight: 700; color: #1e3a5f; text-align: center; line-height: 1.2; }
-
-                .cert-certify { text-align: center; margin-bottom: 8px; }
-                .cert-certify .certify-text { font-family: 'Great Vibes', cursive; font-size: 22px; color: #333; }
-                .cert-student-name { text-align: center; margin-bottom: 4px; }
-                .cert-student-name h3 {
-                    font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
-                    color: #111; letter-spacing: 1px; text-transform: uppercase;
-                }
-                .cert-father-name {
-                    text-align: center; font-size: 20px; font-weight: 700; color: #111;
-                    margin-bottom: 8px; text-transform: uppercase;
-                }
-                .cert-institute-highlight { text-align: center; margin-bottom: 12px; }
-                .cert-institute-highlight span {
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
-                    padding: 4px 20px; border-radius: 20px; font-weight: 800; font-size: 14px;
-                    letter-spacing: 1px; display: inline-block;
+                /* Gold border frame */
+                .c-frame{
+                    position:absolute;top:12mm;left:12mm;right:12mm;bottom:12mm;
+                    border:2px solid #b8860b;pointer-events:none;z-index:1;
                 }
 
-                .cert-exam-row {
-                    display: flex; justify-content: center; align-items: baseline; gap: 8px;
-                    margin-bottom: 8px; font-size: 14px; color: #333; flex-wrap: wrap;
+                /* Watermark logo center */
+                .c-watermark{
+                    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                    width:320px;height:320px;opacity:.04;pointer-events:none;z-index:0;
                 }
-                .cert-exam-row .label-italic { font-style: italic; }
-                .cert-exam-row .value-box {
-                    border: 1.5px solid #1E40AF; padding: 2px 12px; border-radius: 4px;
-                    font-weight: 700; color: #1E40AF; background: rgba(255,255,255,0.6);
-                    min-width: 40px; text-align: center;
-                }
-                .cert-awarded-text { text-align: center; font-style: italic; font-size: 13px; color: #444; margin-bottom: 6px; }
-                .cert-course-title { text-align: center; margin-bottom: 4px; }
-                .cert-course-title h4 {
-                    font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800;
-                    color: #1E40AF; text-transform: uppercase; letter-spacing: 1px;
-                }
-                .cert-course-meta { text-align: center; font-size: 11px; color: #555; font-weight: 600; margin-bottom: 3px; }
-                .cert-standards-text { text-align: center; margin: 10px 0 5px; }
-                .cert-standards-text .designed { font-family: 'Great Vibes', cursive; font-size: 18px; color: #333; }
-                .cert-standards-text .institute-name { font-weight: 900; font-size: 16px; color: #1E40AF; display: block; margin-top: 2px; }
-                .cert-iso-line { text-align: center; font-size: 11px; font-weight: 600; color: #1e3a5f; margin-bottom: 10px; }
+                .c-watermark img{width:100%;height:100%;object-fit:contain;}
 
-                .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; padding: 0 5mm; }
-                .cert-footer-left { text-align: center; }
-                .cert-footer-left .signature-line { font-family: 'Great Vibes', cursive; font-size: 22px; color: #1e3a5f; margin-bottom: 2px; }
-                .cert-footer-left .signer-name { font-weight: 800; font-size: 11px; color: #111; text-transform: uppercase; }
-                .cert-footer-left .signer-title { font-size: 10px; color: #555; font-weight: 600; }
-                .cert-footer-center { text-align: center; flex: 1; }
-                .cert-footer-center .cert-number { font-size: 11px; font-weight: 700; color: #111; margin-bottom: 2px; }
-                .cert-footer-center .cert-date { font-size: 11px; font-weight: 600; color: #333; margin-bottom: 2px; }
-                .cert-footer-center .cert-verify { font-size: 9px; color: #777; }
-                .cert-footer-right { text-align: center; }
-                .cert-footer-right .iso-badge-sm {
-                    width: 50px; height: 50px; border-radius: 50%;
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); display: flex;
-                    flex-direction: column; align-items: center; justify-content: center;
-                    color: white; font-size: 7px; font-weight: 800; line-height: 1.1;
-                    margin: 0 auto 4px; border: 2px solid #ffd700;
-                }
-                .cert-footer-right .director-sig { font-family: 'Great Vibes', cursive; font-size: 20px; color: #1e3a5f; margin-bottom: 2px; }
-                .cert-footer-right .director-name { font-weight: 800; font-size: 10px; color: #111; text-transform: uppercase; }
-                .cert-footer-right .director-title { font-size: 9px; font-weight: 600; color: #555; }
+                .c-content{position:relative;z-index:2;padding:14mm 16mm;}
 
-                .cert-address-bar {
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
-                    text-align: center; padding: 8px 15px; font-size: 9px; font-weight: 600;
-                    letter-spacing: 0.5px; margin-top: 12px; line-height: 1.5;
+                /* ====== TOP BADGES ROW ====== */
+                .c-top-badges{
+                    display:flex;justify-content:space-between;align-items:center;
+                    margin-bottom:4px;padding:0 5mm;
                 }
-                .cert-address-bar .contact { font-size: 11px; font-weight: 800; margin-top: 2px; }
+                .c-badge{
+                    width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+                    justify-content:center;font-size:5px;font-weight:700;text-align:center;line-height:1.1;
+                }
+                .c-msme{background:linear-gradient(135deg,#0c2340,#1e3a5f);color:#fff;border:2px solid #b8860b;font-size:6px;}
+                .c-digital{background:linear-gradient(135deg,#e65100,#ff8f00);color:#fff;border:2px solid #bf360c;}
+                .c-main-logo{width:80px;height:80px;}
+                .c-main-logo img{width:100%;height:100%;object-fit:contain;}
+                .c-make{background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border:2px solid #b8860b;}
+                .c-govt{background:linear-gradient(135deg,#1b5e20,#388e3c);color:#fff;border:2px solid #b8860b;}
 
-                .cert-seal {
-                    width: 50px; height: 50px; background: radial-gradient(circle, #dc2626, #991b1b);
-                    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                    color: white; font-size: 7px; font-weight: 800; text-align: center;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.3); line-height: 1;
-                    position: absolute; bottom: 95px; left: 45px;
+                /* ====== INSTITUTE NAME ====== */
+                .c-inst{text-align:center;margin-bottom:2px;}
+                .c-inst h1{
+                    font-family:'Outfit',sans-serif;font-size:30px;font-weight:900;
+                    color:#1a1a1a;letter-spacing:2px;text-transform:uppercase;
+                }
+                .c-inst .c-iso-t{font-size:11px;font-weight:600;color:#444;margin-top:1px;}
+
+                /* ====== CERTIFICATE TITLE ====== */
+                .c-title{text-align:center;margin:6px 0 10px;}
+                .c-title h2{
+                    font-family:'Great Vibes',cursive;font-size:62px;color:#1E40AF;font-weight:400;line-height:1;
                 }
 
-                .print-btn {
-                    position: fixed; bottom: 30px; right: 30px;
-                    background: linear-gradient(135deg, #1E40AF, #3B82F6); color: white;
-                    border: none; padding: 14px 28px; border-radius: 14px; font-size: 16px;
-                    font-weight: 700; cursor: pointer; box-shadow: 0 6px 25px rgba(30,64,175,0.4);
-                    z-index: 1000; display: flex; align-items: center; gap: 8px;
-                    transition: all 0.3s; font-family: 'Inter', sans-serif;
+                /* ====== BODY: Left badges | Photo | Right QR ====== */
+                .c-body-row{
+                    display:flex;justify-content:space-between;align-items:flex-start;
+                    margin-bottom:8px;padding:0 8mm;
                 }
-                .print-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(30,64,175,0.5); }
+                .c-side-col{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:70px;}
 
-                .edit-btn {
-                    position: fixed; bottom: 30px; right: 220px;
-                    background: linear-gradient(135deg, #d97706, #f59e0b); color: white;
-                    border: none; padding: 14px 28px; border-radius: 14px; font-size: 16px;
-                    font-weight: 700; cursor: pointer; box-shadow: 0 6px 25px rgba(217,119,6,0.4);
-                    z-index: 1000; display: flex; align-items: center; gap: 8px;
-                    transition: all 0.3s; font-family: 'Inter', sans-serif;
+                /* ISO badge */
+                .c-iso-badge{
+                    width:55px;height:55px;border-radius:50%;
+                    background:linear-gradient(135deg,#ffd700,#daa520);
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    font-size:6px;font-weight:800;color:#1a1a1a;text-align:center;line-height:1.1;
+                    border:2px solid #b8860b;box-shadow:0 2px 8px rgba(0,0,0,.15);
                 }
-                .edit-btn:hover { transform: translateY(-2px); }
+                /* IAF badge */
+                .c-iaf{
+                    width:55px;height:55px;border-radius:50%;
+                    background:linear-gradient(135deg,#0d1b4a,#1a237e);
+                    display:flex;align-items:center;justify-content:center;
+                    color:#ffd700;font-weight:900;font-size:16px;
+                    border:3px solid #ffd700;box-shadow:0 2px 8px rgba(0,0,0,.15);
+                }
 
-                @media print {
-                    body { background: white !important; margin: 0; padding: 0; }
-                    .cert-page { margin: 0; box-shadow: none; width: 210mm; min-height: 297mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                    .print-btn, .edit-btn { display: none !important; }
-                    @page { size: A4 portrait; margin: 0; }
+                /* Photo */
+                .c-photo-col{display:flex;flex-direction:column;align-items:center;}
+                .c-photo{
+                    width:115px;height:140px;border-radius:6px;object-fit:cover;
+                    border:3px solid #8B0000;box-shadow:0 4px 15px rgba(0,0,0,.2);background:#f0e8d8;
+                }
+                .c-photo-ph{
+                    width:115px;height:140px;border-radius:6px;border:3px solid #8B0000;
+                    background:linear-gradient(135deg,#f5e6c8,#ecd9a8);
+                    display:flex;align-items:center;justify-content:center;font-size:36px;color:#8B0000;
+                }
+
+                /* QR section */
+                .c-qr-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+                .c-qr-label{font-size:9px;font-weight:800;color:#1a1a1a;text-align:center;letter-spacing:.5px;line-height:1.3;}
+                .c-qr-wrap{
+                    padding:5px;background:#fff;border-radius:4px;border:1px solid #ddd;
+                    box-shadow:0 2px 6px rgba(0,0,0,.08);
+                }
+
+                /* ====== CERTIFY TEXT ====== */
+                .c-certify{text-align:center;margin:6px 0 4px;}
+                .c-certify span{font-family:'Great Vibes',cursive;font-size:24px;color:#333;}
+
+                .c-student{text-align:center;margin-bottom:3px;padding:0 15mm;border-bottom:2px solid #333;}
+                .c-student h3{
+                    font-family:'Outfit',sans-serif;font-size:26px;font-weight:800;
+                    color:#111;text-transform:uppercase;padding-bottom:4px;letter-spacing:.5px;
+                }
+
+                /* ====== RED BANNER ====== */
+                .c-red-banner{
+                    text-align:center;margin:10px auto;position:relative;
+                    display:inline-block;width:100%;
+                }
+                .c-red-banner span{
+                    background:linear-gradient(135deg,#b91c1c,#dc2626);color:#ffd700;
+                    padding:4px 28px;font-weight:900;font-size:13px;letter-spacing:1.5px;
+                    display:inline-block;border-radius:2px;text-transform:uppercase;
+                    box-shadow:0 2px 8px rgba(185,28,28,.25);
+                }
+
+                /* ====== EXAM ROW ====== */
+                .c-exam{text-align:center;margin:8px 0 4px;line-height:1.8;}
+                .c-exam .it{font-family:'Great Vibes',cursive;font-size:18px;color:#333;}
+                .c-exam .vb{
+                    display:inline-block;border:1.5px solid #111;padding:1px 14px;
+                    font-weight:800;color:#111;min-width:35px;text-align:center;font-size:14px;
+                    margin:0 4px;background:rgba(255,255,255,.4);
+                }
+                .c-awarded{text-align:center;font-family:'Great Vibes',cursive;font-size:18px;color:#333;margin:2px 0;}
+
+                .c-course{text-align:center;margin-bottom:2px;}
+                .c-course h4{
+                    font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;
+                    color:#111;text-transform:uppercase;letter-spacing:1px;
+                }
+                .c-course-meta{text-align:center;font-size:10px;font-weight:700;color:#555;margin-bottom:1px;}
+
+                .c-standards{text-align:center;margin:6px 0 2px;}
+                .c-standards .des{font-family:'Great Vibes',cursive;font-size:17px;color:#333;}
+                .c-standards .inst-name{font-weight:900;font-size:15px;color:#b91c1c;display:block;margin-top:1px;}
+                .c-standards-iso{text-align:center;font-size:10px;font-weight:600;color:#444;margin-bottom:6px;}
+
+                /* ====== FOOTER ====== */
+                .c-footer{display:flex;justify-content:space-between;align-items:flex-end;padding:0 2mm;margin-top:6px;}
+                .c-foot-col{text-align:center;min-width:110px;}
+                .c-sig{font-family:'Great Vibes',cursive;font-size:22px;color:#1e3a5f;margin-bottom:1px;}
+                .c-sig-name{font-weight:800;font-size:10px;color:#111;text-transform:uppercase;}
+                .c-sig-title{font-size:9px;font-weight:600;color:#555;}
+
+                .c-foot-mid{text-align:center;flex:1;}
+                .c-foot-mid .cn{font-size:11px;font-weight:700;color:#111;}
+                .c-foot-mid .cd{font-size:10px;font-weight:600;color:#444;}
+                .c-foot-mid .cv{font-size:8px;color:#888;margin-top:2px;}
+
+                .c-iso-sm{
+                    width:48px;height:48px;border-radius:50%;margin:0 auto 4px;
+                    border:2px solid #b8860b;display:flex;flex-direction:column;
+                    align-items:center;justify-content:center;font-size:6px;font-weight:800;
+                    color:#1a1a1a;background:linear-gradient(135deg,#ffd700,#daa520);line-height:1.1;
+                }
+
+                /* ====== RED SEAL ====== */
+                .c-seal{
+                    position:absolute;bottom:85px;left:40px;width:55px;height:55px;z-index:3;
+                    background:radial-gradient(circle,#dc2626 30%,#991b1b 100%);border-radius:50%;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    color:#fff;font-size:6px;font-weight:800;text-align:center;line-height:1.1;
+                    box-shadow:0 3px 12px rgba(153,27,27,.4);border:2px solid #fca5a5;
+                }
+                .c-seal .st{font-size:14px;margin-bottom:1px;}
+
+                /* ====== ADDRESS BAR ====== */
+                .c-addr{
+                    background:linear-gradient(135deg,#f5e0b0,#ecd39a);
+                    text-align:center;padding:6px 15px;font-size:9px;font-weight:700;
+                    color:#333;letter-spacing:.3px;line-height:1.5;border-top:1px solid #b8860b;
+                    position:relative;z-index:2;
+                }
+                .c-addr .ab{font-size:11px;font-weight:900;color:#111;margin-top:1px;}
+
+                /* ====== BUTTONS ====== */
+                .pb{
+                    position:fixed;bottom:30px;right:30px;background:linear-gradient(135deg,#1E40AF,#3B82F6);color:#fff;
+                    border:none;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;
+                    box-shadow:0 6px 25px rgba(30,64,175,.4);z-index:1000;display:flex;align-items:center;gap:8px;
+                    transition:all .3s;font-family:'Inter',sans-serif;
+                }
+                .pb:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(30,64,175,.5);}
+                .eb{
+                    position:fixed;bottom:30px;right:220px;background:linear-gradient(135deg,#92400e,#d97706);color:#fff;
+                    border:none;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;
+                    box-shadow:0 6px 25px rgba(217,119,6,.35);z-index:1000;display:flex;align-items:center;gap:8px;
+                    transition:all .3s;font-family:'Inter',sans-serif;
+                }
+                .eb:hover{transform:translateY(-2px);}
+
+                @media print{
+                    body{background:#fff!important;margin:0;padding:0;}
+                    .c-page{margin:0;box-shadow:none;width:210mm;min-height:297mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+                    .pb,.eb{display:none!important;}
+                    @page{size:A4 portrait;margin:0;}
                 }
             `}</style>
 
-            <button className="edit-btn" onClick={() => setReady(false)}>✏️ Edit Marks</button>
-            <button className="print-btn" onClick={handlePrint}>🖨️ Print Certificate</button>
+            <button className="eb" onClick={() => setReady(false)}>✏️ Edit Marks</button>
+            <button className="pb" onClick={handlePrint}>🖨️ Print Certificate</button>
 
-            <div className="cert-page">
-                <div className="cert-watermark"><img src="/logo.png" alt="Pretech" /></div>
-                <div className="cert-border-inner" />
+            <div className="c-page">
+                {/* Maroon decorative corner — top left */}
+                <div className="c-corner-tl">
+                    <svg viewBox="0 0 180 180" fill="none">
+                        <path d="M0 0 H180 C140 10 80 20 40 80 C20 120 10 150 0 180 Z" fill="#5a0000" opacity=".85" />
+                        <path d="M0 0 H150 C120 10 60 15 30 65 C15 100 8 130 0 160 Z" fill="#8B0000" opacity=".7" />
+                        <path d="M0 0 H100 C80 8 40 12 22 50 C10 80 5 100 0 120 Z" fill="#a01010" opacity=".5" />
+                    </svg>
+                </div>
+                {/* Maroon decorative corner — top right */}
+                <div className="c-corner-tr">
+                    <svg viewBox="0 0 180 180" fill="none">
+                        <path d="M180 0 H0 C40 10 100 20 140 80 C160 120 170 150 180 180 Z" fill="#5a0000" opacity=".85" />
+                        <path d="M180 0 H30 C60 10 120 15 150 65 C165 100 172 130 180 160 Z" fill="#8B0000" opacity=".7" />
+                        <path d="M180 0 H80 C100 8 140 12 158 50 C170 80 175 100 180 120 Z" fill="#a01010" opacity=".5" />
+                    </svg>
+                </div>
+                {/* Gold ornamental corner — bottom right */}
+                <div className="c-corner-bl-deco">
+                    <svg viewBox="0 0 200 200" fill="none">
+                        <path d="M200 200 C180 160 160 120 120 100 C80 80 40 70 0 60 L0 200 Z" fill="#b8860b" opacity=".3" />
+                        <path d="M200 200 C185 170 170 140 140 120 C110 100 70 90 30 85 L30 200 Z" fill="#daa520" opacity=".15" />
+                        <circle cx="60" cy="160" r="15" fill="#b8860b" opacity=".08" />
+                        <circle cx="100" cy="170" r="10" fill="#b8860b" opacity=".06" />
+                        <circle cx="140" cy="180" r="8" fill="#daa520" opacity=".1" />
+                        <path d="M200 200 Q170 180 150 150 Q140 130 130 100" stroke="#b8860b" strokeWidth="1" opacity=".15" fill="none" />
+                        <path d="M200 200 Q180 170 160 140 Q150 120 140 90" stroke="#daa520" strokeWidth=".5" opacity=".1" fill="none" />
+                    </svg>
+                </div>
 
-                <div className="cert-content">
-                    <div className="cert-header-logos">
-                        <div className="cert-badge msme-badge">MSME<br />GOVT OF<br />INDIA</div>
-                        <div className="cert-badge digital-india-badge">Digital<br />India</div>
-                        <div className="cert-main-logo"><img src="/logo.png" alt="Pretech Computer Education" /></div>
-                        <div className="govt-badge">MAKE<br />IN<br />INDIA</div>
-                        <div className="govt-badge">भारत<br />सरकार</div>
+                {/* Gold frame */}
+                <div className="c-frame" />
+                {/* Watermark */}
+                <div className="c-watermark"><img src="/logo.png" alt="" /></div>
+
+                <div className="c-content">
+                    {/* Top badges row */}
+                    <div className="c-top-badges">
+                        <div className="c-badge c-msme">MSME<br />GOVT OF<br />INDIA</div>
+                        <div className="c-badge c-digital">Digital<br />India</div>
+                        <div className="c-main-logo"><img src="/logo.png" alt="Pretech" /></div>
+                        <div className="c-badge c-make">MAKE<br />IN<br />INDIA</div>
+                        <div className="c-badge c-govt">भारत<br />सरकार</div>
                     </div>
 
-                    <div className="cert-institute-name">
-                        <h1>PRETECH COMPUTER EDUCATION</h1>
-                        <p className="iso-text">An ISO 9001:2015 Certified Organisation</p>
+                    {/* Institute Name */}
+                    <div className="c-inst">
+                        <h1>Pretech Computer Education</h1>
+                        <p className="c-iso-t">An ISO 9001:2015 Certified Organisation</p>
                     </div>
 
-                    <div className="cert-title"><h2>Certificate</h2></div>
+                    {/* Certificate Title */}
+                    <div className="c-title"><h2>Certificate</h2></div>
 
-                    <div className="cert-badges-row">
-                        <div className="cert-side-badges">
-                            <div className="iso-round-badge">ISO<br />9001<br />2015<br />CERTIFIED</div>
-                            <div className="iaf-badge">IAF</div>
+                    {/* Body: ISO | Photo | QR */}
+                    <div className="c-body-row">
+                        <div className="c-side-col">
+                            <div className="c-iso-badge">ISO<br />9001<br />2015<br />CERTIFIED</div>
+                            <div className="c-iaf">IAF</div>
                         </div>
 
-                        <div className="cert-photo-section">
+                        <div className="c-photo-col">
                             {student.passportPhoto ? (
-                                <img src={student.passportPhoto} alt="Student" className="cert-photo" />
+                                <img src={student.passportPhoto} alt="Student" className="c-photo" />
                             ) : (
-                                <div className="cert-photo-placeholder">👤</div>
+                                <div className="c-photo-ph">👤</div>
                             )}
                         </div>
 
-                        <div className="cert-qr-box">
-                            <div className="cert-qr-wrapper">
+                        <div className="c-qr-col">
+                            <div className="c-qr-label">FOR ONLINE<br />VERIFICATION SCAN</div>
+                            <div className="c-qr-wrap">
                                 <QRCode value={verificationUrl} size={70} level="M" />
                             </div>
-                            <span className="cert-qr-label">FOR ONLINE<br />VERIFICATION SCAN</span>
                         </div>
                     </div>
 
-                    <div className="cert-certify"><span className="certify-text">This is to certify that,</span></div>
-                    <div className="cert-student-name"><h3>{student.name}</h3></div>
-                    {student.fatherHusbandName && (
-                        <div className="cert-father-name">
-                            {student.gender === 'Female' ? 'D/O' : 'S/O'} {student.fatherHusbandName}
-                        </div>
-                    )}
-                    <div className="cert-institute-highlight"><span>PRETECH COMPUTER EDUCATION</span></div>
+                    {/* Certify text */}
+                    <div className="c-certify"><span>This is to certify that,</span></div>
 
-                    <div className="cert-exam-row">
-                        <span className="label-italic">has passed the prescribed examination with</span>
-                        <span className="value-box">{grade}</span>
-                        <span>Grade (</span>
-                        <span className="value-box">{marks}%</span>
-                        <span>Marks)</span>
+                    {/* Student Name */}
+                    <div className="c-student">
+                        <h3>{student.name} {student.fatherHusbandName ? `${student.gender === 'Female' ? 'D/O' : 'S/O'} ${student.fatherHusbandName}` : ''}</h3>
                     </div>
 
-                    <div className="cert-awarded-text">has been awarded the</div>
-                    <div className="cert-course-title"><h4>{courseName}</h4></div>
-                    <div className="cert-course-meta">(COURSE DURATION: {courseDuration})</div>
-                    <div className="cert-course-meta">(COURSE PERIOD: {formatDate(regDate)} TO {formatDate(endDate)})</div>
-
-                    <div className="cert-standards-text">
-                        <span className="designed">designed and developed as per the standards of</span>
-                        <span className="institute-name">PRETECH COMPUTER EDUCATION</span>
-                    </div>
-                    <div className="cert-iso-line">An ISO 9001:2015 Certified Organisation</div>
-
-                    <div className="cert-footer">
-                        <div className="cert-footer-left">
-                            <div className="signature-line">Pankaj Gilhotra</div>
-                            <div className="signer-name">PANKAJ GILHOTRA</div>
-                            <div className="signer-title">Controller Of Examination</div>
-                        </div>
-                        <div className="cert-footer-center">
-                            <div className="cert-number">Certificate No: {certNo}</div>
-                            <div className="cert-date">Date Of Issue: {formatDate(issueDate)}</div>
-                            <div className="cert-verify">Online Certificate Verification available on.</div>
-                        </div>
-                        <div className="cert-footer-right">
-                            <div className="iso-badge-sm"><span>ISO</span><span>9001</span><span>2015</span></div>
-                            <div className="director-sig">Pankaj Gilhotra</div>
-                            <div className="director-name">PANKAJ GILHOTRA</div>
-                            <div className="director-title">DIRECTOR</div>
-                        </div>
+                    {/* Red Banner */}
+                    <div className="c-red-banner">
+                        <span>PRETECH COMPUTER EDUCATION</span>
                     </div>
 
-                    <div className="cert-seal">CERTIFIED<br />★</div>
+                    {/* Exam details */}
+                    <div className="c-exam">
+                        <span className="it">has passed the prescribed examination with </span>
+                        <span className="vb">{grade}</span>
+                        <span className="it"> Grade ( </span>
+                        <span className="vb">{marks}%</span>
+                        <span className="it"> Marks)</span>
+                    </div>
+
+                    <div className="c-awarded">has been awarded the</div>
+
+                    {/* Course */}
+                    <div className="c-course"><h4>{courseName}</h4></div>
+                    <div className="c-course-meta">(COURSE DURATION: {courseDuration})</div>
+                    <div className="c-course-meta">(COURSE PERIOD: {formatDate(regDate)} TO {formatDate(endDate)})</div>
+
+                    {/* Standards */}
+                    <div className="c-standards">
+                        <span className="des">designed and developed as per the standards of</span>
+                        <span className="inst-name">PRETECH COMPUTER EDUCATION</span>
+                    </div>
+                    <div className="c-standards-iso">An ISO 9001:2015 Certified Organisation</div>
+
+                    {/* Footer */}
+                    <div className="c-footer">
+                        <div className="c-foot-col">
+                            <div className="c-sig">Pankaj Gilhotra</div>
+                            <div className="c-sig-name">PANKAJ GILHOTRA</div>
+                            <div className="c-sig-title">Controller Of Examination</div>
+                        </div>
+                        <div className="c-foot-mid">
+                            <div className="cn">Certificate No : {certNo}</div>
+                            <div className="cd">Date Of Issue : {formatDate(issueDate)}</div>
+                            <div className="cv">Online Certificate Verification available on :</div>
+                        </div>
+                        <div className="c-foot-col">
+                            <div className="c-iso-sm"><span>ISO</span><span style={{ fontSize: '9px', fontWeight: 900 }}>9001</span><span>2015</span><span>CERTIFIED</span></div>
+                            <div className="c-sig">Pankaj Gilhotra</div>
+                            <div className="c-sig-name">PANKAJ GILHOTRA</div>
+                            <div className="c-sig-title">DIRECTOR</div>
+                        </div>
+                    </div>
+
+                    {/* Red seal */}
+                    <div className="c-seal"><span className="st">★</span><span>CERTIFIED</span><span>VERIFIED</span></div>
                 </div>
 
-                <div className="cert-address-bar">
+                {/* Address bar */}
+                <div className="c-addr">
                     ADDRESS: B-35, MP NAGAR, BIKANER, RAJASTHAN
-                    <div className="contact">CONTACT: PANKAJ GILHOTRA (DIRECTOR)</div>
+                    <div className="ab">CONTACT : +91 PANKAJ GILHOTRA (DIRECTOR)</div>
                 </div>
             </div>
         </>
