@@ -15,6 +15,22 @@ exports.markAttendance = async (req, res) => {
         const attendanceDate = new Date(date);
         attendanceDate.setHours(0, 0, 0, 0);
 
+        // Lock editing: if records already exist for this date and it's not today, reject
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000;
+        const todayIST = new Date(now.getTime() + istOffset);
+        todayIST.setUTCHours(0, 0, 0, 0);
+        const attDateNorm = new Date(attendanceDate);
+        attDateNorm.setUTCHours(0, 0, 0, 0);
+        const isToday = attDateNorm.getTime() === todayIST.getTime();
+
+        if (!isToday) {
+            const existingCount = await Attendance.countDocuments({ course: courseId, date: attendanceDate });
+            if (existingCount > 0) {
+                return res.status(403).json({ message: 'Attendance for this date is locked. You can only edit attendance on the same day it was marked.' });
+            }
+        }
+
         const bulkOps = records.map(r => ({
             updateOne: {
                 filter: { student: r.studentId, course: courseId, date: attendanceDate },
@@ -169,6 +185,22 @@ exports.markTeacherAttendance = async (req, res) => {
 
         const attendanceDate = new Date(date);
         attendanceDate.setHours(0, 0, 0, 0);
+
+        // Lock editing: if records already exist for this date and it's not today, reject
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000;
+        const todayIST = new Date(now.getTime() + istOffset);
+        todayIST.setUTCHours(0, 0, 0, 0);
+        const attDateNorm = new Date(attendanceDate);
+        attDateNorm.setUTCHours(0, 0, 0, 0);
+        const isToday = attDateNorm.getTime() === todayIST.getTime();
+
+        if (!isToday) {
+            const existingCount = await TeacherAttendance.countDocuments({ date: attendanceDate });
+            if (existingCount > 0) {
+                return res.status(403).json({ message: 'Attendance for this date is locked. You can only edit attendance on the same day it was marked.' });
+            }
+        }
 
         const bulkOps = records.map(r => ({
             updateOne: {

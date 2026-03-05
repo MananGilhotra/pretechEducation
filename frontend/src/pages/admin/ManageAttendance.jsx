@@ -31,6 +31,7 @@ const ManageAttendance = () => {
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [loadingSummary, setLoadingSummary] = useState(false);
+    const [hasExistingRecords, setHasExistingRecords] = useState(false);
 
     // Reset tab when switching mode
     useEffect(() => { setTab('mark'); }, [mode]);
@@ -58,21 +59,26 @@ const ManageAttendance = () => {
 
             const { data: records } = await API.get('/attendance', { params: { course: selectedCourse, date: selectedDate } });
             const map = {};
-            courseStudents.forEach(s => { map[s._id] = 'Absent'; });
+            courseStudents.forEach(s => { map[s._id] = 'Not Marked'; });
             records.forEach(r => { if (r.student?._id) map[r.student._id] = r.status; });
             setStudentAttMap(map);
-        } catch { toast.error('Failed to load'); setStudents([]); setStudentAttMap({}); }
+            setHasExistingRecords(records.length > 0);
+        } catch { toast.error('Failed to load'); setStudents([]); setStudentAttMap({}); setHasExistingRecords(false); }
         finally { setLoading(false); }
     };
 
     const submitStudentAttendance = async () => {
         if (!students.length) return;
+        const markedRecords = students
+            .filter(s => studentAttMap[s._id] && studentAttMap[s._id] !== 'Not Marked')
+            .map(s => ({ studentId: s._id, status: studentAttMap[s._id] }));
+        if (!markedRecords.length) { toast.error('No students marked yet'); return; }
         setSubmitting(true);
         try {
-            const records = students.map(s => ({ studentId: s._id, status: studentAttMap[s._id] || 'Absent' }));
-            await API.post('/attendance/mark', { courseId: selectedCourse, date: selectedDate, records });
-            const p = records.filter(r => r.status === 'Present').length;
-            toast.success(`Saved! ${p}/${records.length} present`);
+            await API.post('/attendance/mark', { courseId: selectedCourse, date: selectedDate, records: markedRecords });
+            const p = markedRecords.filter(r => r.status === 'Present').length;
+            toast.success(`Saved! ${p}/${markedRecords.length} present`);
+            setHasExistingRecords(true);
         } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
         finally { setSubmitting(false); }
     };
@@ -101,21 +107,26 @@ const ManageAttendance = () => {
 
             const { data: records } = await API.get('/attendance/teachers', { params: { date: selectedDate } });
             const map = {};
-            active.forEach(t => { map[t._id] = 'Absent'; });
+            active.forEach(t => { map[t._id] = 'Not Marked'; });
             records.forEach(r => { if (r.teacher?._id) map[r.teacher._id] = r.status; });
             setTeacherAttMap(map);
-        } catch { toast.error('Failed to load'); setTeachers([]); setTeacherAttMap({}); }
+            setHasExistingRecords(records.length > 0);
+        } catch { toast.error('Failed to load'); setTeachers([]); setTeacherAttMap({}); setHasExistingRecords(false); }
         finally { setLoading(false); }
     };
 
     const submitTeacherAttendance = async () => {
         if (!teachers.length) return;
+        const markedRecords = teachers
+            .filter(t => teacherAttMap[t._id] && teacherAttMap[t._id] !== 'Not Marked')
+            .map(t => ({ teacherId: t._id, status: teacherAttMap[t._id] }));
+        if (!markedRecords.length) { toast.error('No teachers marked yet'); return; }
         setSubmitting(true);
         try {
-            const records = teachers.map(t => ({ teacherId: t._id, status: teacherAttMap[t._id] || 'Absent' }));
-            await API.post('/attendance/teachers/mark', { date: selectedDate, records });
-            const p = records.filter(r => r.status === 'Present').length;
-            toast.success(`Saved! ${p}/${records.length} present`);
+            await API.post('/attendance/teachers/mark', { date: selectedDate, records: markedRecords });
+            const p = markedRecords.filter(r => r.status === 'Present').length;
+            toast.success(`Saved! ${p}/${markedRecords.length} present`);
+            setHasExistingRecords(true);
         } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
         finally { setSubmitting(false); }
     };
@@ -138,10 +149,22 @@ const ManageAttendance = () => {
     const currentList = mode === 'students' ? students : teachers;
     const presentCount = Object.values(currentAttMap).filter(s => s === 'Present').length;
     const absentCount = Object.values(currentAttMap).filter(s => s === 'Absent').length;
+    const notMarkedCount = Object.values(currentAttMap).filter(s => s === 'Not Marked').length;
     const selectedCourseName = courses.find(c => c._id === selectedCourse)?.name || '';
 
+    // Editable if it's today, OR if no records exist yet for that date (first-time marking)
+    const isToday = selectedDate === new Date().toISOString().split('T')[0];
+    const isEditable = isToday || !hasExistingRecords;
+
     const toggleStatus = (id) => {
-        currentSetAttMap(prev => ({ ...prev, [id]: prev[id] === 'Present' ? 'Absent' : 'Present' }));
+        currentSetAttMap(prev => {
+            const current = prev[id];
+            let next;
+            if (current === 'Not Marked') next = 'Present';
+            else if (current === 'Present') next = 'Absent';
+            else next = 'Present';
+            return { ...prev, [id]: next };
+        });
     };
 
     const markAll = (status) => {
@@ -281,15 +304,24 @@ const ManageAttendance = () => {
                                             <span className="text-xs text-red-600">Absent:</span>
                                             <span className="text-sm font-bold text-red-700 dark:text-red-400">{absentCount}</span>
                                         </div>
-                                        <div className="ml-auto flex gap-2">
-                                            <button onClick={() => markAll('Present')} className="btn-outline text-xs !px-3 !py-1.5 !text-green-700 !border-green-300 hover:!bg-green-50">
-                                                <HiCheck className="inline mr-1" />All Present
-                                            </button>
-                                            <button onClick={() => markAll('Absent')} className="btn-outline text-xs !px-3 !py-1.5 !text-red-700 !border-red-300 hover:!bg-red-50">
-                                                <HiX className="inline mr-1" />All Absent
-                                            </button>
-                                        </div>
+                                        {isEditable && (
+                                            <div className="ml-auto flex gap-2">
+                                                <button onClick={() => markAll('Present')} className="btn-outline text-xs !px-3 !py-1.5 !text-green-700 !border-green-300 hover:!bg-green-50">
+                                                    <HiCheck className="inline mr-1" />All Present
+                                                </button>
+                                                <button onClick={() => markAll('Absent')} className="btn-outline text-xs !px-3 !py-1.5 !text-red-700 !border-red-300 hover:!bg-red-50">
+                                                    <HiX className="inline mr-1" />All Absent
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Locked banner for past dates with existing records */}
+                                    {!isEditable && (
+                                        <div className="flex items-center gap-2 mb-4 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-sm font-medium">
+                                            🔒 Attendance for this date is locked. You can only edit attendance on the same day it was marked.
+                                        </div>
+                                    )}
 
                                     {/* Table */}
                                     <div className="card overflow-hidden">
@@ -307,10 +339,12 @@ const ManageAttendance = () => {
                                                 </thead>
                                                 <tbody>
                                                     {currentList.map((item, i) => {
-                                                        const status = currentAttMap[item._id] || 'Absent';
+                                                        const status = currentAttMap[item._id] || 'Not Marked';
                                                         const isPresent = status === 'Present';
+                                                        const isAbsent = status === 'Absent';
+                                                        const isNotMarked = status === 'Not Marked';
                                                         return (
-                                                            <tr key={item._id} className={`border-b border-gray-100 dark:border-dark-border transition-colors ${isPresent ? 'bg-green-50/50 dark:bg-green-900/10' : 'hover:bg-gray-50 dark:hover:bg-dark-card/50'}`}>
+                                                            <tr key={item._id} className={`border-b border-gray-100 dark:border-dark-border transition-colors ${isPresent ? 'bg-green-50/50 dark:bg-green-900/10' : isAbsent ? 'bg-red-50/30 dark:bg-red-900/5' : 'hover:bg-gray-50 dark:hover:bg-dark-card/50'}`}>
                                                                 <td className="py-3 px-4 text-gray-400 text-xs">{i + 1}</td>
                                                                 {mode === 'students' && <td className="py-3 px-4 font-mono text-primary-700 dark:text-primary-400 font-medium text-xs">{item.studentId}</td>}
                                                                 <td className="py-3 px-4">
@@ -320,14 +354,18 @@ const ManageAttendance = () => {
                                                                 </td>
                                                                 {mode === 'teachers' && <td className="py-3 px-4 text-gray-600 dark:text-gray-400 text-xs">{item.subject}</td>}
                                                                 <td className="py-3 px-4 text-center">
-                                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPresent ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPresent ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : isAbsent ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700/30 dark:text-gray-400'}`}>
                                                                         {status}
                                                                     </span>
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
-                                                                    <button onClick={() => toggleStatus(item._id)} className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${isPresent ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400'}`}>
-                                                                        {isPresent ? '✗ Mark Absent' : '✓ Mark Present'}
-                                                                    </button>
+                                                                    {isEditable ? (
+                                                                        <button onClick={() => toggleStatus(item._id)} className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${isNotMarked ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400' : isPresent ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400'}`}>
+                                                                            {isNotMarked ? '● Mark Present' : isPresent ? '✗ Mark Absent' : '✓ Mark Present'}
+                                                                        </button>
+                                                                    ) : (
+                                                                        <span className="text-xs text-gray-400 dark:text-gray-500">🔒 Locked</span>
+                                                                    )}
                                                                 </td>
                                                             </tr>
                                                         );
@@ -339,9 +377,15 @@ const ManageAttendance = () => {
 
                                     {/* Submit */}
                                     <div className="flex justify-end mt-6">
-                                        <button onClick={mode === 'students' ? submitStudentAttendance : submitTeacherAttendance} disabled={submitting} className="btn-primary px-8 py-3 text-base font-semibold disabled:opacity-50">
-                                            {submitting ? 'Saving...' : `✓ Save Attendance (${presentCount}P / ${absentCount}A)`}
-                                        </button>
+                                        {isEditable ? (
+                                            <button onClick={mode === 'students' ? submitStudentAttendance : submitTeacherAttendance} disabled={submitting} className="btn-primary px-8 py-3 text-base font-semibold disabled:opacity-50">
+                                                {submitting ? 'Saving...' : `✓ Save Attendance (${presentCount}P / ${absentCount}A)`}
+                                            </button>
+                                        ) : (
+                                            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-100 dark:bg-dark-card text-gray-500 dark:text-gray-400 text-sm font-medium border border-gray-200 dark:border-dark-border">
+                                                🔒 Editing locked — attendance can only be modified on the same day
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ) : (
