@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { HiUser, HiAcademicCap, HiCurrencyRupee, HiDownload, HiClock, HiClipboardCheck } from 'react-icons/hi';
+import { HiUser, HiAcademicCap, HiCurrencyRupee, HiDownload, HiClock, HiClipboardCheck, HiClipboardList } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -11,6 +12,7 @@ const StudentDashboard = () => {
     const [admission, setAdmission] = useState(null);
     const [payments, setPayments] = useState([]);
     const [attendance, setAttendance] = useState(null);
+    const [tests, setTests] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,6 +34,12 @@ const StudentDashboard = () => {
                 setAttendance(attRes.data);
             } catch (err) {
                 console.log('No attendance data:', err.response?.data?.message || err.message);
+            }
+            try {
+                const testRes = await API.get('/tests/me');
+                setTests(testRes.data || []);
+            } catch (err) {
+                console.log('No test data:', err.response?.data?.message || err.message);
             }
             setLoading(false);
         };
@@ -219,6 +227,38 @@ const StudentDashboard = () => {
                                     </>
                                 )}
                             </div>
+
+                            {/* Available Tests */}
+                            {tests.length > 0 && (
+                                <div className="card lg:col-span-2">
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <HiClipboardList className="text-purple-600 text-xl" />
+                                        <h3 className="text-lg font-bold font-heading text-gray-900 dark:text-white">Available Tests</h3>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {tests.map(test => (
+                                            <div key={test._id} className="p-4 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-100 dark:border-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-gray-900 dark:text-white text-sm">{test.title}</h4>
+                                                    <p className="text-xs text-gray-500 mt-0.5">{test.course?.name} • {test.questionCount} Qs • {test.totalMarks} Marks{test.duration > 0 ? ` • ${test.duration} min` : ''}</p>
+                                                </div>
+                                                {test.submission ? (
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${test.submission.percentage >= 60 ? 'bg-green-100 text-green-700' : test.submission.percentage >= 33 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+                                                            {test.submission.score}/{test.submission.totalMarks} ({test.submission.percentage}%)
+                                                        </span>
+                                                        <Link to={`/student/test/${test._id}/result`} className="text-xs font-medium text-primary-700 dark:text-primary-400 hover:underline">View Result</Link>
+                                                    </div>
+                                                ) : (
+                                                    <Link to={`/student/test/${test._id}`} className="px-4 py-2 rounded-xl text-xs font-bold bg-primary-600 text-white hover:bg-primary-700 transition-colors whitespace-nowrap">
+                                                        Take Test
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="card text-center py-12">

@@ -30,11 +30,14 @@ import ViewTeachers from './pages/admin/ViewTeachers';
 import ManageSalaries from './pages/admin/ManageSalaries';
 import ManageExpenses from './pages/admin/ManageExpenses';
 import ManageAttendance from './pages/admin/ManageAttendance';
+import ManageTests from './pages/admin/ManageTests';
 import StudentCertificate from './pages/admin/StudentCertificate';
 import StudentIdCard from './pages/admin/StudentIdCard';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
+import TakeTest from './pages/student/TakeTest';
+import TestResult from './pages/student/TestResult';
 
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
@@ -89,6 +92,7 @@ function App() {
                                     <Route path="/admin/salaries" element={<ManageSalaries />} />
                                     <Route path="/admin/expenses" element={<ManageExpenses />} />
                                     <Route path="/admin/attendance" element={<ManageAttendance />} />
+                                    <Route path="/admin/tests" element={<ManageTests />} />
                                 </Route>
                                 {/* Printable pages (no Layout) */}
                                 <Route path="/admin/certificate/:id" element={<StudentCertificate />} />
@@ -99,6 +103,8 @@ function App() {
                             <Route element={<ProtectedRoute allowedRoles={['student']} />}>
                                 <Route element={<Layout />}>
                                     <Route path="/student/dashboard" element={<StudentDashboard />} />
+                                    <Route path="/student/test/:id" element={<TakeTest />} />
+                                    <Route path="/student/test/:id/result" element={<TestResult />} />
                                 </Route>
                             </Route>
 
@@ -106,6 +112,8 @@ function App() {
                             <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
                                 <Route element={<Layout />}>
                                     <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+                                    <Route path="/teacher/test/:id" element={<TakeTest />} />
+                                    <Route path="/teacher/test/:id/result" element={<TestResult />} />
                                 </Route>
                             </Route>
 

@@ -201,6 +201,7 @@ const Dashboard = () => {
                             { label: 'Installment Reports', path: '/admin/installments', icon: '📊' },
                             { label: 'Manage Expenses', path: '/admin/expenses', icon: '🧾' },
                             { label: 'Attendance', path: '/admin/attendance', icon: '📋' },
+                            { label: 'Manage Tests', path: '/admin/tests', icon: '📝' },
                         ].map((link, i) => (
                             <Link key={i} to={link.path} className="card-hover text-center">
                                 <div className="text-3xl mb-2">{link.icon}</div>
