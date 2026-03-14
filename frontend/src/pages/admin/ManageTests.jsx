@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { HiPlus, HiPencil, HiTrash, HiEye, HiX, HiClipboardList, HiUpload, HiCheck, HiChevronDown, HiChevronUp, HiDocumentText } from 'react-icons/hi';
+import { HiPlus, HiPencil, HiTrash, HiEye, HiX, HiClipboardList, HiUpload, HiCheck, HiChevronDown, HiChevronUp, HiDocumentText, HiRefresh } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -135,6 +135,15 @@ const ManageTests = () => {
             setShowBulkImport(false);
             fetchTests();
         } catch (err) { toast.error(err.response?.data?.message || 'Import failed'); }
+    };
+
+    const handleResetSubmission = async (testId, submissionId, name) => {
+        if (!window.confirm(`Reset submission for "${name}"? They will be able to retake the test.`)) return;
+        try {
+            await API.delete(`/tests/${testId}/submissions/${submissionId}`);
+            toast.success(`Submission reset for ${name}`);
+            setSubmissions(prev => prev.filter(s => s._id !== submissionId));
+        } catch (err) { toast.error(err.response?.data?.message || 'Reset failed'); }
     };
 
     // ---- Question builder helpers ----
@@ -386,6 +395,7 @@ const ManageTests = () => {
                                                 <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Score</th>
                                                 <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">%</th>
                                                 <th className="text-left py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Date</th>
+                                                <th className="text-center py-2.5 px-3 font-semibold text-gray-600 dark:text-gray-400">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -404,6 +414,15 @@ const ManageTests = () => {
                                                         <span className={`font-bold ${sub.percentage >= 60 ? 'text-green-600' : sub.percentage >= 33 ? 'text-amber-600' : 'text-red-600'}`}>{sub.percentage}%</span>
                                                     </td>
                                                     <td className="py-2.5 px-3 text-gray-500 text-xs">{new Date(sub.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                                                    <td className="py-2.5 px-3 text-center">
+                                                        <button
+                                                            onClick={() => handleResetSubmission(showSubmissions._id, sub._id, sub.submitterName)}
+                                                            className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 transition-colors flex items-center gap-1 mx-auto"
+                                                            title="Reset — allow retake"
+                                                        >
+                                                            <HiRefresh /> Reset
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>

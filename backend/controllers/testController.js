@@ -144,6 +144,22 @@ exports.getTestSubmissions = async (req, res) => {
     }
 };
 
+// @desc    Reset (delete) a submission so student/teacher can retake
+// @route   DELETE /api/tests/:id/submissions/:submissionId
+// @access  Admin
+exports.resetSubmission = async (req, res) => {
+    try {
+        const submission = await TestSubmission.findOneAndDelete({
+            _id: req.params.submissionId,
+            test: req.params.id
+        });
+        if (!submission) return res.status(404).json({ message: 'Submission not found' });
+        res.json({ message: 'Submission reset successfully. The student/teacher can now retake the test.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Bulk import questions from structured text
 // @route   POST /api/tests/:id/import
 // @access  Admin
