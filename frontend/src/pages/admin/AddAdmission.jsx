@@ -216,7 +216,7 @@ const AddAdmission = () => {
                                     <option value="">Select Batch</option>
                                     {(() => {
                                         const selectedCourse = courses.find(c => c._id === watch('courseApplied'));
-                                        const slots = selectedCourse?.batchSlots || ['Morning', 'Evening', 'Direct Student'];
+                                        const slots = [...new Set([...(selectedCourse?.batchSlots || []), 'Morning', 'Evening', 'Direct Student'])];
                                         return slots.map(slot => <option key={slot} value={slot}>{slot}</option>);
                                     })()}
                                 </select>
