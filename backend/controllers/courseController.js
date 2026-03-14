@@ -36,6 +36,12 @@ exports.createCourse = async (req, res) => {
     try {
         const courseData = { ...req.body };
 
+        // Parse batchSlots if sent as JSON string (from FormData)
+        if (typeof courseData.batchSlots === 'string') {
+            try { courseData.batchSlots = JSON.parse(courseData.batchSlots); }
+            catch { /* keep as-is */ }
+        }
+
         // Handle image upload (base64)
         if (req.file) {
             courseData.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
@@ -53,6 +59,12 @@ exports.createCourse = async (req, res) => {
 exports.updateCourse = async (req, res) => {
     try {
         const updateData = { ...req.body };
+
+        // Parse batchSlots if sent as JSON string (from FormData)
+        if (typeof updateData.batchSlots === 'string') {
+            try { updateData.batchSlots = JSON.parse(updateData.batchSlots); }
+            catch { /* keep as-is */ }
+        }
 
         // Handle image upload (base64)
         if (req.file) {

@@ -18,6 +18,12 @@ const ManageCourses = () => {
     const [form, setForm] = useState({
         name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active'
     });
+    const [batchSlots, setBatchSlots] = useState([
+        '8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM',
+        '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM',
+        '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM'
+    ]);
+    const [newSlot, setNewSlot] = useState('');
 
     const fetchCourses = async () => {
         try {
@@ -48,6 +54,7 @@ const ManageCourses = () => {
             formData.append('eligibility', form.eligibility);
             formData.append('category', form.category);
             formData.append('status', form.status);
+            formData.append('batchSlots', JSON.stringify(batchSlots));
             if (imageFile) {
                 formData.append('image', imageFile);
             }
@@ -64,6 +71,8 @@ const ManageCourses = () => {
             setImageFile(null);
             setImagePreview('');
             setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
+            setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+            setNewSlot('');
             fetchCourses();
         } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     };
@@ -71,6 +80,8 @@ const ManageCourses = () => {
     const handleEdit = (course) => {
         setEditing(course._id);
         setForm({ name: course.name, description: course.description, duration: course.duration, fees: course.fees, eligibility: course.eligibility, category: course.category, status: course.status });
+        setBatchSlots(course.batchSlots || ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+        setNewSlot('');
         setImageFile(null);
         setImagePreview(course.image || '');
         setShowModal(true);
@@ -88,6 +99,8 @@ const ManageCourses = () => {
     const openAddModal = () => {
         setEditing(null);
         setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
+        setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+        setNewSlot('');
         setImageFile(null);
         setImagePreview('');
         setShowModal(true);
@@ -231,6 +244,44 @@ const ManageCourses = () => {
                                     </select>
                                 </div>
                             </div>
+
+                            {/* Batch Time Slots */}
+                            <div>
+                                <label className="label">Batch Time Slots</label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {batchSlots.map((slot, i) => (
+                                        <span key={i} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 border border-primary-200 dark:border-primary-800">
+                                            {slot}
+                                            <button type="button" onClick={() => setBatchSlots(batchSlots.filter((_, j) => j !== i))} className="ml-1 hover:text-red-500 transition-colors"><HiX className="text-xs" /></button>
+                                        </span>
+                                    ))}
+                                    {batchSlots.length === 0 && <span className="text-xs text-gray-400">No slots added</span>}
+                                </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={newSlot}
+                                        onChange={e => setNewSlot(e.target.value)}
+                                        className="input-field flex-1 text-sm"
+                                        placeholder="e.g. 2:00 PM - 3:00 PM"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (newSlot.trim() && !batchSlots.includes(newSlot.trim())) {
+                                                    setBatchSlots([...batchSlots, newSlot.trim()]);
+                                                    setNewSlot('');
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <button type="button" onClick={() => {
+                                        if (newSlot.trim() && !batchSlots.includes(newSlot.trim())) {
+                                            setBatchSlots([...batchSlots, newSlot.trim()]);
+                                            setNewSlot('');
+                                        }
+                                    }} className="btn-outline text-xs !px-3"><HiPlus /></button>
+                                </div>
+                            </div>
+
                             <button type="submit" className="btn-primary w-full !py-3">{editing ? 'Update Course' : 'Create Course'}</button>
                         </form>
                     </motion.div>

@@ -7,7 +7,6 @@ import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ConfirmModal from '../../components/ConfirmModal';
 
-const BATCH_OPTIONS = ['Morning', 'Evening', 'Direct Student'];
 
 const ManageTests = () => {
     const [tests, setTests] = useState([]);
@@ -295,12 +294,13 @@ const ManageTests = () => {
                                 <div>
                                     <label className="label text-xs">Batches *</label>
                                     <div className="flex flex-wrap gap-2 mt-1">
-                                        {BATCH_OPTIONS.map(batch => (
+                                        {(courses.find(c => c._id === form.course)?.batchSlots || []).map(batch => (
                                             <button key={batch} type="button" onClick={() => toggleBatch(batch)}
                                                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${form.batches.includes(batch) ? 'bg-primary-600 text-white border-primary-600' : 'bg-white dark:bg-dark-card text-gray-600 dark:text-gray-400 border-gray-200 dark:border-dark-border hover:border-primary-400'}`}>
                                                 {form.batches.includes(batch) && <HiCheck className="inline mr-1" />}{batch}
                                             </button>
                                         ))}
+                                        {!form.course && <span className="text-xs text-gray-400">Select a course first</span>}
                                     </div>
                                 </div>
                                 <div className="flex items-end gap-4">

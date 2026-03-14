@@ -256,9 +256,9 @@ const ManageAttendance = () => {
                                         <label className="label">Batch Timing</label>
                                         <select value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)} className="input-field">
                                             <option value="">All Batches</option>
-                                            <option value="Morning">Morning</option>
-                                            <option value="Evening">Evening</option>
-                                            <option value="Direct Student">Direct Student</option>
+                                            {(courses.find(c => c._id === selectedCourse)?.batchSlots || ['Morning', 'Evening', 'Direct Student']).map(slot => (
+                                                <option key={slot} value={slot}>{slot}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </>

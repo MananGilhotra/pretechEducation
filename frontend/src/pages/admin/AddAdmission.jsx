@@ -214,9 +214,11 @@ const AddAdmission = () => {
                                 <label className="label text-xs">Batch Timing *</label>
                                 <select {...register('batchTiming', { required: 'Required' })} className="input-field">
                                     <option value="">Select Batch</option>
-                                    <option value="Morning">Morning</option>
-                                    <option value="Evening">Evening</option>
-                                    <option value="Direct Student">Direct Student</option>
+                                    {(() => {
+                                        const selectedCourse = courses.find(c => c._id === watch('courseApplied'));
+                                        const slots = selectedCourse?.batchSlots || ['Morning', 'Evening', 'Direct Student'];
+                                        return slots.map(slot => <option key={slot} value={slot}>{slot}</option>);
+                                    })()}
                                 </select>
                                 {errors.batchTiming && <p className="text-red-500 text-xs mt-0.5">{errors.batchTiming.message}</p>}
                             </div>

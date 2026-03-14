@@ -399,7 +399,7 @@ const ViewAdmissions = () => {
                                             { label: 'Address', key: 'address', value: selectedStudent.address, edit: true },
                                             { label: 'Aadhar', key: 'aadharNumber', value: selectedStudent.aadharNumber, edit: true },
                                             { label: 'Course', key: 'courseApplied', value: selectedStudent.courseApplied?.name, edit: false },
-                                            { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: true, selectOptions: ['Morning', 'Evening', 'Direct Student'] },
+                                            { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: true, selectOptions: selectedStudent.courseApplied?.batchSlots || ['Morning', 'Evening', 'Direct Student'] },
                                             { label: 'Batch Month', key: 'batchMonth', value: selectedStudent.batchMonth, edit: false },
                                             { label: 'Payment Plan', key: 'paymentPlan', value: selectedStudent.paymentPlan, edit: false },
                                             { label: 'Reference By', key: 'referenceBy', value: selectedStudent.referenceBy, edit: false },
