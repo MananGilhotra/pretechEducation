@@ -164,7 +164,7 @@ const createAdmissionInternal = async (req, res, isAdmin) => {
             console.log('Email sending failed, continuing...');
         }
 
-        const populatedAdmission = await Admission.findById(admission._id).populate('courseApplied', 'name fees');
+        const populatedAdmission = await Admission.findById(admission._id).populate('courseApplied', 'name fees batchSlots');
 
         res.status(201).json({
             message: 'Admission submitted successfully',
@@ -205,7 +205,7 @@ exports.getAdmissions = async (req, res) => {
         }
 
         const admissions = await Admission.find(filter)
-            .populate('courseApplied', 'name fees')
+            .populate('courseApplied', 'name fees batchSlots')
             .sort({ createdAt: -1 });
 
         // Recalculate paymentStatus from actual payment records to fix stale statuses
@@ -243,7 +243,7 @@ exports.getAdmissions = async (req, res) => {
 exports.getAdmissionById = async (req, res) => {
     try {
         const admission = await Admission.findById(req.params.id)
-            .populate('courseApplied', 'name fees duration category');
+            .populate('courseApplied', 'name fees duration category batchSlots');
         if (!admission) {
             return res.status(404).json({ message: 'Admission not found' });
         }
@@ -258,7 +258,7 @@ exports.getAdmissionById = async (req, res) => {
 exports.getMyAdmission = async (req, res) => {
     try {
         const admission = await Admission.findOne({ user: req.user._id })
-            .populate('courseApplied', 'name fees duration');
+            .populate('courseApplied', 'name fees duration batchSlots');
         if (!admission) {
             return res.status(404).json({ message: 'No admission found' });
         }
@@ -276,7 +276,7 @@ exports.approveAdmission = async (req, res) => {
             req.params.id,
             { approved: true },
             { new: true }
-        ).populate('courseApplied', 'name fees');
+        ).populate('courseApplied', 'name fees batchSlots');
 
         if (!admission) {
             return res.status(404).json({ message: 'Admission not found' });
@@ -328,7 +328,7 @@ exports.updateAdmission = async (req, res) => {
 exports.exportAdmissions = async (req, res) => {
     try {
         const admissions = await Admission.find()
-            .populate('courseApplied', 'name fees')
+            .populate('courseApplied', 'name fees batchSlots')
             .sort({ createdAt: -1 });
 
         const csvHeader = 'Student ID,Name,Email,Mobile,Course,Batch,Payment Status,Date\n';
