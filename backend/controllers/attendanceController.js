@@ -332,3 +332,91 @@ exports.getTeacherAttendanceSummary = async (req, res) => {
     }
 };
 
+// ======================== STUDENT / TEACHER SELF-SERVICE ========================
+
+// @desc    Get my attendance (for logged-in student)
+// @route   GET /api/attendance/me
+// @access  Student (authenticated)
+exports.getMyAttendance = async (req, res) => {
+    try {
+        const admission = await Admission.findOne({ user: req.user._id });
+        if (!admission) {
+            return res.status(404).json({ message: 'No admission found for this user' });
+        }
+
+        const records = await Attendance.find({ student: admission._id })
+            .populate('course', 'name')
+            .sort({ date: -1 })
+            .limit(30);
+
+        // Calculate summary
+        const allRecords = await Attendance.find({ student: admission._id });
+        const totalDays = allRecords.length;
+        const presentDays = allRecords.filter(r => r.status === 'Present').length;
+        const absentDays = allRecords.filter(r => r.status === 'Absent').length;
+        const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 1000) / 10 : 0;
+
+        res.json({
+            summary: { totalDays, presentDays, absentDays, percentage },
+            records
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get my attendance (for logged-in teacher)
+// @route   GET /api/attendance/teachers/me
+// @access  Teacher (authenticated)
+exports.getMyTeacherAttendance = async (req, res) => {
+    try {
+        const Teacher = require('../models/Teacher');
+        const teacher = await Teacher.findOne({ user: req.user._id });
+        if (!teacher) {
+            return res.status(404).json({ message: 'No teacher profile found for this user' });
+        }
+
+        const records = await TeacherAttendance.find({ teacher: teacher._id })
+            .sort({ date: -1 })
+            .limit(30);
+
+        // Calculate summary
+        const allRecords = await TeacherAttendance.find({ teacher: teacher._id });
+        const totalDays = allRecords.length;
+        const presentDays = allRecords.filter(r => r.status === 'Present').length;
+        const absentDays = allRecords.filter(r => r.status === 'Absent').length;
+        const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 1000) / 10 : 0;
+
+        res.json({
+            summary: { totalDays, presentDays, absentDays, percentage },
+            records
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get attendance for a specific student (admin view)
+// @route   GET /api/attendance/student/:admissionId
+// @access  Admin
+exports.getStudentAttendanceById = async (req, res) => {
+    try {
+        const { admissionId } = req.params;
+
+        const records = await Attendance.find({ student: admissionId })
+            .populate('course', 'name')
+            .sort({ date: -1 });
+
+        const totalDays = records.length;
+        const presentDays = records.filter(r => r.status === 'Present').length;
+        const absentDays = records.filter(r => r.status === 'Absent').length;
+        const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 1000) / 10 : 0;
+
+        res.json({
+            summary: { totalDays, presentDays, absentDays, percentage },
+            records
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

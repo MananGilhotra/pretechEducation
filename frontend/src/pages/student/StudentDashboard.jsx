@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { HiUser, HiAcademicCap, HiCurrencyRupee, HiDownload, HiClock } from 'react-icons/hi';
+import { HiUser, HiAcademicCap, HiCurrencyRupee, HiDownload, HiClock, HiClipboardCheck } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -10,6 +10,7 @@ const StudentDashboard = () => {
     const { user } = useAuth();
     const [admission, setAdmission] = useState(null);
     const [payments, setPayments] = useState([]);
+    const [attendance, setAttendance] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,6 +26,12 @@ const StudentDashboard = () => {
                 setPayments(payRes.data || []);
             } catch (err) {
                 console.log('No payment data:', err.response?.data?.message || err.message);
+            }
+            try {
+                const attRes = await API.get('/attendance/me');
+                setAttendance(attRes.data);
+            } catch (err) {
+                console.log('No attendance data:', err.response?.data?.message || err.message);
             }
             setLoading(false);
         };
@@ -141,6 +148,75 @@ const StudentDashboard = () => {
                                             </div>
                                         ))}
                                     </div>
+                                )}
+                            </div>
+
+                            {/* Attendance Section */}
+                            <div className="card lg:col-span-2">
+                                <div className="flex items-center space-x-2 mb-4">
+                                    <HiClipboardCheck className="text-indigo-600 text-xl" />
+                                    <h3 className="text-lg font-bold font-heading text-gray-900 dark:text-white">Attendance</h3>
+                                </div>
+                                {!attendance || attendance.summary?.totalDays === 0 ? (
+                                    <div className="text-center py-8 text-gray-500">
+                                        <HiClipboardCheck className="text-3xl mx-auto mb-2 text-gray-400" />
+                                        <p>No attendance records yet</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Summary Stats */}
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                                            <div className="bg-gray-50 dark:bg-dark-bg rounded-xl p-3 text-center">
+                                                <div className="text-xs text-gray-500 mb-0.5">Total Days</div>
+                                                <div className="text-lg font-bold text-gray-900 dark:text-white">{attendance.summary.totalDays}</div>
+                                            </div>
+                                            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+                                                <div className="text-xs text-green-600 mb-0.5">Present</div>
+                                                <div className="text-lg font-bold text-green-700 dark:text-green-400">{attendance.summary.presentDays}</div>
+                                            </div>
+                                            <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
+                                                <div className="text-xs text-red-600 mb-0.5">Absent</div>
+                                                <div className="text-lg font-bold text-red-700 dark:text-red-400">{attendance.summary.absentDays}</div>
+                                            </div>
+                                            <div className={`rounded-xl p-3 text-center ${attendance.summary.percentage >= 75 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-amber-50 dark:bg-amber-900/20'}`}>
+                                                <div className={`text-xs mb-0.5 ${attendance.summary.percentage >= 75 ? 'text-green-600' : 'text-amber-600'}`}>Attendance %</div>
+                                                <div className={`text-lg font-bold ${attendance.summary.percentage >= 75 ? 'text-green-700 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'}`}>{attendance.summary.percentage}%</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Recent Records */}
+                                        {attendance.records?.length > 0 && (
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Recent Records</h4>
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-xs">
+                                                        <thead>
+                                                            <tr className="border-b border-gray-200 dark:border-dark-border">
+                                                                <th className="text-left py-2 px-3 font-semibold text-gray-500">Date</th>
+                                                                <th className="text-left py-2 px-3 font-semibold text-gray-500">Course</th>
+                                                                <th className="text-left py-2 px-3 font-semibold text-gray-500">Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {attendance.records.map((rec, i) => (
+                                                                <tr key={rec._id || i} className="border-b border-gray-100 dark:border-dark-border">
+                                                                    <td className="py-2 px-3 text-gray-600 dark:text-gray-400">
+                                                                        {new Date(rec.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                                    </td>
+                                                                    <td className="py-2 px-3 text-gray-600 dark:text-gray-400">{rec.course?.name || 'N/A'}</td>
+                                                                    <td className="py-2 px-3">
+                                                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${rec.status === 'Present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                                            {rec.status}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>

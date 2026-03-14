@@ -68,7 +68,8 @@ const AddAdmission = () => {
             await API.post('/admissions/admin', formData);
             toast.success('Admission created successfully!');
             reset();
-            navigate('/admin/admissions');
+            setExistingPhoto('');
+            setExistingSignature('');
         } catch (err) {
             console.error('Submission Error:', err);
             toast.error(err.response?.data?.message || 'Submission failed.');

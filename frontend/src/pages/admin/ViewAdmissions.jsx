@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { HiSearch, HiDownload, HiCheck, HiX, HiEye, HiCurrencyRupee, HiUser, HiPhone, HiMail, HiLocationMarker, HiAcademicCap, HiCalendar, HiIdentification } from 'react-icons/hi';
+import { HiSearch, HiDownload, HiCheck, HiX, HiEye, HiCurrencyRupee, HiUser, HiPhone, HiMail, HiLocationMarker, HiAcademicCap, HiCalendar, HiIdentification, HiClipboardCheck } from 'react-icons/hi';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -23,6 +23,7 @@ const ViewAdmissions = () => {
     const [editData, setEditData] = useState({});
     const [editFiles, setEditFiles] = useState({ passportPhoto: null, signature: null });
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+    const [studentAttendance, setStudentAttendance] = useState(null);
 
     const fetchAdmissions = async () => {
         try {
@@ -87,15 +88,23 @@ const ViewAdmissions = () => {
         setIsEditing(false);
         setLoadingDetail(true);
         try {
-            const { data } = await API.get(`/payments/summary/${admission._id}`);
-            setStudentFees(data);
-        } catch { setStudentFees(null); }
+            const [feesRes, attRes] = await Promise.allSettled([
+                API.get(`/payments/summary/${admission._id}`),
+                API.get(`/attendance/student/${admission._id}`)
+            ]);
+            setStudentFees(feesRes.status === 'fulfilled' ? feesRes.value.data : null);
+            setStudentAttendance(attRes.status === 'fulfilled' ? attRes.value.data : null);
+        } catch {
+            setStudentFees(null);
+            setStudentAttendance(null);
+        }
         finally { setLoadingDetail(false); }
     };
 
     const closeDetail = () => {
         setSelectedStudent(null);
         setStudentFees(null);
+        setStudentAttendance(null);
         setIsEditing(false);
         setEditFiles({ passportPhoto: null, signature: null });
     };
@@ -442,6 +451,59 @@ const ViewAdmissions = () => {
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            )}
+
+                            {/* Attendance Section */}
+                            {studentAttendance && studentAttendance.summary?.totalDays > 0 && (
+                                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-border">
+                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2"><HiClipboardCheck className="text-indigo-600" /> Attendance</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                                        <div className="bg-gray-50 dark:bg-dark-bg rounded-xl p-2.5 text-center">
+                                            <div className="text-[10px] text-gray-500 mb-0.5">Total Days</div>
+                                            <div className="text-base font-bold text-gray-900 dark:text-white">{studentAttendance.summary.totalDays}</div>
+                                        </div>
+                                        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-2.5 text-center">
+                                            <div className="text-[10px] text-green-600 mb-0.5">Present</div>
+                                            <div className="text-base font-bold text-green-700 dark:text-green-400">{studentAttendance.summary.presentDays}</div>
+                                        </div>
+                                        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-2.5 text-center">
+                                            <div className="text-[10px] text-red-600 mb-0.5">Absent</div>
+                                            <div className="text-base font-bold text-red-700 dark:text-red-400">{studentAttendance.summary.absentDays}</div>
+                                        </div>
+                                        <div className={`rounded-xl p-2.5 text-center ${studentAttendance.summary.percentage >= 75 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-amber-50 dark:bg-amber-900/20'}`}>
+                                            <div className={`text-[10px] mb-0.5 ${studentAttendance.summary.percentage >= 75 ? 'text-green-600' : 'text-amber-600'}`}>Attendance %</div>
+                                            <div className={`text-base font-bold ${studentAttendance.summary.percentage >= 75 ? 'text-green-700 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'}`}>{studentAttendance.summary.percentage}%</div>
+                                        </div>
+                                    </div>
+                                    {studentAttendance.records?.length > 0 && (
+                                        <div className="overflow-x-auto max-h-40 overflow-y-auto">
+                                            <table className="w-full text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-gray-200 dark:border-dark-border">
+                                                        <th className="text-left py-1.5 px-3 font-semibold text-gray-500">Date</th>
+                                                        <th className="text-left py-1.5 px-3 font-semibold text-gray-500">Course</th>
+                                                        <th className="text-left py-1.5 px-3 font-semibold text-gray-500">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {studentAttendance.records.slice(0, 15).map((rec, i) => (
+                                                        <tr key={rec._id || i} className="border-b border-gray-100 dark:border-dark-border">
+                                                            <td className="py-1.5 px-3 text-gray-600 dark:text-gray-400">
+                                                                {new Date(rec.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                            </td>
+                                                            <td className="py-1.5 px-3 text-gray-600 dark:text-gray-400">{rec.course?.name || 'N/A'}</td>
+                                                            <td className="py-1.5 px-3">
+                                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${rec.status === 'Present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                                    {rec.status}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
