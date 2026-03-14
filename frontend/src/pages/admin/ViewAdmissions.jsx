@@ -399,7 +399,7 @@ const ViewAdmissions = () => {
                                             { label: 'Address', key: 'address', value: selectedStudent.address, edit: true },
                                             { label: 'Aadhar', key: 'aadharNumber', value: selectedStudent.aadharNumber, edit: true },
                                             { label: 'Course', key: 'courseApplied', value: selectedStudent.courseApplied?.name, edit: false },
-                                            { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: false },
+                                            { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: true, selectOptions: ['Morning', 'Evening', 'Direct Student'] },
                                             { label: 'Batch Month', key: 'batchMonth', value: selectedStudent.batchMonth, edit: false },
                                             { label: 'Payment Plan', key: 'paymentPlan', value: selectedStudent.paymentPlan, edit: false },
                                             { label: 'Reference By', key: 'referenceBy', value: selectedStudent.referenceBy, edit: false },
@@ -409,7 +409,13 @@ const ViewAdmissions = () => {
                                                 <span className="text-xs text-gray-500 w-1/3 pt-0.5">{row.label}</span>
                                                 <div className="w-2/3 text-right">
                                                     {isEditing && row.edit ? (
-                                                        <input type={row.type || 'text'} value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right" />
+                                                        row.selectOptions ? (
+                                                            <select value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right">
+                                                                {row.selectOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                            </select>
+                                                        ) : (
+                                                            <input type={row.type || 'text'} value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right" />
+                                                        )
                                                     ) : (
                                                         <span className="text-xs font-medium text-gray-900 dark:text-white break-words inline-block max-w-full text-right">{row.value}</span>
                                                     )}

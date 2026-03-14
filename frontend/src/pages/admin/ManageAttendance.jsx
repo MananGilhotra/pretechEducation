@@ -17,6 +17,7 @@ const ManageAttendance = () => {
     // ─── Student State ───
     const [courses, setCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState('');
+    const [selectedBatch, setSelectedBatch] = useState('');
     const [students, setStudents] = useState([]);
     const [studentAttMap, setStudentAttMap] = useState({});
     const [studentSummary, setStudentSummary] = useState([]);
@@ -54,7 +55,10 @@ const ManageAttendance = () => {
         setLoading(true);
         try {
             const { data: admissions } = await API.get('/admissions');
-            const courseStudents = admissions.filter(a => a.courseApplied?._id === selectedCourse && a.approved);
+            let courseStudents = admissions.filter(a => a.courseApplied?._id === selectedCourse && a.approved);
+            if (selectedBatch) {
+                courseStudents = courseStudents.filter(a => a.batchTiming === selectedBatch);
+            }
             setStudents(courseStudents);
 
             const { data: records } = await API.get('/attendance', { params: { course: selectedCourse, date: selectedDate } });
@@ -240,13 +244,24 @@ const ManageAttendance = () => {
                         <div className="flex flex-col md:flex-row gap-4 items-end">
                             {/* Course selector (students only) */}
                             {mode === 'students' && (
-                                <div className="flex-1">
-                                    <label className="label"><HiAcademicCap className="inline mr-1.5 text-primary-600" />Select Course</label>
-                                    <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)} className="input-field">
-                                        <option value="">— Choose a Course —</option>
-                                        {courses.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                                    </select>
-                                </div>
+                                <>
+                                    <div className="flex-1">
+                                        <label className="label"><HiAcademicCap className="inline mr-1.5 text-primary-600" />Select Course</label>
+                                        <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)} className="input-field">
+                                            <option value="">— Choose a Course —</option>
+                                            {courses.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="w-full md:w-48">
+                                        <label className="label">Batch Timing</label>
+                                        <select value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)} className="input-field">
+                                            <option value="">All Batches</option>
+                                            <option value="Morning">Morning</option>
+                                            <option value="Evening">Evening</option>
+                                            <option value="Direct Student">Direct Student</option>
+                                        </select>
+                                    </div>
+                                </>
                             )}
 
                             {tab === 'mark' ? (
@@ -332,6 +347,7 @@ const ManageAttendance = () => {
                                                         <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400 w-12">#</th>
                                                         {mode === 'students' && <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Student ID</th>}
                                                         <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+                                                        {mode === 'students' && !selectedBatch && <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Batch</th>}
                                                         {mode === 'teachers' && <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Subject</th>}
                                                         <th className="text-center py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Status</th>
                                                         <th className="text-center py-3 px-4 font-semibold text-gray-600 dark:text-gray-400">Action</th>
@@ -352,6 +368,7 @@ const ManageAttendance = () => {
                                                                     {mode === 'students' && item.fatherHusbandName && <div className="text-xs text-gray-500 mt-0.5">S/D of {item.fatherHusbandName}</div>}
                                                                     {mode === 'teachers' && item.phone && <div className="text-xs text-gray-500 mt-0.5">{item.phone}</div>}
                                                                 </td>
+                                                                {mode === 'students' && !selectedBatch && <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">{item.batchTiming || '—'}</td>}
                                                                 {mode === 'teachers' && <td className="py-3 px-4 text-gray-600 dark:text-gray-400 text-xs">{item.subject}</td>}
                                                                 <td className="py-3 px-4 text-center">
                                                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPresent ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : isAbsent ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700/30 dark:text-gray-400'}`}>
