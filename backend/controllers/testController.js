@@ -251,8 +251,7 @@ exports.getMyTests = async (req, res) => {
 
             const tests = await Test.find({
                 status: 'Published',
-                course: admission.courseApplied,
-                batches: admission.batchTiming
+                course: admission.courseApplied
             })
                 .populate('course', 'name')
                 .select('-questions.options.isCorrect')
@@ -334,8 +333,8 @@ exports.getTestForAttempt = async (req, res) => {
         if (user.role === 'student') {
             const admission = await Admission.findOne({ user: user._id });
             if (!admission) return res.status(403).json({ message: 'No admission found' });
-            // Check batch eligibility
-            if (String(admission.courseApplied) !== String(test.course._id) || !test.batches.includes(admission.batchTiming)) {
+            // Check course eligibility
+            if (String(admission.courseApplied) !== String(test.course._id)) {
                 return res.status(403).json({ message: 'You are not eligible for this test' });
             }
             submitterId = admission._id;
