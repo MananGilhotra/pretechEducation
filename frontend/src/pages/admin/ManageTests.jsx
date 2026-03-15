@@ -303,7 +303,7 @@ const ManageTests = () => {
                                 <div>
                                     <label className="label text-xs">Batches *</label>
                                     <div className="flex flex-wrap gap-2 mt-1">
-                                        {(courses.find(c => c._id === form.course)?.batchSlots || []).map(batch => (
+                                        {[...new Set([...(courses.find(c => c._id === form.course)?.batchSlots || []), 'Morning', 'Evening', 'Direct Student'])].map(batch => (
                                             <button key={batch} type="button" onClick={() => toggleBatch(batch)}
                                                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${form.batches.includes(batch) ? 'bg-primary-600 text-white border-primary-600' : 'bg-white dark:bg-dark-card text-gray-600 dark:text-gray-400 border-gray-200 dark:border-dark-border hover:border-primary-400'}`}>
                                                 {form.batches.includes(batch) && <HiCheck className="inline mr-1" />}{batch}
