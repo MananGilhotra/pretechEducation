@@ -31,6 +31,7 @@ import ManageSalaries from './pages/admin/ManageSalaries';
 import ManageExpenses from './pages/admin/ManageExpenses';
 import ManageAttendance from './pages/admin/ManageAttendance';
 import ManageTests from './pages/admin/ManageTests';
+import DayBook from './pages/admin/DayBook';
 import StudentCertificate from './pages/admin/StudentCertificate';
 import StudentIdCard from './pages/admin/StudentIdCard';
 
@@ -93,6 +94,7 @@ function App() {
                                     <Route path="/admin/expenses" element={<ManageExpenses />} />
                                     <Route path="/admin/attendance" element={<ManageAttendance />} />
                                     <Route path="/admin/tests" element={<ManageTests />} />
+                                    <Route path="/admin/daybook" element={<DayBook />} />
                                 </Route>
                                 {/* Printable pages (no Layout) */}
                                 <Route path="/admin/certificate/:id" element={<StudentCertificate />} />
