@@ -63,7 +63,7 @@ const TakeTest = () => {
 
         try {
             const answerArray = Object.entries(answers).map(([qIdx, selOpt]) => ({
-                questionIndex: Number(qIdx),
+                questionIndex: test.questions[Number(qIdx)].originalIndex !== undefined ? test.questions[Number(qIdx)].originalIndex : Number(qIdx),
                 selectedOption: selOpt
             }));
             await API.post(`/tests/${id}/submit`, { answers: answerArray });

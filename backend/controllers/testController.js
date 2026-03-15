@@ -352,12 +352,27 @@ exports.getTestForAttempt = async (req, res) => {
         const existing = await TestSubmission.findOne({ test: test._id, submitterType, submitterId });
         if (existing) return res.status(400).json({ message: 'You have already submitted this test', submission: existing });
 
-        // Strip correct answers
+        // Strip correct answers and shuffle questions for each student
         const sanitized = test.toObject();
-        sanitized.questions = sanitized.questions.map(q => ({
-            ...q,
-            options: q.options.map(o => ({ text: o.text }))
-        }));
+        
+        // Fisher-Yates shuffle
+        const shuffleArray = (arr) => {
+            const shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        // Add originalIndex to each question, shuffle order, strip correct answers
+        sanitized.questions = shuffleArray(
+            sanitized.questions.map((q, idx) => ({
+                ...q,
+                originalIndex: idx,
+                options: q.options.map(o => ({ text: o.text }))
+            }))
+        );
 
         res.json(sanitized);
     } catch (error) {
