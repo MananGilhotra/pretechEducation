@@ -170,19 +170,18 @@ const InstallmentReports = () => {
                                             <td className="py-3 px-4 font-bold text-red-600">
                                                 {student.balance === 0 ? <span className="text-green-600">₹0</span> : `₹${student.balance.toLocaleString('en-IN')}`}
                                             </td>
-                                            <td className="py-3 px-4">
+                                            <td className="py-3 px-4 whitespace-nowrap">
                                                 {student.lastPayment ? (
-                                                    <div>
-                                                        <div className="font-medium text-xs">₹{student.lastPayment.amount?.toLocaleString('en-IN')}</div>
-                                                        <div className="text-xs text-gray-500">{new Date(student.lastPayment.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
-                                                    </div>
+                                                    <span className="text-xs">
+                                                        <span className="font-medium">₹{student.lastPayment.amount?.toLocaleString('en-IN')}</span>
+                                                        <span className="text-gray-500 ml-1">· {new Date(student.lastPayment.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                                                    </span>
                                                 ) : (
                                                     <span className="text-xs text-gray-400">No payments</span>
                                                 )}
                                             </td>
                                             <td className="py-3 px-4">
-                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium 
-                                                    ${student.balance === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                <span className={`whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-medium ${student.balance === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                     {student.balance === 0 ? '✓ Cleared' : 'Pending'}
                                                 </span>
                                             </td>

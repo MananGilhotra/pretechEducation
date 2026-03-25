@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { HiUsers, HiQuestionMarkCircle, HiCurrencyRupee, HiBookOpen, HiArrowRight, HiUserGroup } from 'react-icons/hi';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import API from '../../api/axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
@@ -120,24 +120,33 @@ const Dashboard = () => {
                         {/* Admissions by Course */}
                         <div className="card">
                             <h3 className="text-lg font-bold font-heading text-gray-900 dark:text-white mb-4">Admissions by Course</h3>
-                            <div className="h-64">
+                            <div style={{ height: Math.max(260, (stats?.admissionsByCourse?.length || 0) * 36 + 40) }}>
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={stats?.admissionsByCourse || []}
-                                            dataKey="count"
-                                            nameKey="_id"
-                                            cx="50%"
-                                            cy="50%"
-                                            outerRadius={80}
-                                            label={({ _id, count }) => `${_id}: ${count}`}
-                                        >
-                                            {(stats?.admissionsByCourse || []).map((entry, index) => (
+                                    <BarChart
+                                        data={[...(stats?.admissionsByCourse || [])].sort((a, b) => b.count - a.count)}
+                                        layout="vertical"
+                                        margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+                                        <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+                                        <YAxis
+                                            dataKey="_id"
+                                            type="category"
+                                            tick={{ fontSize: 11 }}
+                                            width={140}
+                                            tickFormatter={(value) => value.length > 20 ? value.slice(0, 18) + '…' : value}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                                            formatter={(value) => [value, 'Students']}
+                                            labelFormatter={(label) => label}
+                                        />
+                                        <Bar dataKey="count" fill="#1E40AF" radius={[0, 6, 6, 0]} barSize={20}>
+                                            {[...(stats?.admissionsByCourse || [])].sort((a, b) => b.count - a.count).map((entry, index) => (
                                                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
                                             ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
