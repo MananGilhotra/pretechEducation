@@ -99,7 +99,7 @@ const Dashboard = () => {
                     {/* Charts */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         {/* Revenue Chart */}
-                        <div className="card">
+                        <div className="card flex flex-col">
                             <h3 className="text-lg font-bold font-heading text-gray-900 dark:text-white mb-4">Monthly Revenue</h3>
                             <div className="h-64">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -115,6 +115,45 @@ const Dashboard = () => {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
+
+                            {/* Revenue Insights */}
+                            {(() => {
+                                const rev = stats?.monthlyRevenue || [];
+                                if (rev.length === 0) return null;
+                                const totalRev = rev.reduce((s, r) => s + (r.revenue || 0), 0);
+                                const avgRev = Math.round(totalRev / rev.length);
+                                const bestMonth = rev.reduce((best, r) => (r.revenue || 0) > (best.revenue || 0) ? r : best, rev[0]);
+                                const lastTwo = rev.slice(-2);
+                                const growth = lastTwo.length === 2 && lastTwo[0].revenue > 0
+                                    ? Math.round(((lastTwo[1].revenue - lastTwo[0].revenue) / lastTwo[0].revenue) * 100) : null;
+                                return (
+                                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-border grid grid-cols-2 gap-3 flex-1">
+                                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
+                                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">Total Revenue</div>
+                                            <div className="text-lg font-bold text-blue-700 dark:text-blue-300">₹{totalRev.toLocaleString('en-IN')}</div>
+                                        </div>
+                                        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3">
+                                            <div className="text-xs text-green-600 dark:text-green-400 font-medium">Best Month</div>
+                                            <div className="text-lg font-bold text-green-700 dark:text-green-300">{bestMonth.month}</div>
+                                            <div className="text-xs text-green-600 dark:text-green-400">₹{(bestMonth.revenue || 0).toLocaleString('en-IN')}</div>
+                                        </div>
+                                        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3">
+                                            <div className="text-xs text-purple-600 dark:text-purple-400 font-medium">Avg / Month</div>
+                                            <div className="text-lg font-bold text-purple-700 dark:text-purple-300">₹{avgRev.toLocaleString('en-IN')}</div>
+                                        </div>
+                                        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3">
+                                            <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">Month Trend</div>
+                                            <div className="text-lg font-bold">
+                                                {growth !== null ? (
+                                                    <span className={growth >= 0 ? 'text-green-600' : 'text-red-600'}>
+                                                        {growth >= 0 ? '↑' : '↓'} {Math.abs(growth)}%
+                                                    </span>
+                                                ) : <span className="text-gray-400">—</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* Admissions by Course */}
