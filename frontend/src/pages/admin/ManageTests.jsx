@@ -146,6 +146,15 @@ const ManageTests = () => {
         } catch (err) { toast.error(err.response?.data?.message || 'Reset failed'); }
     };
 
+    const handleResetAllSubmissions = async (testId) => {
+        if (!window.confirm(`Reset ALL submissions for this test? All students/teachers will be able to retake it.`)) return;
+        try {
+            const { data } = await API.delete(`/tests/${testId}/submissions`);
+            toast.success(data.message);
+            setSubmissions([]);
+        } catch (err) { toast.error(err.response?.data?.message || 'Reset all failed'); }
+    };
+
     // ---- Question builder helpers ----
     const addQuestion = () => {
         setQuestions([...questions, {
@@ -387,7 +396,18 @@ const ManageTests = () => {
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Test Results</h2>
                                     <p className="text-sm text-gray-500">{showSubmissions.title}</p>
                                 </div>
-                                <button onClick={() => setShowSubmissions(null)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border"><HiX className="text-xl" /></button>
+                                <div className="flex items-center gap-2">
+                                    {submissions.length > 0 && (
+                                        <button
+                                            onClick={() => handleResetAllSubmissions(showSubmissions._id)}
+                                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 transition-colors flex items-center gap-1"
+                                            title="Reset all submissions — allow everyone to retake"
+                                        >
+                                            <HiRefresh /> Reset All
+                                        </button>
+                                    )}
+                                    <button onClick={() => setShowSubmissions(null)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border"><HiX className="text-xl" /></button>
+                                </div>
                             </div>
 
                             {loadingSubs ? (

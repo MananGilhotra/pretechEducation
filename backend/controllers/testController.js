@@ -160,6 +160,21 @@ exports.resetSubmission = async (req, res) => {
     }
 };
 
+// @desc    Reset ALL submissions for a test so everyone can retake
+// @route   DELETE /api/tests/:id/submissions
+// @access  Admin
+exports.resetAllSubmissions = async (req, res) => {
+    try {
+        const test = await Test.findById(req.params.id);
+        if (!test) return res.status(404).json({ message: 'Test not found' });
+
+        const result = await TestSubmission.deleteMany({ test: test._id });
+        res.json({ message: `All ${result.deletedCount} submission(s) reset successfully. Everyone can now retake the test.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Bulk import questions from structured text
 // @route   POST /api/tests/:id/import
 // @access  Admin

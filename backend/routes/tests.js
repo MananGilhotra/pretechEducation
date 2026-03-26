@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     createTest, getTests, getTestById, updateTest, deleteTest,
-    getTestSubmissions, resetSubmission, bulkImportQuestions,
+    getTestSubmissions, resetSubmission, resetAllSubmissions, bulkImportQuestions,
     getMyTests, getTestForAttempt, submitTest, getMySubmission
 } = require('../controllers/testController');
 const { protect, authorize } = require('../middleware/auth');
@@ -18,6 +18,7 @@ router.get('/:id/my-result', protect, getMySubmission);
 router.post('/', protect, authorize('admin'), createTest);
 router.get('/', protect, authorize('admin'), getTests);
 router.get('/:id/submissions', protect, authorize('admin'), getTestSubmissions);
+router.delete('/:id/submissions', protect, authorize('admin'), resetAllSubmissions);
 router.delete('/:id/submissions/:submissionId', protect, authorize('admin'), resetSubmission);
 router.post('/:id/import', protect, authorize('admin'), bulkImportQuestions);
 router.get('/:id', protect, authorize('admin'), getTestById);
