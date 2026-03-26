@@ -20,7 +20,7 @@ const Footer = () => {
                             </div>
                         </div>
                         <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                            Empowering students with cutting-edge computer education and professional IT certification courses since 2010.
+                            Empowering students with cutting-edge computer education and professional IT certification courses since 2003.
                         </p>
                         <div className="flex space-x-3">
                             {[FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube].map((Icon, i) => (
