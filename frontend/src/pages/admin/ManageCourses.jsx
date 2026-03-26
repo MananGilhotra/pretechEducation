@@ -21,7 +21,7 @@ const ManageCourses = () => {
     const [batchSlots, setBatchSlots] = useState([
         '8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM',
         '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM',
-        '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM'
+        '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM'
     ]);
     const [newSlot, setNewSlot] = useState('');
 
@@ -71,7 +71,7 @@ const ManageCourses = () => {
             setImageFile(null);
             setImagePreview('');
             setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
-            setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+            setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
             setNewSlot('');
             fetchCourses();
         } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
@@ -80,7 +80,7 @@ const ManageCourses = () => {
     const handleEdit = (course) => {
         setEditing(course._id);
         setForm({ name: course.name, description: course.description, duration: course.duration, fees: course.fees, eligibility: course.eligibility, category: course.category, status: course.status });
-        setBatchSlots(course.batchSlots || ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+        setBatchSlots(course.batchSlots || ['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
         setNewSlot('');
         setImageFile(null);
         setImagePreview(course.image || '');
@@ -99,7 +99,7 @@ const ManageCourses = () => {
     const openAddModal = () => {
         setEditing(null);
         setForm({ name: '', description: '', duration: '', fees: '', eligibility: '', category: 'Programming', status: 'Active' });
-        setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
+        setBatchSlots(['8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM', '8:00 PM - 9:00 PM']);
         setNewSlot('');
         setImageFile(null);
         setImagePreview('');
