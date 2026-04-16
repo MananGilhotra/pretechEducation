@@ -24,6 +24,7 @@ const ViewAdmissions = () => {
     const [editFiles, setEditFiles] = useState({ passportPhoto: null, signature: null });
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
     const [studentAttendance, setStudentAttendance] = useState(null);
+    const [allCourses, setAllCourses] = useState([]);
 
     const fetchAdmissions = async () => {
         try {
@@ -37,6 +38,16 @@ const ViewAdmissions = () => {
     };
 
     useEffect(() => { fetchAdmissions(); }, [search, statusFilter]);
+
+    useEffect(() => {
+        const fetchAllCourses = async () => {
+            try {
+                const { data } = await API.get('/courses');
+                setAllCourses(data);
+            } catch (err) {}
+        };
+        fetchAllCourses();
+    }, []);
 
     const handleApprove = async (id) => {
         try {
@@ -82,7 +93,8 @@ const ViewAdmissions = () => {
             email: admission.email || '',
             address: admission.address || '',
             aadharNumber: admission.aadharNumber || '',
-            registrationDate: admission.registrationDate ? new Date(admission.registrationDate).toISOString().split('T')[0] : ''
+            registrationDate: admission.registrationDate ? new Date(admission.registrationDate).toISOString().split('T')[0] : '',
+            courseApplied: admission.courseApplied?._id || ''
         });
         setEditFiles({ passportPhoto: null, signature: null });
         setIsEditing(false);
@@ -398,7 +410,7 @@ const ViewAdmissions = () => {
                                             { label: 'Email', key: 'email', value: selectedStudent.email, edit: true, type: 'email' },
                                             { label: 'Address', key: 'address', value: selectedStudent.address, edit: true },
                                             { label: 'Aadhar', key: 'aadharNumber', value: selectedStudent.aadharNumber, edit: true },
-                                            { label: 'Course', key: 'courseApplied', value: selectedStudent.courseApplied?.name, edit: false },
+                                            { label: 'Course', key: 'courseApplied', value: selectedStudent.courseApplied?.name, edit: true, selectOptions: allCourses.map(c => ({ value: c._id, label: c.name })) },
                                             { label: 'Batch Timing', key: 'batchTiming', value: selectedStudent.batchTiming, edit: true, selectOptions: [...new Set([...(selectedStudent.courseApplied?.batchSlots || []), 'Morning', 'Evening', 'Direct Student', ...(selectedStudent.batchTiming ? [selectedStudent.batchTiming] : [])])] },
                                             { label: 'Batch Month', key: 'batchMonth', value: selectedStudent.batchMonth, edit: false },
                                             { label: 'Payment Plan', key: 'paymentPlan', value: selectedStudent.paymentPlan, edit: false },
@@ -411,7 +423,11 @@ const ViewAdmissions = () => {
                                                     {isEditing && row.edit ? (
                                                         row.selectOptions ? (
                                                             <select value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right">
-                                                                {row.selectOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                                {row.selectOptions.map(opt => (
+                                                                    typeof opt === 'object'
+                                                                        ? <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                        : <option key={opt} value={opt}>{opt}</option>
+                                                                ))}
                                                             </select>
                                                         ) : (
                                                             <input type={row.type || 'text'} value={editData[row.key] || ''} onChange={e => setEditData({ ...editData, [row.key]: e.target.value })} className="input-field py-1 text-xs px-2 h-auto text-right" />
