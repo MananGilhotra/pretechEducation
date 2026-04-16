@@ -312,7 +312,8 @@ exports.updateAdmission = async (req, res) => {
         }
 
         // If email was changed and student login exists, we'd ideally sync it, but for now we just update admission
-        admission = await Admission.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+        admission = await Admission.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true })
+            .populate('courseApplied', 'name fees duration category batchSlots');
 
         res.json({ message: 'Admission updated successfully', admission });
     } catch (error) {
