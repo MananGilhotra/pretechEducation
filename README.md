@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🎓 Pretech Computer Education — Institute Management Platform
 
@@ -9,7 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Express](https://img.shields.io/badge/Express-4.18-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Deployed](https://img.shields.io/badge/Live-Vercel%20%2B%20Render-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](#deployment)
+[![Deployed](https://img.shields.io/badge/Live-Vercel%20%2B%20Render-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](#-deployment)
 
 ---
 
@@ -438,7 +438,7 @@ institute_management_website/
 
 ## 📄 License
 
-This project is proprietary software developed for Pretech Computer Education.  
+This project is proprietary software developed for Pretech Computer Education.
 All rights reserved.
 
 ---
@@ -448,4 +448,3 @@ All rights reserved.
 **Built with ❤️ by [Manan Gilhotra](https://github.com/MananGilhotra)**
 
 </div>
-]]>
