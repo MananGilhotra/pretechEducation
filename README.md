@@ -13,7 +13,7 @@
 
 ---
 
-**🔗 Live Demo:** [pretecheducation.vercel.app](https://pretecheducation.vercel.app) &nbsp;|&nbsp; **📡 API:** [pretecheducation-1.onrender.com](https://pretecheducation-1.onrender.com)
+**🔗 Live Demo:** [pretecheducation.vercel.app](https://pretech-education.vercel.app) &nbsp;|&nbsp; **📡 API:** [pretecheducation-1.onrender.com](https://pretecheducation-1.onrender.com)
 
 </div>
 
