@@ -12,41 +12,9 @@ const InstallmentReports = () => {
 
     const fetchData = async () => {
         try {
-            const { data: admissions } = await API.get('/admissions');
-
-            // For each admission, fetch fee summary (which uses actual Payment records)
-            const enriched = await Promise.all(
-                admissions.map(async (student) => {
-                    try {
-                        const { data } = await API.get(`/payments/summary/${student._id}`);
-                        return {
-                            ...student,
-                            totalFees: data.feeSummary.totalFees,
-                            grossFees: data.feeSummary.grossFees || data.feeSummary.totalFees,
-                            discount: data.feeSummary.discount || 0,
-                            paidAmount: data.feeSummary.totalPaid,
-                            balance: data.feeSummary.balanceDue,
-                            paymentCount: data.payments?.length || 0,
-                            lastPayment: data.payments?.[0] || null
-                        };
-                    } catch {
-                        return {
-                            ...student,
-                            totalFees: student.finalFees || 0,
-                            grossFees: student.finalFees || 0,
-                            discount: 0,
-                            paidAmount: 0,
-                            balance: student.finalFees || 0,
-                            paymentCount: 0,
-                            lastPayment: null
-                        };
-                    }
-                })
-            );
-
-            // Sort: students with balance due first
-            enriched.sort((a, b) => b.balance - a.balance);
-            setStudents(enriched);
+            // Single bulk API call — replaces N+1 individual requests
+            const { data } = await API.get('/payments/installment-report');
+            setStudents(data);
         } catch (error) {
             console.error(error);
             toast.error('Failed to fetch data');

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createCheckout, verifyPayment, getPayments, getMyPayments, downloadReceipt, submitManualPayment, approvePayment, rejectPayment, recordPayment, getFeeSummary, updateInstallmentStatus, getFeeOverview, applyDiscount, updatePayment, deletePayment } = require('../controllers/paymentController');
+const { createCheckout, verifyPayment, getPayments, getMyPayments, downloadReceipt, submitManualPayment, approvePayment, rejectPayment, recordPayment, getFeeSummary, updateInstallmentStatus, getFeeOverview, applyDiscount, updatePayment, deletePayment, getInstallmentReport } = require('../controllers/paymentController');
 const { protect, authorize } = require('../middleware/auth');
 
 // Deprecated: router.post('/create-checkout', protect, createCheckout);
@@ -13,6 +13,7 @@ router.put('/:id/reject', protect, authorize('admin'), rejectPayment);
 // Admin fee data-entry routes
 router.post('/record', protect, authorize('admin'), recordPayment);
 router.get('/overview', protect, authorize('admin'), getFeeOverview);
+router.get('/installment-report', protect, authorize('admin'), getInstallmentReport);
 router.get('/summary/:admissionId', protect, authorize('admin'), getFeeSummary);
 router.put('/installment/:admissionId/:installmentNumber', protect, authorize('admin'), updateInstallmentStatus);
 router.put('/discount/:admissionId', protect, authorize('admin'), applyDiscount);

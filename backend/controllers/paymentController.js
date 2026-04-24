@@ -596,6 +596,74 @@ exports.updatePayment = async (req, res) => {
     }
 };
 
+// @desc    Bulk installment report — returns all students with fee summaries in 2 DB queries
+// @route   GET /api/payments/installment-report
+exports.getInstallmentReport = async (req, res) => {
+    try {
+        // 1. Aggregate all paid payments: group by admission to get totalPaid & lastPayment
+        const paymentAgg = await Payment.aggregate([
+            { $match: { status: 'paid' } },
+            { $sort: { createdAt: -1 } },
+            {
+                $group: {
+                    _id: '$admission',
+                    totalPaid: { $sum: '$amount' },
+                    paymentCount: { $sum: 1 },
+                    lastPaymentAmount: { $first: '$amount' },
+                    lastPaymentDate: { $first: '$createdAt' }
+                }
+            }
+        ]);
+
+        // Build a lookup map: admissionId -> { totalPaid, paymentCount, lastPayment }
+        const paymentMap = {};
+        paymentAgg.forEach(p => {
+            paymentMap[p._id.toString()] = {
+                totalPaid: p.totalPaid,
+                paymentCount: p.paymentCount,
+                lastPayment: { amount: p.lastPaymentAmount, createdAt: p.lastPaymentDate }
+            };
+        });
+
+        // 2. Fetch all admissions with only needed fields (no base64 images)
+        const admissions = await Admission.find()
+            .select('studentId name courseApplied discount finalFees paymentStatus paymentPlan totalInstallments installments')
+            .populate('courseApplied', 'name fees')
+            .sort({ createdAt: -1 })
+            .lean();
+
+        // 3. Merge and compute
+        const result = admissions.map(adm => {
+            const grossFees = adm.courseApplied?.fees || 0;
+            const discount = adm.discount || 0;
+            const totalFees = Math.max(0, grossFees - discount);
+            const pm = paymentMap[adm._id.toString()] || { totalPaid: 0, paymentCount: 0, lastPayment: null };
+            const balance = Math.max(0, totalFees - pm.totalPaid);
+
+            return {
+                _id: adm._id,
+                studentId: adm.studentId,
+                name: adm.name,
+                courseApplied: adm.courseApplied,
+                totalFees,
+                grossFees,
+                discount,
+                paidAmount: pm.totalPaid,
+                balance,
+                paymentCount: pm.paymentCount,
+                lastPayment: pm.lastPayment
+            };
+        });
+
+        // Sort: students with highest balance first
+        result.sort((a, b) => b.balance - a.balance);
+
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Delete a payment record
 // @route   DELETE /api/payments/:id
 exports.deletePayment = async (req, res) => {
