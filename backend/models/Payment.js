@@ -47,4 +47,8 @@ const paymentSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Index for dashboard aggregate queries that filter by status
+paymentSchema.index({ status: 1 });
+paymentSchema.index({ admission: 1, status: 1 });
+
 module.exports = mongoose.model('Payment', paymentSchema);
