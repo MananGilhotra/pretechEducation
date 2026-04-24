@@ -62,11 +62,11 @@ const ManageFees = () => {
         debounceRef.current = setTimeout(async () => {
             setLoadingSuggestions(true);
             try {
-                const { data } = await API.get('/admissions', { params: { search: query } });
-                setSuggestions(data.slice(0, 8));
+                const { data } = await API.get('/admissions/search', { params: { q: query } });
+                setSuggestions(data);
             } catch { setSuggestions([]); }
             finally { setLoadingSuggestions(false); }
-        }, 350);
+        }, 400);
     }, [query]);
 
     const selectStudent = async (admission) => {

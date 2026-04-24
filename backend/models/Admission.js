@@ -139,4 +139,10 @@ const admissionSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Indexes for fast search in Manage Fees autocomplete
+admissionSchema.index({ name: 1 });
+admissionSchema.index({ studentId: 1 });
+admissionSchema.index({ email: 1 });
+admissionSchema.index({ fatherHusbandName: 1 });
+
 module.exports = mongoose.model('Admission', admissionSchema);

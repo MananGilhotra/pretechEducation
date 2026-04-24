@@ -238,6 +238,39 @@ exports.getAdmissions = async (req, res) => {
     }
 };
 
+// @desc    Lightweight search for fee management (fast autocomplete)
+// @route   GET /api/admissions/search
+exports.searchAdmissionsLite = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.trim().length < 2) {
+            return res.json([]);
+        }
+
+        const regex = { $regex: q.trim(), $options: 'i' };
+        const filter = {
+            $or: [
+                { name: regex },
+                { studentId: regex },
+                { email: regex },
+                { fatherHusbandName: regex }
+            ]
+        };
+
+        // Only fetch what the dropdown needs — no base64 images, no installments
+        const admissions = await Admission.find(filter)
+            .select('name studentId email fatherHusbandName mobile paymentStatus paymentPlan courseApplied')
+            .populate('courseApplied', 'name')
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .lean();
+
+        res.json(admissions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get single admission by ID (admin)
 // @route   GET /api/admissions/:id
 exports.getAdmissionById = async (req, res) => {
